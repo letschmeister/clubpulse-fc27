@@ -27,6 +27,35 @@
     .two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.inner{padding:23px}.bar-stack{height:12px;background:#31363d;display:flex;overflow:hidden;border-radius:9px;gap:2px;margin:26px 0 11px}.bar-stack>span{transition:width .2s}.bar-win{background:var(--green)}.bar-draw{background:var(--yellow)}.bar-loss{background:var(--red)}.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#aab1bb}.legend b{color:#e6eaf0}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}.form-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:21px}.form-cell{height:31px;min-width:31px;display:grid;place-items:center;border-radius:8px;font-size:12px;font-weight:900}.form-cell.W{background:#23553f;color:#7ce6a4}.form-cell.D{background:#605138;color:#ffd07a}.form-cell.L{background:#5b3333;color:#ffa5a5}.empty{font-size:13px;color:var(--muted);padding:18px 0}.note{font-size:12px;color:var(--muted);margin-top:13px}
     .player-filters{display:flex;gap:9px;align-items:center}.filter{background:#1c222a;color:#e7e9ed;border:1px solid #39414a;border-radius:10px;padding:10px 12px;outline:0;min-width:185px;max-width:100%}select.filter{min-width:150px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;color:#919ba6;text-transform:uppercase;letter-spacing:1px;font-size:10px;font-weight:800;border-bottom:1px solid #303641;padding:16px 19px;cursor:pointer;user-select:none}th:hover{color:var(--accent)}td{padding:15px 19px;border-bottom:1px solid #292f37;font-size:13px}tr:last-child td{border-bottom:0}tbody tr{cursor:pointer}tbody tr:hover{background:#202720}.player-name{font-weight:800;display:flex;align-items:center;gap:11px}.avatar{width:33px;height:33px;border-radius:10px;background:#34412a;color:var(--accent);font-weight:900;display:grid;place-items:center;flex-shrink:0}.pos{font-size:10px;letter-spacing:.8px;padding:5px 8px;border-radius:6px;background:#303840;color:#e2e8ea}.good{color:var(--accent);font-weight:800}
     .matches{display:flex;flex-direction:column}.match{padding:13px 20px;border-bottom:1px solid #2b3139;display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:16px}.match:last-child{border:0}.match-result{height:30px;width:30px;display:grid;place-items:center;border-radius:9px;font-size:12px;font-weight:800}.match-result.W{background:#214734;color:#7be39e}.match-result.L{background:#4d2e30;color:#ffa1a1}.match-result.D{background:#5c4d2f;color:#f7d282}.match strong{font-size:13px}.match small{font-size:11px;color:#7e8792}.match-score{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:800;font-size:18px}.match-date{font-size:11px;color:#8c959e;min-width:83px;text-align:right}.footer{text-align:center;border-top:1px solid #242931;color:#7e8792;font-size:12px;margin-top:60px;padding:28px 0 40px}
+    /* Matchkader: einzelne Partien ohne zusätzliche EA-Anfrage aufklappen. */
+    .match-entry{border-bottom:1px solid #2b3139}
+    .match-entry:last-child{border-bottom:0}
+    .match-entry[open]{background:#192019}
+    .match-entry summary{list-style:none;cursor:pointer}
+    .match-entry summary::-webkit-details-marker{display:none}
+    .match-entry summary:hover{background:#1f2921}
+    .match-entry summary:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+    .match-entry .match{border-bottom:0;grid-template-columns:36px minmax(0,1fr) auto auto 22px}
+    .match-hint{display:block;margin-top:4px;color:#b5c99e!important;font-size:11px!important}
+    .match-chevron{font-size:20px;color:var(--accent);text-align:center;transition:transform .18s}
+    .match-entry[open] .match-chevron{transform:rotate(180deg)}
+    .match-expanded{padding:3px 20px 19px;border-top:1px solid #303a33}
+    .match-expanded-head{font-size:12px;color:#b3bea9;margin:13px 0 14px}
+    .match-rosters{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-items:start}
+    .roster-side{border:1px solid #333e39;border-radius:12px;background:#141a1b;min-width:0;overflow:hidden}
+    .roster-top{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #303a33}
+    .roster-top strong{font-size:13px}.roster-top span{font-size:11px;color:#9ca9a4}
+    .roster-scroll{overflow-x:auto}
+    .roster-side .match-player-table{min-width:520px;width:100%}
+    .match-player-table th{padding:10px 9px;color:#9cacaa;cursor:default;font-size:9px;white-space:nowrap}
+    .match-player-table th:hover{color:#9cacaa}
+    .match-player-table td{padding:11px 9px;font-size:12px;white-space:nowrap}
+    .match-player-table tbody tr{cursor:default}
+    .match-player-table tbody tr:hover{background:#202820}
+    .match-player-table td:first-child{max-width:158px;overflow:hidden;text-overflow:ellipsis;font-weight:750}
+    .match-no-players{padding:16px;font-size:12px;color:#a0aaa5}
+    @media(max-width:850px){.match-rosters{grid-template-columns:1fr}}
+    @media(max-width:760px){.match-entry .match{grid-template-columns:30px minmax(0,1fr) auto 20px;gap:9px}.match-expanded{padding:2px 11px 15px}.match-date{display:none}}
     .feat-wrap{margin-top:27px;display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.feat{padding:25px 24px}.feat .pic{height:45px;width:45px;background:#27331e;color:var(--accent);border-radius:12px;display:grid;place-items:center;font-size:22px}.feat h3{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:17px;margin:19px 0 7px}.feat p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}
     .overlay{position:fixed;inset:0;z-index:10;background:#030403ce;display:flex;align-items:center;justify-content:center;padding:15px}.modal{max-width:590px;width:100%;max-height:92vh;overflow:auto;background:#171b22;border:1px solid #3d453c;border-radius:23px;padding:26px;box-shadow:0 30px 90px #0009}.modal-head{display:flex;align-items:start;justify-content:space-between;gap:15px}.modal-head h2{margin:5px 0;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:30px}.x{border:0;border-radius:10px;background:#292f35;color:white;font-size:20px;width:36px;height:36px}.player-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}.mini-metric{background:#222832;border:1px solid #343b45;border-radius:12px;padding:14px}.mini-metric small{display:block;font-size:10px;color:#9ba6b2}.mini-metric strong{display:block;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:26px;margin-top:7px}.section-sub{margin:23px 0 7px;color:var(--accent);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800}.loading{display:flex;gap:11px;align-items:center;justify-content:center;color:#acb7bc;font-size:14px;padding:18px}.spinner{height:19px;width:19px;border:2px solid #465045;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
     /* Hauptnavigation links oben – getrennt von der Suche. */
@@ -143,7 +172,7 @@
       <p class="note">Spielerstatistiken: aktuelle Saison. Karrierewerte beziehen sich auf den gewählten Club, soweit EA sie liefert.</p>
     </section>
     <section class="section">
-      <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>EA stellt maximal die letzten zehn Ligaspiele direkt bereit.</p></div></div>
+      <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>Tippe auf ein Ergebnis, um die Spieler beider Teams und ihre Match-Statistiken zu sehen. EA liefert maximal zehn Ligaspiele.</p></div></div>
       <div class="panel matches" id="matches-view"></div>
     </section>
   </div>
@@ -333,8 +362,22 @@ function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').cl
  const total=num(s.wins)+num(s.losses)+num(s.ties);const percent = n=>total?100*num(n)/total:0;
  $('#performance').innerHTML=`<div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 38px 'Space Grotesk';color:var(--accent)">${total?Math.round(percent(s.wins))+'%':'–'}</span><span class="muted" style="font-size:13px">Siegquote</span></div><div class="bar-stack"><span class="bar-win" style="width:${percent(s.wins)}%"></span><span class="bar-draw" style="width:${percent(s.ties)}%"></span><span class="bar-loss" style="width:${percent(s.losses)}%"></span></div><div class="legend"><span><i style="background:var(--green)"></i> Siege <b>${esc(disp(s.wins))}</b></span><span><i style="background:var(--yellow)"></i> Remis <b>${esc(disp(s.ties))}</b></span><span><i style="background:var(--red)"></i> Niederlagen <b>${esc(disp(s.losses))}</b></span></div>`;
  const matches=data.matches||[];$('#form-view').innerHTML=matches.length?`<div class="muted" style="font-size:13px">Letzte ${Math.min(10,matches.length)} Ligaspiele</div><div class="form-row">${matches.slice(0,10).map(m=>`<span title="${esc(m.opponent)} (${esc(m.goals)}:${esc(m.against)})" class="form-cell ${esc(m.result)}">${esc(m.result)}</span>`).join('')}</div><div class="note">W = Sieg · D = Unentschieden · L = Niederlage</div>`:'<p class="empty">EA hat keine letzten Ligaspiele geliefert.</p>';
- $('#matches-view').innerHTML=matches.length?matches.map(m=>`<div class="match"><span class="match-result ${esc(m.result)}">${esc(m.result)}</span><div><strong>${esc(m.opponent)}</strong><br><small>Ligaspiel</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span></div>`).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
+ $('#matches-view').innerHTML=matches.length?matches.map(renderMatch).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
  renderPlayers();
+}
+function renderMatchSquad(players, teamName, isOwn){
+ const list=Array.isArray(players)?players:[];
+ const columns=[['Spieler','name'],['Pos.','position'],['Tore','goals'],['Assists','assists'],['Bew.','rating'],['Schüsse','shots'],['Pässe','passes'],['Paraden','saves']];
+ const header=`<thead><tr>${columns.map(c=>`<th>${esc(c[0])}</th>`).join('')}</tr></thead>`;
+ const cells=list.map(p=>`<tr><td title="${esc(p.name||'Unbekannt')}">${esc(p.name||'Unbekannt')}</td><td><span class="pos">${esc(posText[p.position]||p.position||'–')}</span></td><td class="good">${esc(disp(p.goals))}</td><td>${esc(disp(p.assists))}</td><td>${esc(dec(p.rating))}</td><td>${esc(disp(p.shots))}</td><td>${esc(disp(p.passes))}</td><td>${esc(disp(p.saves))}</td></tr>`).join('');
+ return `<section class="roster-side" aria-label="${esc(teamName)}"><div class="roster-top"><strong>${isOwn?'🟢 ':''}${esc(teamName)}</strong><span>${list.length} Spieler</span></div>${list.length?`<div class="roster-scroll"><table class="match-player-table">${header}<tbody>${cells}</tbody></table></div>`:'<div class="match-no-players">EA liefert für diese Mannschaft keinen Spielkader.</div>'}</section>`;
+}
+function renderMatch(m){
+ const ours=m.lineup?.ours||[],them=m.lineup?.opponents||[];
+ const count=ours.length+them.length;
+ const label=count?'Spielkader anzeigen':'Spielkader prüfen';
+ const result=['W','D','L'].includes(m.result)?m.result:'D';
+ return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Kader anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">Diese Spieler haben laut EA in diesem Match mitgespielt. Die Werte gelten nur für dieses Spiel.</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true)}${renderMatchSquad(them,m.opponent||'Gegner',false)}</div><p class="note">Werte werden aus EA-Matchdaten übernommen. Falls EA keinen Kader bereitstellt, erscheint ein Hinweis.</p></div></details>`;
 }
 function renderPlayers(){const all=clubData?.members||[];const text=$('#player-filter').value.trim().toLowerCase();const filtered=all.filter(p=>[p.name,p.proName].some(v=>String(v||'').toLowerCase().includes(text)));filtered.sort((a,b)=>sortKey==='name'?String(a.name).localeCompare(String(b.name),'de'):sortKey==='favoritePosition'?String(a.favoritePosition).localeCompare(String(b.favoritePosition)):num(b[sortKey])-num(a[sortKey]));
  $('#players-body').replaceChildren();const tbody=$('#players-body');for(const p of filtered){const row=document.createElement('tr');row.tabIndex=0;row.setAttribute('aria-label','Spieler '+(p.name||''));row.innerHTML=`<td><div class="player-name"><span class="avatar">${esc(monogram(p.name))}</span><span>${esc(p.name||'Unbekannt')}<br><small class="muted" style="font-size:11px;font-weight:400">${esc(p.proName||'')}</small></span></div></td><td><span class="pos">${esc(posText[p.favoritePosition]||p.favoritePosition||'–')}</span></td><td>${esc(disp(p.gamesPlayed))}</td><td class="good">${esc(disp(p.goals))}</td><td>${esc(disp(p.assists))}</td><td>${esc(dec(p.ratingAve))}</td><td>${esc(disp(p.proOverall))}</td>`;row.addEventListener('click',()=>openPlayer(p));row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlayer(p)}});tbody.appendChild(row)}

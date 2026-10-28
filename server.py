@@ -141,6 +141,36 @@ def do_search(name):
     return {"clubs": clubs, "updated": int(time())}
 
 
+def match_players_for_club(game, club_id):
+    """EA clubs/matches enthält den Spielkader bereits unter players[clubId].
+
+    Es sind die Teilnehmer DIESES Matches, nicht einfach aktuelle Club-Mitglieder.
+    Nur konkrete öffentliche Matchwerte übernehmen, keine Werte erfinden.
+    """
+    groups = game.get("players") or {}
+    raw = groups.get(str(club_id), {}) if isinstance(groups, dict) else {}
+    if not isinstance(raw, dict):
+        return []
+    result = []
+    for player_id, stats in list(raw.items())[:32]:
+        if not isinstance(stats, dict):
+            continue
+        result.append({
+            "name": str(stats.get("playername") or "Unbekannter Spieler")[:100],
+            "position": str(stats.get("pos") or "")[:30],
+            "rating": stats.get("rating"),
+            "goals": stats.get("goals"),
+            "assists": stats.get("assists"),
+            "shots": stats.get("shots"),
+            "passes": stats.get("passesmade"),
+            "saves": stats.get("saves"),
+        })
+    # Die Daten müssen nicht in Feldspieler-/Torwart-Reihenfolge kommen.
+    order = {"goalkeeper": 0, "defender": 1, "midfielder": 2, "forward": 3}
+    result.sort(key=lambda p: (order.get(p["position"], 4), p["name"].casefold()))
+    return result
+
+
 def do_club(club_id):
     club_id = club_id.strip()
     if not club_id.isdecimal() or not 1 <= len(club_id) <= 20:
@@ -167,7 +197,8 @@ def do_club(club_id):
         our = clubs.get(club_id)
         if not isinstance(our, dict):
             continue
-        other = next((v for k, v in clubs.items() if str(k) != club_id and isinstance(v, dict)), {})
+        opponent_id, other = next(((str(k), v) for k, v in clubs.items()
+                                    if str(k) != club_id and isinstance(v, dict)), ("", {}))
         # Bei DNF zeigt EA teils zusätzliche Ergebnis-Codes; Toranzahl ist die sichere Grundlage.
         gf = int(our.get("goals") or 0)
         ga = int(our.get("goalsAgainst") or 0)
@@ -177,6 +208,10 @@ def do_club(club_id):
             "timestamp": game.get("timestamp"),
             "opponent": (other.get("details") or {}).get("name") or "Unbekannter Gegner",
             "goals": gf, "against": ga, "result": result,
+            "lineup": {
+                "ours": match_players_for_club(game, club_id),
+                "opponents": match_players_for_club(game, opponent_id) if opponent_id else [],
+            },
         })
     remember_roster(club_id, info.get("name") or "Unbekannter Club", members)
     return {
