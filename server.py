@@ -1,10 +1,12 @@
-"""CLUBPULSE FC 27 — lokaler Webserver und EA-Clubs-Datenproxy.
+"""CLUBPULSE FC 27 — Webserver und Proxy fuer EA-Clubs-Statistiken.
 
-Start: python server.py
+Start lokal: python server.py
+Cloud (Render): python server.py, HOST=0.0.0.0, PORT von Render
 Keine Zusatzpakete erforderlich (Python 3.9+).
-Hinweis: inoffizielle, ungesicherte EA-Schnittstelle; kann jederzeit ausfallen.
+Hinweis: inoffizielle EA-Schnittstelle; kann jederzeit ausfallen.
 """
 
+from collections import deque, OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -23,6 +25,45 @@ PLATFORM = "common-gen5"  # PS5 / Xbox Series / PC — FC27 nach Community-Test
 CACHE_TTL = 120
 CACHE = {}
 CACHE_LOCK = Lock()
+# Spieler können ausschließlich innerhalb bekannter Club-Kader gefunden werden.
+# Der kleine, temporäre Index enthält nur öffentliche EA-Clubs-Daten.
+KNOWN_ROSTERS = OrderedDict()
+ROSTER_LOCK = Lock()
+ROSTER_LIMIT = 50
+ROSTER_TTL = 3600
+
+
+def remember_roster(club_id, club_name, members):
+    with ROSTER_LOCK:
+        KNOWN_ROSTERS.pop(club_id, None)
+        KNOWN_ROSTERS[club_id] = (monotonic(), club_name, members)
+        while len(KNOWN_ROSTERS) > ROSTER_LIMIT:
+            KNOWN_ROSTERS.popitem(last=False)
+
+
+def known_rosters():
+    with ROSTER_LOCK:
+        return [(key, name, members) for key, (stored, name, members) in KNOWN_ROSTERS.items()
+                if monotonic() - stored < ROSTER_TTL]
+
+
+# Einfache globale Schutzbremse fuer die oeffentliche Test-Website.
+# Verhindert extrem viele parallele Abfragen an die inoffizielle EA-API.
+REQUEST_LOG = deque()
+REQUEST_LOCK = Lock()
+RATE_WINDOW = 60
+RATE_MAX = 75
+
+
+def request_allowed():
+    now = monotonic()
+    with REQUEST_LOCK:
+        while REQUEST_LOG and now - REQUEST_LOG[0] > RATE_WINDOW:
+            REQUEST_LOG.popleft()
+        if len(REQUEST_LOG) >= RATE_MAX:
+            return False
+        REQUEST_LOG.append(now)
+        return True
 
 # Community-Dokumentation: https://github.com/1erkandogan/fc27-clubs-api
 # Nicht-offizielle Schnittstelle. Kein Login, keine Cookies, keine Kontodaten.
@@ -65,6 +106,10 @@ def api_get(endpoint, **params):
         result = []
     with CACHE_LOCK:
         CACHE[url] = (monotonic(), result)
+        # Speicherverbrauch bei vielen Suchbegriffen begrenzen.
+        if len(CACHE) > 350:
+            for old_key in list(CACHE)[:100]:
+                CACHE.pop(old_key, None)
     return result
 
 
@@ -128,6 +173,7 @@ def do_club(club_id):
             "opponent": (other.get("details") or {}).get("name") or "Unbekannter Gegner",
             "goals": gf, "against": ga, "result": result,
         })
+    remember_roster(club_id, info.get("name") or "Unbekannter Club", members)
     return {
         "id": club_id,
         "name": info.get("name") or "Unbekannter Club",
@@ -139,6 +185,61 @@ def do_club(club_id):
         "updated": int(time()),
     }
 
+
+
+
+def do_player_search(gamertag, club_name=""):
+    """Sucht nach EA-Plattformnamen in Kadern, NICHT global nach PSN-Konten.
+
+    Mit Clubnamen: per EA-Clubsuche passende Clubs finden und dort Kader prüfen.
+    Ohne Clubnamen: nur die im aktuellen Serverprozess kürzlich geöffneten Kader.
+    """
+    gamertag = gamertag.strip()
+    club_name = club_name.strip()
+    if not 2 <= len(gamertag) <= 60:
+        raise ValueError("Bitte eine Spieler-ID mit 2 bis 60 Zeichen eingeben.")
+    if len(club_name) > 80:
+        raise ValueError("Der Clubname ist zu lang.")
+    candidates = []
+    mode = "club" if club_name else "known"
+    if club_name:
+        clubs = do_search(club_name)["clubs"]
+        # Die exaktesten Namensübereinstimmungen zuerst. Maximal fünf Clubs
+        # pro Suche, damit die öffentliche EA-Schnittstelle geschont wird.
+        clubs.sort(key=lambda c: (str(c["name"]).casefold() != club_name.casefold(),
+                                  not str(c["name"]).casefold().startswith(club_name.casefold())))
+        for c in clubs[:5]:
+            members_raw = api_get("members/stats", clubId=c["id"])
+            members = members_raw.get("members", []) if isinstance(members_raw, dict) else []
+            remember_roster(c["id"], c["name"], members)
+            candidates.append((c["id"], c["name"], members))
+    else:
+        candidates = known_rosters()
+    needle = gamertag.casefold()
+    results = []
+    for club_id, name, members in candidates:
+        for player in members:
+            if not isinstance(player, dict):
+                continue
+            # EA nennt dieses Feld "name": den angezeigten Plattform-Gamertag.
+            # "proName" ist hingegen der Name des virtuellen Profis.
+            username = str(player.get("name") or "")
+            pro_name = str(player.get("proName") or "")
+            if needle in username.casefold() or (pro_name and needle in pro_name.casefold()):
+                results.append({"clubId": club_id, "clubName": name, "player": {
+                    "name": username, "proName": pro_name,
+                    "gamesPlayed": player.get("gamesPlayed"),
+                    "goals": player.get("goals"), "assists": player.get("assists"),
+                    "ratingAve": player.get("ratingAve"),
+                    "favoritePosition": player.get("favoritePosition")
+                }})
+    results.sort(key=lambda r: (
+        r["player"]["name"].casefold() != needle,
+        r["player"]["proName"].casefold() != needle,
+        r["player"]["name"].casefold()
+    ))
+    return {"players": results[:25], "mode": mode, "searchedClubs": len(candidates),
+            "partial": True, "updated": int(time())}
 
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -157,12 +258,16 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         p = urlsplit(self.path)
         if p.path.startswith("/api/"):
+            if p.path in ("/api/search", "/api/club", "/api/player") and not request_allowed():
+                return self.send_json(429, {"error": "Gerade zu viele Anfragen. Bitte in einer Minute erneut versuchen."})
             query = parse_qs(p.query)
             try:
                 if p.path == "/api/search":
                     result = do_search(query.get("q", [""])[0])
                 elif p.path == "/api/club":
                     result = do_club(query.get("id", [""])[0])
+                elif p.path == "/api/player":
+                    result = do_player_search(query.get("q", [""])[0], query.get("club", [""])[0])
                 elif p.path == "/api/status":
                     result = {"ok": True}
                 else:
@@ -183,8 +288,10 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
-    server = ThreadingHTTPServer(("0.0.0.0", port), Handler)
-    print(f"\n  CLUBPULSE FC27 läuft auf http://127.0.0.1:{port}\n  Zum Beenden: Strg+C\n")
+    # Render benoetigt 0.0.0.0; lokal nur 127.0.0.1, ausser HOST ist gesetzt.
+    host = os.environ.get("HOST", "0.0.0.0" if os.environ.get("RENDER") else "127.0.0.1")
+    server = ThreadingHTTPServer((host, port), Handler)
+    print(f"\n  CLUBPULSE FC27 startet auf {host}:{port}\n  Lokal: http://127.0.0.1:{port}\n  Zum Beenden: Strg+C\n", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
