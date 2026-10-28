@@ -29,6 +29,21 @@
     .matches{display:flex;flex-direction:column}.match{padding:13px 20px;border-bottom:1px solid #2b3139;display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:16px}.match:last-child{border:0}.match-result{height:30px;width:30px;display:grid;place-items:center;border-radius:9px;font-size:12px;font-weight:800}.match-result.W{background:#214734;color:#7be39e}.match-result.L{background:#4d2e30;color:#ffa1a1}.match-result.D{background:#5c4d2f;color:#f7d282}.match strong{font-size:13px}.match small{font-size:11px;color:#7e8792}.match-score{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:800;font-size:18px}.match-date{font-size:11px;color:#8c959e;min-width:83px;text-align:right}.footer{text-align:center;border-top:1px solid #242931;color:#7e8792;font-size:12px;margin-top:60px;padding:28px 0 40px}
     .feat-wrap{margin-top:27px;display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.feat{padding:25px 24px}.feat .pic{height:45px;width:45px;background:#27331e;color:var(--accent);border-radius:12px;display:grid;place-items:center;font-size:22px}.feat h3{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:17px;margin:19px 0 7px}.feat p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}
     .overlay{position:fixed;inset:0;z-index:10;background:#030403ce;display:flex;align-items:center;justify-content:center;padding:15px}.modal{max-width:590px;width:100%;max-height:92vh;overflow:auto;background:#171b22;border:1px solid #3d453c;border-radius:23px;padding:26px;box-shadow:0 30px 90px #0009}.modal-head{display:flex;align-items:start;justify-content:space-between;gap:15px}.modal-head h2{margin:5px 0;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:30px}.x{border:0;border-radius:10px;background:#292f35;color:white;font-size:20px;width:36px;height:36px}.player-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}.mini-metric{background:#222832;border:1px solid #343b45;border-radius:12px;padding:14px}.mini-metric small{display:block;font-size:10px;color:#9ba6b2}.mini-metric strong{display:block;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:26px;margin-top:7px}.section-sub{margin:23px 0 7px;color:var(--accent);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800}.loading{display:flex;gap:11px;align-items:center;justify-content:center;color:#acb7bc;font-size:14px;padding:18px}.spinner{height:19px;width:19px;border:2px solid #465045;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    /* Hauptnavigation links oben – getrennt von der Suche. */
+    .site-menu{position:relative;flex:0 0 auto;z-index:30}
+    .menu-trigger{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 14px;color:#eaf0ea;background:#1b2027;border:1px solid #3a4543;border-radius:11px;font-weight:800;font-size:13px;white-space:nowrap}
+    .menu-trigger:hover,.menu-trigger[aria-expanded="true"]{border-color:var(--accent);color:var(--accent)}
+    .menu-icon{display:inline-grid;gap:4px}
+    .menu-icon i{height:2px;width:17px;background:currentColor;display:block;border-radius:2px}
+    .menu-caret{font-size:10px;opacity:.8}
+    .menu-panel{position:absolute;top:calc(100% + 10px);left:0;min-width:228px;border:1px solid #39423b;background:#181e24;padding:7px;border-radius:14px;box-shadow:0 22px 45px #000a;z-index:50}
+    .menu-item{border:0;background:transparent;color:#e6eded;font-size:14px;font-weight:700;text-align:left;display:flex;gap:11px;align-items:center;width:100%;padding:13px 12px;border-radius:9px;cursor:pointer}
+    .menu-item:hover,.menu-item:focus-visible{background:#2d392b;color:var(--accent);outline:none}
+    .menu-item.active{color:var(--accent);background:#273322}
+    .menu-caption{font-size:11px;color:#99a4aa;border-top:1px solid #303942;margin:7px 7px 3px;padding:10px 5px 4px;line-height:1.45}
+    .topbar{gap:16px}.topbar .brand{margin-right:auto}
+    @media(max-width:640px){.topbar{gap:11px}.topbar .brand{font-size:20px;letter-spacing:-.7px}.topbar .mark{width:30px;height:30px;font-size:19px}.topright .tag{display:none}.topright{gap:6px}.menu-trigger{padding:10px 11px}.menu-text{display:none}.menu-caret{display:none}.menu-panel{min-width:210px}}
+    @media(max-width:380px){.topbar .brand{font-size:18px}.topright #my-player-button{font-size:11px;padding:7px 8px}}
     /* Events: eigenständiger dritter Reiter */
     .events-section{margin-top:4px}.events-hero{padding:27px 29px;margin-bottom:22px;background:radial-gradient(circle at 93% 0%,#3d522a 0%,transparent 45%),linear-gradient(125deg,#1c271a,#151a1f);border:1px solid #3b4c32;border-radius:21px;display:flex;align-items:center;justify-content:space-between;gap:20px}
     .events-hero h2{font-family:'Space Grotesk',system-ui,Arial,sans-serif;margin:4px 0 8px;font-size:clamp(25px,4vw,37px);letter-spacing:-1.2px}.events-hero p{margin:0;color:#aebaa8;font-size:14px;max-width:600px}.events-hero-mark{font-size:52px;line-height:1;flex-shrink:0}
@@ -40,12 +55,45 @@
     @media(max-width:760px){.topbar{height:72px}.topright a{display:none}.hero{padding:53px 0 42px}.hero h1{letter-spacing:-2.2px}.club-stats{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.feat-wrap{grid-template-columns:1fr}.results{grid-template-columns:1fr}.club-heading{flex-direction:column;align-items:flex-start}.club-right{width:100%;justify-content:flex-start}.player-filters{flex-direction:column;align-items:stretch}.section-head{align-items:flex-start}.section-head:not(.compact){flex-direction:column}.match{grid-template-columns:30px 1fr auto;gap:9px}.match-date{display:none}}
     @media(max-width:600px){.topright:has(#my-player-button:not(.hidden)) .tag{display:none}.player-search-fields{grid-template-columns:1fr}.search-box{flex-wrap:wrap}.search-box .button{width:100%}.search-box input{min-height:44px}}
     @media(max-width:460px){.wrap{width:min(100% - 26px,1160px)}.brand{font-size:21px}.topright .tag{font-size:9px;letter-spacing:.4px;padding:6px 8px}.hero h1{font-size:40px}.search-box{padding:5px}.search-box input{font-size:13px}.search-icon{width:35px}.button{padding:12px 15px;font-size:13px}.club-stats{gap:8px}.metric{padding:17px 14px}.metric .value{font-size:30px}.inner{padding:19px}.player-grid{gap:6px}.mini-metric{padding:11px}.mini-metric strong{font-size:22px}}
+
+    /* ADMIN PANEL – neutral, klein und für Mobilgeräte nutzbar */
+    .admin-entry{border:1px solid #303842;background:#161a20;color:#a5adb4;border-radius:10px;padding:8px 11px;font-size:12px;font-weight:750}
+    .admin-entry:hover{border-color:var(--accent);color:var(--accent)}
+    .admin-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:#030608d9;backdrop-filter:blur(7px)}
+    .admin-dialog{width:min(790px,100%);max-height:min(92vh,900px);overflow-y:auto;border-radius:19px;border:1px solid #3c4745;background:#151a20;box-shadow:0 25px 100px #000c;padding:26px}
+    .admin-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .admin-top h2{font-size:26px;margin:0;font-family:'Space Grotesk',system-ui,Arial,sans-serif}
+    .admin-top p{margin:5px 0 0;color:#a1adb6;font-size:13px}
+    .admin-close{background:#222831;color:#fff;border:1px solid #3b434b;border-radius:9px;font-size:20px;padding:3px 11px}
+    .admin-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:12px;color:#b3bdc5;font-weight:750}
+    .admin-field input,.admin-field select,.admin-field textarea{width:100%;padding:12px 13px;border-radius:10px;border:1px solid #3b454e;color:#eef6fb;background:#10141b;font:inherit;font-size:14px;outline:0}
+    .admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{border-color:var(--accent)}
+    .admin-field textarea{resize:vertical;min-height:92px}
+    .admin-fields-two{display:grid;grid-template-columns:1fr 1fr;gap:0 13px}
+    .admin-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+    .admin-msg{font-size:13px;color:#a6c9ff;padding:11px;border:1px solid #34465a;border-radius:10px;background:#1a2631;margin-bottom:14px}
+    .admin-msg.bad{color:#ffc0c0;background:#302027;border-color:#70414c}
+    .admin-list{display:flex;flex-direction:column;gap:8px;max-height:265px;overflow:auto;margin:15px 0 18px}
+    .admin-item{border:1px solid #323b43;background:#1a2026;border-radius:11px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .admin-item strong{font-size:13px}.admin-item small{display:block;color:#94a0a7;font-size:11px;margin-top:3px}
+    .admin-item button{border-radius:8px;padding:7px 11px;color:#e8f1ed;background:#283037;border:1px solid #424b50;font-weight:700;font-size:12px}
+    .admin-item button:hover{border-color:var(--accent)}
+    .admin-hint{font-size:12px;color:#9eabb4;line-height:1.5}
+    @media(max-width:600px){.admin-entry span{display:none}.admin-dialog{padding:18px}.admin-fields-two{grid-template-columns:1fr}.admin-item{align-items:flex-start}.admin-actions{flex-direction:column;align-items:stretch}.admin-actions .button{width:100%}}
   </style>
 </head>
 <body>
 <header class="topbar wrap">
+  <nav class="site-menu" aria-label="Hauptmenü">
+    <button class="menu-trigger" id="menu-trigger" type="button" aria-expanded="false" aria-controls="menu-panel" aria-label="Menü öffnen"><span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span class="menu-text">Menü</span><span class="menu-caret" aria-hidden="true">▾</span></button>
+    <div id="menu-panel" class="menu-panel hidden">
+      <button type="button" class="menu-item active" id="menu-home">⌂ <span>Startseite</span></button>
+      <button type="button" class="menu-item" id="menu-events">🏆 <span>Events &amp; Termine</span></button>
+      <div class="menu-caption">FC 27 Clubs · unabhängiges Fanprojekt</div>
+    </div>
+  </nav>
   <a class="brand" href="/" aria-label="Zur Startseite"><span class="mark">C</span> CLUB<span>PULSE</span></a>
-  <div class="topright"><button type="button" class="button secondary sm hidden" id="my-player-button" title="Gespeichertes Spielerprofil aufrufen">★ Mein Spieler</button><span class="tag"><span class="dot"></span> EA FC 27 · CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
+  <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><button type="button" class="button secondary sm hidden" id="my-player-button" title="Gespeichertes Spielerprofil aufrufen">★ Mein Spieler</button><span class="tag"><span class="dot"></span> EA FC 27 · CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
 </header>
 <main class="wrap">
   <section class="hero" id="hero">
@@ -55,7 +103,6 @@
     <div class="search-switch" role="tablist" aria-label="Suchmodus">
       <button type="button" class="search-tab active" id="tab-club" role="tab" aria-selected="true" aria-controls="search-form">⚽ Clubsuche</button>
       <button type="button" class="search-tab" id="tab-player" role="tab" aria-selected="false" aria-controls="player-search-form">◉ Spielersuche</button>
-      <button type="button" class="search-tab" id="tab-events" role="tab" aria-selected="false" aria-controls="events-section">▣ Events</button>
     </div>
     <form id="search-form" class="search-box" autocomplete="off">
       <span class="search-icon">⌕</span>
@@ -102,13 +149,14 @@
   </div>
   <section id="events-section" class="section events-section hidden" aria-labelledby="events-heading">
     <div class="events-hero">
-      <div><div class="eyebrow" style="margin-bottom:7px">// FC 27 CLUBS · TERMINE & EVENTS</div><h2 id="events-heading">Verpass keine Playoffs.</h2><p>Playoffs, Club-Turniere und wichtige The-Grounds-Neuigkeiten – mit offiziellen Quellen und ehrlich gekennzeichneten Terminen.</p></div>
+      <div><div class="eyebrow" style="margin-bottom:7px">// FC 27 CLUBS · TERMINE & EVENTS</div><h2 id="events-heading">Verpass keine Playoffs.</h2><p>Playoffs, Saisonwechsel und Club-Turniere – bestätigt oder deutlich als Schätzung gekennzeichnet.</p></div>
       <div class="events-hero-mark" aria-hidden="true">🏆</div>
     </div>
     <div class="section-head"><div><div class="label">// EVENT-KALENDER</div><h2>Alle Clubs-Events</h2><p>Bekannte Daten sowie Veranstaltungen, deren Termin EA noch nicht veröffentlicht hat.</p></div></div>
     <div class="events-filters" role="group" aria-label="Events filtern">
       <button class="events-filter active" type="button" data-event-filter="Alle" aria-pressed="true">Alle</button>
       <button class="events-filter" type="button" data-event-filter="Playoffs" aria-pressed="false">Playoffs</button>
+      <button class="events-filter" type="button" data-event-filter="Saison" aria-pressed="false">Saison</button>
       <button class="events-filter" type="button" data-event-filter="Turniere" aria-pressed="false">Turniere</button>
       <button class="events-filter" type="button" data-event-filter="News" aria-pressed="false">News</button>
     </div>
@@ -122,6 +170,41 @@
 </main>
 <footer class="footer wrap">CLUBPULSE · Unabhängiges Fanprojekt, keine Verbindung zu Electronic Arts. EA-Daten können verzögert oder vorübergehend nicht verfügbar sein.</footer>
 <div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div style="display:flex;justify-content:flex-end;margin-top:20px"><button id="save-player-button" type="button" class="button secondary sm">☆ Als „Mein Spieler“ merken</button></div></div></div>
+<div id="admin-overlay" class="admin-overlay hidden" role="presentation">
+  <div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title">
+    <div class="admin-top"><div><div class="label">// CLUBPULSE · VERWALTUNG</div><h2 id="admin-title">Events verwalten</h2><p>Neue Termine hinzufügen, bestehende ändern oder löschen.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
+    <div id="admin-login-view">
+      <form id="admin-login-form">
+        <label class="admin-field">Admin-Passwort<input id="admin-password" type="password" autocomplete="current-password" minlength="1" required placeholder="Dein Admin-Passwort"></label>
+        <button class="button" type="submit">Anmelden ↗</button>
+      </form>
+      <p class="admin-hint">Das Passwort wird nicht öffentlich gespeichert. Richte es zunächst unter Render → Environment ein. Die Verwaltung funktioniert nur über HTTPS.</p>
+    </div>
+    <div id="admin-editor-view" class="hidden">
+      <div class="admin-actions"><button class="button sm" id="admin-new" type="button">＋ Neues Event</button><button class="button secondary sm" id="admin-logout" type="button">Abmelden</button></div>
+      <div id="admin-status" class="admin-msg hidden" role="status"></div>
+      <div id="admin-list" class="admin-list" aria-label="Bestehende Events"></div>
+      <form id="admin-event-form" class="hidden">
+        <div class="label" id="admin-form-heading">// EVENT BEARBEITEN</div>
+        <input id="admin-event-id" type="hidden">
+        <label class="admin-field">Titel *<input id="admin-title-input" maxlength="110" required placeholder="z. B. Clubs-Playoffs"></label>
+        <div class="admin-fields-two">
+          <label class="admin-field">Kategorie *<select id="admin-category"><option>Playoffs</option><option>Saison</option><option>Turniere</option><option>News</option></select></label>
+          <label class="admin-field">Datum-Status *<select id="admin-date-status"><option value="confirmed">Bestätigt</option><option value="estimated">Geschätzt</option><option value="unknown">Noch offen</option></select></label>
+          <label class="admin-field">Startdatum (optional)<input id="admin-start" type="date"></label>
+          <label class="admin-field">Enddatum (optional)<input id="admin-end" type="date"></label>
+        </div>
+        <label class="admin-field">Beschreibung<textarea id="admin-description" maxlength="1500" placeholder="Infos zum Event"></textarea></label>
+        <div class="admin-fields-two">
+          <label class="admin-field">Quellenlink (https://)<input id="admin-source" type="url" maxlength="500" placeholder="https://www.ea.com/..."></label>
+          <label class="admin-field">Anzeigename der Quelle<input id="admin-source-label" maxlength="100" placeholder="EA Sports FC"></label>
+        </div>
+        <div class="admin-actions"><button class="button" id="admin-save" type="submit">Event speichern ↗</button><button class="button secondary" id="admin-cancel-edit" type="button">Abbrechen</button><button class="button secondary hidden" id="admin-delete" type="button">Event löschen</button></div>
+      </form>
+      <p class="admin-hint">Speichern erstellt automatisch einen Commit in <code>events.json</code> auf GitHub. Render kann dadurch ein neues Deployment starten. Die Termine sind sofort auf dem aktuellen Server sichtbar.</p>
+    </div>
+  </div>
+</div>
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
@@ -145,16 +228,35 @@ async function api(path) {const response=await fetch(path,{headers:{Accept:'appl
 function clearDashboard(){$('#dashboard').classList.add('hidden');$('#intro').classList.remove('hidden');}
 function setSearchMode(mode){
  searchMode=mode;
- for(const m of ['club','player','events']){$('#tab-'+m).classList.toggle('active',m===mode);$('#tab-'+m).setAttribute('aria-selected',String(m===mode))}
+ for(const m of ['club','player']){$('#tab-'+m).classList.toggle('active',m===mode);$('#tab-'+m).setAttribute('aria-selected',String(m===mode))}
+ $('#hero').classList.toggle('hidden',mode==='events');
  $('#search-form').classList.toggle('hidden',mode!=='club');$('#player-search-form').classList.toggle('hidden',mode!=='player');
  $('#events-section').classList.toggle('hidden',mode!=='events');
- document.querySelector('.below-search').classList.toggle('hidden',mode==='events');
+ $('#menu-home').classList.toggle('active',mode!=='events');$('#menu-events').classList.toggle('active',mode==='events');
  $('#search-section').classList.add('hidden');
  $('#dashboard').classList.toggle('hidden',mode==='events'||!clubData);
  $('#intro').classList.toggle('hidden',mode==='events'||!!clubData);
  status('');
  if(mode==='events')loadEvents();
 }
+function toggleMenu(force){
+ const panel=$('#menu-panel');const open=force===undefined?panel.classList.contains('hidden'):force;
+ panel.classList.toggle('hidden',!open);$('#menu-trigger').setAttribute('aria-expanded',String(open));
+ $('#menu-trigger').setAttribute('aria-label',open?'Menü schließen':'Menü öffnen');
+}
+function navigateTo(mode){
+ toggleMenu(false);setSearchMode(mode);
+ const url=new URL(location.href);
+ if(mode==='events'){url.searchParams.set('view','events')}else{url.searchParams.delete('view');url.searchParams.delete('club')}
+ history.pushState(null,'',url);
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+$('#menu-trigger').addEventListener('click',()=>toggleMenu());
+$('#menu-home').addEventListener('click',()=>navigateTo('club'));
+$('#menu-events').addEventListener('click',()=>navigateTo('events'));
+document.addEventListener('click',e=>{if(!e.target.closest('.site-menu'))toggleMenu(false)});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){toggleMenu(false)} });
+window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);setSearchMode(params.get('view')==='events'?'events':'club')});
 let eventEntries=[], selectedEventFilter='Alle', eventsLoading=false, eventsReady=false;
 function formatEventDate(iso){if(!iso)return 'Termin noch offen';
   const d=new Date(iso+'T12:00:00');return Number.isNaN(d.getTime())?'Termin noch offen':d.toLocaleDateString('de-AT',{day:'numeric',month:'long',year:'numeric'});
@@ -166,10 +268,11 @@ function renderEvents(){
   target.innerHTML=shown.length?shown.map(e=>{
     const past=!!e.start&&e.start<today;
     const pending=!e.start;
-    const label=pending?'Termin offen':past?'Vergangen':'Bestätigter Termin';
-    const state=pending?'pending':past?'past':'known';
+    const estimated=e.dateStatus==='estimated';
+    const label=estimated?'Geschätzt':pending?'Termin offen':past?'Vergangen':'Bestätigt';
+    const state=estimated?'pending':pending?'pending':past?'past':'known';
     const validLink=typeof e.source==='string'&&/^https:\/\//.test(e.source);
-    return `<article class="panel event-card"><div class="event-top"><span class="event-type">${esc(e.category||'Event')}</span><span class="event-state ${state}">${esc(label)}</span></div><div class="event-date">${esc(formatEventDate(e.start))}</div><h3>${esc(e.title)}</h3><p>${esc(e.description||'')}</p>${validLink?`<a class="event-link" href="${esc(e.source)}" target="_blank" rel="noopener noreferrer">${esc(e.sourceLabel||'Offizielle Quelle')} ↗</a>`:''}</article>`;
+    return `<article class="panel event-card"><div class="event-top"><span class="event-type">${esc(e.category||'Event')}</span><span class="event-state ${state}">${esc(label)}</span></div><div class="event-date">${esc(estimated?"Voraussichtlich "+formatEventDate(e.start):formatEventDate(e.start))}</div><h3>${esc(e.title)}</h3><p>${esc(e.description||'')}</p>${validLink?`<a class="event-link" href="${esc(e.source)}" target="_blank" rel="noopener noreferrer">${esc(e.sourceLabel||'Offizielle Quelle')} ↗</a>`:''}</article>`;
   }).join(''):'<div class="panel inner muted">Für diesen Filter gibt es noch keine Einträge.</div>';
 }
 async function loadEvents(){
@@ -248,12 +351,11 @@ $('#search-form').addEventListener('submit',e=>{e.preventDefault();searchClub($(
 $('#player-search-form').addEventListener('submit',e=>{e.preventDefault();searchPlayer($('#player-input').value)});
 $('#tab-club').addEventListener('click',()=>setSearchMode('club'));
 $('#tab-player').addEventListener('click',()=>setSearchMode('player'));
-$('#tab-events').addEventListener('click',()=>setSearchMode('events'));
 $('#save-player-button').addEventListener('click',()=>{if(!clubData||!openedPlayer)return;try{
   localStorage.setItem(MY_PLAYER_KEY,JSON.stringify({clubId:clubData.id,name:openedPlayer.name}));
   $('#save-player-button').textContent='✓ Als „Mein Spieler“ gespeichert';updateMyPlayerButton();
  }catch{status('Das Speichern ist in diesem Browser nicht möglich.','error')}});
-$('#my-player-button').addEventListener('click',()=>{const saved=readMyPlayer();if(saved?.clubId&&saved?.name)loadClub(saved.clubId,saved.name)});
+$('#my-player-button').addEventListener('click',()=>{const saved=readMyPlayer();if(saved?.clubId&&saved?.name){setSearchMode('club');loadClub(saved.clubId,saved.name)}});
 updateMyPlayerButton();
 $('#sort-select').addEventListener('change',e=>{sortKey=e.target.value;renderPlayers()});
 $('#player-filter').addEventListener('input',renderPlayers);
@@ -262,6 +364,94 @@ $('#refresh-button').addEventListener('click',()=>{if(clubData)loadClub(clubData
 $('#copy-button').addEventListener('click',async()=>{if(!clubData)return;const url=new URL(location.href);url.searchParams.set('club',clubData.id);try{await navigator.clipboard.writeText(url.toString());$('#copy-button').textContent='✓ Kopiert';setTimeout(()=>$('#copy-button').textContent='🔗 Link kopieren',1700)}catch{window.prompt('Link kopieren:',url.toString())}});
 const closeModal=()=>$('#overlay').classList.add('hidden');$('#close-modal').addEventListener('click',closeModal);$('#overlay').addEventListener('click',e=>{if(e.target===$('#overlay'))closeModal()});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 const startParams=new URLSearchParams(location.search);const startClub=startParams.get('club');if(startParams.get('view')==='events')setSearchMode('events');else if(startClub && /^\d{1,20}$/.test(startClub)) loadClub(startClub);
+
+/* Passwort nur im Arbeitsspeicher dieses Browser-Tabs, niemals im Quellcode oder localStorage. */
+let adminPassword='', adminItems=[], adminBusy=false;
+function adminMessage(message,bad=false){const box=$('#admin-status');box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('bad',bad)}
+function adminOpen(){
+  $('#admin-overlay').classList.remove('hidden');
+  $('#admin-login-view').classList.toggle('hidden',!!adminPassword);
+  $('#admin-editor-view').classList.toggle('hidden',!adminPassword);
+  if(adminPassword)adminRefresh();else $('#admin-password').focus();
+}
+function adminClose(){adminPassword='';adminItems=[];$('#admin-overlay').classList.add('hidden');$('#admin-event-form').classList.add('hidden')}
+async function adminRequest(path,payload){
+ const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':adminPassword},body:JSON.stringify(payload),cache:'no-store'});
+ const data=await response.json().catch(()=>({error:'Serverantwort ist ungültig.'}));
+ if(!response.ok)throw Error(data.error||'Anfrage fehlgeschlagen.');return data;
+}
+function adminRefresh(){
+ // Die öffentliche Liste reicht für die Anzeige – nur die Änderungen sind geschützt.
+ fetch('/api/events',{cache:'no-store'}).then(r=>r.json()).then(data=>{
+   if(!Array.isArray(data.items))throw Error('Liste konnte nicht geladen werden.');
+   adminItems=data.items;adminDrawList();
+ }).catch(e=>adminMessage(e.message,true));
+}
+function adminDrawList(){
+ const box=$('#admin-list');box.replaceChildren();
+ for(const event of adminItems){
+   const item=document.createElement('div');item.className='admin-item';
+   const details=document.createElement('div'),title=document.createElement('strong'),date=document.createElement('small');
+   title.textContent=event.title||'(Ohne Titel)';date.textContent=`${event.category||'Event'} · ${event.start||'Termin offen'}`;
+   details.append(title,date);const edit=document.createElement('button');edit.type='button';edit.textContent='Bearbeiten';
+   edit.addEventListener('click',()=>adminEdit(event));item.append(details,edit);box.append(item);
+ }
+ if(!adminItems.length){const hint=document.createElement('p');hint.className='muted';hint.textContent='Noch keine Events vorhanden.';box.append(hint)}
+}
+function adminEdit(event=null){
+ const e=event||{};
+ $('#admin-event-id').value=e.id||'';
+ $('#admin-title-input').value=e.title||'';
+ $('#admin-category').value=e.category||'Playoffs';
+ $('#admin-date-status').value=e.dateStatus||'unknown';
+ $('#admin-start').value=e.start||'';$('#admin-end').value=e.end||'';
+ $('#admin-description').value=e.description||'';
+ $('#admin-source').value=e.source||'';$('#admin-source-label').value=e.sourceLabel||'';
+ $('#admin-form-heading').textContent=event?'// EVENT BEARBEITEN':'// NEUES EVENT';
+ $('#admin-delete').classList.toggle('hidden',!event);
+ $('#admin-event-form').classList.remove('hidden');adminMessage('');
+ $('#admin-title-input').focus();
+}
+function adminFormEvent(){return {
+  title:$('#admin-title-input').value.trim(),category:$('#admin-category').value,
+  dateStatus:$('#admin-date-status').value,start:$('#admin-start').value||null,
+  end:$('#admin-end').value||null,description:$('#admin-description').value.trim(),
+  source:$('#admin-source').value.trim(),sourceLabel:$('#admin-source-label').value.trim()
+}}
+async function adminMutate(action){
+ if(adminBusy)return;
+ const id=$('#admin-event-id').value;
+ if(action==='delete'&&!confirm('Dieses Event wirklich löschen?'))return;
+ adminBusy=true;$('#admin-save').disabled=true;$('#admin-delete').disabled=true;
+ adminMessage('Wird auf GitHub gespeichert …');
+ try{
+   const data=await adminRequest('/api/admin/events',{action,id,event:action==='delete'?null:adminFormEvent()});
+   adminItems=data.events.items;adminDrawList();
+   eventEntries=adminItems;eventsReady=true;renderEvents();
+   $('#events-updated').textContent='Zuletzt bearbeitet: '+formatEventDate(data.events.lastChecked)+'.';
+   $('#admin-event-form').classList.add('hidden');
+   adminMessage('✓ Auf GitHub gespeichert. Render veröffentlicht die Änderung automatisch, wenn Auto-Deploy aktiv ist.');
+ }catch(e){adminMessage(e.message,true)}finally{adminBusy=false;$('#admin-save').disabled=false;$('#admin-delete').disabled=false}
+}
+$('#admin-open').addEventListener('click',adminOpen);
+$('#admin-close').addEventListener('click',adminClose);
+$('#admin-overlay').addEventListener('click',e=>{if(e.target===$('#admin-overlay'))adminClose()});
+$('#admin-login-form').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const candidate=$('#admin-password').value;
+ adminPassword=candidate;
+ try{await adminRequest('/api/admin/login',{});
+   $('#admin-password').value='';$('#admin-login-view').classList.add('hidden');
+   $('#admin-editor-view').classList.remove('hidden');adminMessage('');adminRefresh();
+ }catch(err){adminPassword='';alert(err.message)}
+});
+$('#admin-logout').addEventListener('click',()=>{adminPassword='';adminItems=[];adminClose();});
+$('#admin-new').addEventListener('click',()=>adminEdit());
+$('#admin-cancel-edit').addEventListener('click',()=>$('#admin-event-form').classList.add('hidden'));
+$('#admin-delete').addEventListener('click',()=>adminMutate('delete'));
+$('#admin-event-form').addEventListener('submit',e=>{e.preventDefault();adminMutate($('#admin-event-id').value?'update':'create')});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#admin-overlay').classList.contains('hidden'))adminClose()});
+
 </script>
 </body>
 </html>

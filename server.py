@@ -6,7 +6,7 @@ Keine Zusatzpakete erforderlich (Python 3.9+).
 Hinweis: inoffizielle EA-Schnittstelle; kann jederzeit ausfallen.
 """
 
-from collections import deque, OrderedDict
+from collections import deque, OrderedDict, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -18,6 +18,11 @@ from urllib.request import Request, urlopen
 import json
 import os
 import socket
+import re
+import hmac
+import base64
+from datetime import date
+from uuid import uuid4
 
 HERE = Path(__file__).resolve().parent
 EA_BASE = "https://proclubs.ea.com/api/fc"
@@ -286,6 +291,171 @@ def do_player_search(gamertag, saved_club_ids=""):
     return {"players": results[:25], "searchedClubs": len(candidates),
             "partial": True, "hadErrors": bool(errors), "updated": int(time())}
 
+# ADMIN: Zugangsdaten stehen ausschließlich in Render-Umgebungsvariablen.
+# Niemals Passwörter oder GitHub-Tokens in diese Datei / GitHub eintragen.
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "letschmeister/clubpulse-fc27")
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+ADMIN_WRITE_LOCK = Lock()
+ADMIN_FAILURES = defaultdict(deque)
+ADMIN_FAILURE_LOCK = Lock()
+EVENTS_RUNTIME = None
+EVENTS_LOCK = Lock()
+EVENT_CATEGORIES = {"Playoffs", "Saison", "Turniere", "News"}
+EVENT_STATUSES = {"confirmed", "estimated", "unknown"}
+
+
+class AdminError(Exception):
+    def __init__(self, code, message):
+        super().__init__(message)
+        self.code = code
+
+
+def admin_configured():
+    # Auch lokal ohne Konfiguration benutzbar – aber Admin-Änderungen gesperrt.
+    return len(ADMIN_PASSWORD) >= 12 and bool(GITHUB_TOKEN) and bool(re.fullmatch(r"[\w.-]+/[\w.-]+", GITHUB_REPO))
+
+
+def admin_auth(password, ip):
+    if not admin_configured():
+        raise AdminError(503, "Admin noch nicht eingerichtet. ADMIN_PASSWORD und GITHUB_TOKEN in Render konfigurieren.")
+    now = monotonic()
+    with ADMIN_FAILURE_LOCK:
+        attempts = ADMIN_FAILURES[ip]
+        while attempts and now - attempts[0] > 300:
+            attempts.popleft()
+        if len(attempts) >= 10:
+            raise AdminError(429, "Zu viele Anmeldeversuche. Bitte in 5 Minuten erneut versuchen.")
+    if not hmac.compare_digest(password.encode("utf-8")[:1024], ADMIN_PASSWORD.encode("utf-8")):
+        with ADMIN_FAILURE_LOCK:
+            ADMIN_FAILURES[ip].append(now)
+        raise AdminError(401, "Falsches Admin-Passwort.")
+    with ADMIN_FAILURE_LOCK:
+        ADMIN_FAILURES.pop(ip, None)
+
+
+def checked_date(raw, optional=True):
+    if raw is None or raw == "":
+        if optional: return None
+        raise ValueError("Bitte ein Datum eingeben.")
+    if not isinstance(raw, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw):
+        raise ValueError("Datum muss JJJJ-MM-TT sein.")
+    try: date.fromisoformat(raw)
+    except ValueError: raise ValueError("Ungültiges Datum.") from None
+    return raw
+
+
+def validate_event(entry, old_id=None):
+    if not isinstance(entry, dict):
+        raise ValueError("Ungültiges Event.")
+    def cleaned(key, size):
+        x = entry.get(key) or ""
+        if not isinstance(x, str) or len(x) > size:
+            raise ValueError(f"Feld {key} ist zu lang oder ungültig.")
+        return x.strip()
+    category = cleaned("category", 20)
+    if category not in EVENT_CATEGORIES:
+        raise ValueError("Ungültige Event-Kategorie.")
+    title = cleaned("title", 110)
+    if len(title) < 3:
+        raise ValueError("Bitte einen Titel mit mindestens 3 Zeichen eingeben.")
+    description = cleaned("description", 1500)
+    start = checked_date(entry.get("start"))
+    end = checked_date(entry.get("end"))
+    if end and start and end < start:
+        raise ValueError("Das Enddatum darf nicht vor dem Startdatum liegen.")
+    date_status = cleaned("dateStatus", 20)
+    if date_status not in EVENT_STATUSES:
+        raise ValueError("Ungültiger Terminstatus.")
+    if date_status in ("confirmed", "estimated") and not start:
+        raise ValueError("Bestätigte oder geschätzte Termine brauchen ein Startdatum.")
+    if date_status == "unknown" and (start or end):
+        raise ValueError("Bei 'Termin noch offen' bitte kein Datum eintragen.")
+    source = cleaned("source", 500)
+    if source and (not source.startswith("https://") or any(c in source for c in (' ', '\n', '\r', '\t'))):
+        raise ValueError("Quellenlink muss eine HTTPS-Adresse sein.")
+    label = cleaned("sourceLabel", 100)
+    eid = old_id or ("event-" + uuid4().hex[:16])
+    return {"id": eid, "category": category, "title": title, "start": start,
+            "end": end, "description": description, "source": source,
+            "sourceLabel": label, "dateStatus": date_status}
+
+
+def github_file_and_sha():
+    owner, repo = GITHUB_REPO.split("/")
+    endpoint = f"https://api.github.com/repos/{owner}/{repo}/contents/events.json?{urlencode({'ref':GITHUB_BRANCH})}"
+    req = Request(endpoint, headers={"Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "CLUBPULSE-admin/1.0"})
+    try:
+        with urlopen(req, timeout=14) as resp:
+            payload=json.load(resp)
+        decoded=base64.b64decode(payload["content"]).decode("utf-8")
+        events=json.loads(decoded)
+        if not isinstance(events, dict) or not isinstance(events.get("items"), list):
+            raise ValueError("Ungültiges Format von events.json auf GitHub.")
+        return events, payload["sha"]
+    except (HTTPError, URLError, TimeoutError, KeyError, ValueError, OSError) as e:
+        # Keine Token oder Zugriffsinformationen aus HTTP-Antworten protokollieren.
+        print("GitHub lesen fehlgeschlagen:", type(e).__name__, getattr(e, "code", ""))
+        raise AdminError(502, "Events können auf GitHub nicht gelesen werden. Token, Repo und Berechtigungen prüfen.") from None
+
+
+def github_write_events(events, sha):
+    owner, repo=GITHUB_REPO.split("/")
+    url=f"https://api.github.com/repos/{owner}/{repo}/contents/events.json"
+    raw=(json.dumps(events,ensure_ascii=False,indent=2)+"\n").encode("utf-8")
+    body=json.dumps({"message":"Events über CLUBPULSE-Admin aktualisiert",
+                     "content":base64.b64encode(raw).decode("ascii"),
+                     "sha":sha,"branch":GITHUB_BRANCH}).encode("utf-8")
+    req=Request(url, data=body, method="PUT", headers={
+        "Authorization":f"Bearer {GITHUB_TOKEN}",
+        "Accept":"application/vnd.github+json",
+        "Content-Type":"application/json", "User-Agent":"CLUBPULSE-admin/1.0",
+        "X-GitHub-Api-Version":"2022-11-28"})
+    try:
+        with urlopen(req,timeout=16) as resp:
+            if resp.status not in (200,201):
+                raise AdminError(502,"GitHub hat die Änderung nicht bestätigt.")
+    except HTTPError as e:
+        print("GitHub speichern fehlgeschlagen: HTTP", e.code)
+        if e.code == 409:
+            raise AdminError(409,"Events wurden zwischenzeitlich verändert. Bitte neu laden.") from None
+        raise AdminError(502,"Speichern auf GitHub fehlgeschlagen. Token muss Contents: Read and write besitzen.") from None
+    except (URLError, TimeoutError, OSError):
+        raise AdminError(502,"GitHub ist gerade nicht erreichbar; es wurde nichts gespeichert.") from None
+
+
+def admin_change(body):
+    global EVENTS_RUNTIME
+    action = body.get("action")
+    if action not in ("create", "update", "delete"):
+        raise ValueError("Unbekannte Aktion.")
+    with ADMIN_WRITE_LOCK:
+        data, sha=github_file_and_sha()
+        items=data["items"]
+        if len(items)>100:
+            raise ValueError("Zu viele Events in events.json.")
+        eid=body.get("id","")
+        if not isinstance(eid,str):
+            raise ValueError("Ungültige Event-ID.")
+        if action in ("delete", "update"):
+            current=next((i for i,x in enumerate(items) if isinstance(x,dict) and x.get("id")==eid),None)
+            if current is None:
+                raise ValueError("Event nicht gefunden. Liste neu laden.")
+            if action=="delete": del items[current]
+            else: items[current]=validate_event(body.get("event"), old_id=eid)
+        else:
+            if len(items)>=100: raise ValueError("Maximal 100 Events möglich.")
+            items.insert(0, validate_event(body.get("event")))
+        data["lastChecked"]=date.today().isoformat()
+        github_write_events(data,sha)
+        with EVENTS_LOCK:
+            EVENTS_RUNTIME=data
+        return data
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(HERE), **kwargs)
@@ -299,6 +469,38 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(raw)
+
+    def do_POST(self):
+        p=urlsplit(self.path)
+        if p.path not in ("/api/admin/login", "/api/admin/events"):
+            return self.send_json(404,{"error":"Endpunkt nicht gefunden."})
+        try:
+            length=int(self.headers.get("Content-Length", "0"))
+            if not 1<=length<=22000:
+                return self.send_json(413,{"error":"Anfrage zu groß oder leer."})
+            payload=json.loads(self.rfile.read(length))
+            if not isinstance(payload,dict):
+                raise ValueError("Ungültige Anfrage.")
+            password=self.headers.get("X-Admin-Password", "")
+            if len(password)>1024:
+                raise AdminError(401,"Ungültiges Passwort.")
+            # Nicht von einer fremden Website aus Browseranfragen erlauben.
+            origin=self.headers.get("Origin", "")
+            host=self.headers.get("Host", "")
+            if origin and urlsplit(origin).netloc != host:
+                raise AdminError(403,"Anfrage von fremder Website abgelehnt.")
+            admin_auth(password,self.client_address[0])
+            if p.path=="/api/admin/login":
+                return self.send_json(200,{"ok":True})
+            result=admin_change(payload)
+            return self.send_json(200,{"ok":True,"events":result})
+        except AdminError as error:
+            return self.send_json(error.code,{"error":str(error)})
+        except (ValueError,UnicodeError,json.JSONDecodeError) as error:
+            return self.send_json(400,{"error":str(error) or "Ungültige Anfrage."})
+        except Exception as error:
+            print("Unerwarteter Adminfehler:",type(error).__name__)
+            return self.send_json(500,{"error":"Interner Serverfehler."})
 
     def do_GET(self):
         p = urlsplit(self.path)
@@ -315,8 +517,11 @@ class Handler(SimpleHTTPRequestHandler):
                     result = do_player_search(query.get("q", [""])[0], query.get("ids", [""])[0])
                 elif p.path == "/api/events":
                     # Öffentlich kuratierte Termine aus events.json, ohne EA-API-Abhängigkeit.
-                    with (HERE / "events.json").open(encoding="utf-8") as events_file:
-                        result = json.load(events_file)
+                    with EVENTS_LOCK:
+                        result=EVENTS_RUNTIME
+                    if result is None:
+                        with (HERE / "events.json").open(encoding="utf-8") as events_file:
+                            result=json.load(events_file)
                 elif p.path == "/api/status":
                     result = {"ok": True}
                 else:

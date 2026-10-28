@@ -1,16 +1,28 @@
 {
   "lastChecked": "2026-10-28",
-  "notice": "Die Daten werden redaktionell aktualisiert und nicht automatisch von EA synchronisiert. Bitte bestätigte Startzeiten im Spiel prüfen.",
+  "notice": "Der 3. Dezember ist für das Ende von FC-27-Saison 2 bestätigt (Saisonpass); er ist nicht automatisch der bestätigte Start oder das Ende der Clubs-Liga-Playoffs. Der 26. November ist eine Schätzung aus der üblichen einwöchigen Playoff-Phase. Die Daten sind manuell gepflegt.",
   "items": [
     {
       "id": "playoffs",
       "category": "Playoffs",
-      "title": "Nächste Clubs-Playoffs",
-      "start": null,
+      "title": "Nächste Clubs-Playoffs (voraussichtlich)",
+      "start": "2026-11-26",
+      "end": "2026-12-03",
+      "description": "Möglicher Beginn am 26. November, FALLS die Clubs-Liga-Saison ebenfalls am 3. Dezember endet. EA beschreibt Clubs-Playoffs als einwöchiges Event am Saisonende. Weder der genaue Playoff-Start noch das Gleichlaufen von Clubs-Saison und Saisonpass sind für FC 27 hier offiziell bestätigt.",
+      "source": "https://help.ea.com/en/articles/ea-sports-fc/glossary/",
+      "sourceLabel": "EA Hilfe – Clubs-Playoffs (Dauer)",
+      "dateStatus": "estimated"
+    },
+    {
+      "id": "season2-end",
+      "category": "Saison",
+      "title": "FC 27 – Saison 2 endet",
+      "start": "2026-12-03",
       "end": null,
-      "description": "Die Playoffs bilden den Abschluss der Clubs-Liga-Saison. Für den nächsten Start liegt uns noch kein offiziell bestätigtes Datum vor. Schau für aktuelle Zeitangaben im Clubs-Bereich von The Grounds nach.",
-      "source": "https://www.ea.com/de-de/games/ea-sports-fc/clubs",
-      "sourceLabel": "Offizielle EA-Clubs-Seite"
+      "dateStatus": "confirmed",
+      "description": "EA bestätigt den 3. Dezember 2026 als Ende von Saison 2 und Beginn von Saison 3 im FC-27-Saisonkalender. Achtung: Dies bestätigt nicht automatisch das Datum der Clubs-Liga-Playoffs.",
+      "source": "https://forums.ea.com/blog/ea-sports-fc-game-info-hub-en/ea-sports-fc%E2%84%A2-27--launch-rewards/13716198",
+      "sourceLabel": "EA – Launch Rewards / Saisonkalender"
     },
     {
       "id": "live-tournaments",
@@ -20,7 +32,8 @@
       "end": null,
       "description": "FC 27 bietet separate 11-gegen-11-Live-Turniere mit eigenen Regeln und Belohnungen. Termine und Teilnahmebedingungen werden im Clubhaus angezeigt; ein künftiger Termin ist hier noch nicht bestätigt.",
       "source": "https://www.ea.com/de/games/ea-sports-fc/fc-27/news/pitch-notes-fc27-launch-update",
-      "sourceLabel": "EA FC 27 Launch-Update"
+      "sourceLabel": "EA FC 27 Launch-Update",
+      "dateStatus": "unknown"
     },
     {
       "id": "archetype-update",
@@ -30,7 +43,8 @@
       "end": null,
       "description": "EA veröffentlichte Informationen zu Anpassungen an Attributpunkten und Archetypen in The Grounds und Clubs. Das ist eine News-Meldung, kein Playoff-Termin.",
       "source": "https://www.ea.com/de/games/ea-sports-fc/fc-27/news/fc-27-the-grounds-developer-archetypes-update",
-      "sourceLabel": "EA-Entwickler-Update"
+      "sourceLabel": "EA-Entwickler-Update",
+      "dateStatus": "confirmed"
     },
     {
       "id": "first-club-tournament",
@@ -40,7 +54,8 @@
       "end": null,
       "description": "Zum Vorabzugriff von FC 27 startete das erste 11-gegen-11-Turnier im Stadionformat. Der Termin gehört zur Vergangenheit und ist kein nächster Playoff-Termin.",
       "source": "https://www.ea.com/de/games/ea-sports-fc/fc-27/news/pitch-notes-fc27-launch-update",
-      "sourceLabel": "EA FC 27 Launch-Update"
+      "sourceLabel": "EA FC 27 Launch-Update",
+      "dateStatus": "confirmed"
     }
   ]
 }
