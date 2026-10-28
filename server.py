@@ -142,10 +142,10 @@ def do_search(name):
 
 
 def match_players_for_club(game, club_id):
-    """EA clubs/matches enthält den Spielkader bereits unter players[clubId].
+    """Gibt nur namentlich erfasste Spieler eines konkreten EA-Matches zurück.
 
-    Es sind die Teilnehmer DIESES Matches, nicht einfach aktuelle Club-Mitglieder.
-    Nur konkrete öffentliche Matchwerte übernehmen, keine Werte erfinden.
+    `mom` ist die EA-Kennzeichnung für Man of the Match ("1").
+    Keine Tore, Saisonwerte oder geschätzten Match-Statistiken übernehmen.
     """
     groups = game.get("players") or {}
     raw = groups.get(str(club_id), {}) if isinstance(groups, dict) else {}
@@ -155,19 +155,13 @@ def match_players_for_club(game, club_id):
     for player_id, stats in list(raw.items())[:32]:
         if not isinstance(stats, dict):
             continue
-        result.append({
-            "name": str(stats.get("playername") or "Unbekannter Spieler")[:100],
-            "position": str(stats.get("pos") or "")[:30],
-            "rating": stats.get("rating"),
-            "goals": stats.get("goals"),
-            "assists": stats.get("assists"),
-            "shots": stats.get("shots"),
-            "passes": stats.get("passesmade"),
-            "saves": stats.get("saves"),
-        })
-    # Die Daten müssen nicht in Feldspieler-/Torwart-Reihenfolge kommen.
-    order = {"goalkeeper": 0, "defender": 1, "midfielder": 2, "forward": 3}
-    result.sort(key=lambda p: (order.get(p["position"], 4), p["name"].casefold()))
+        name = str(stats.get("playername") or "").strip()[:100]
+        if not name:
+            name = "Unbekannter Spieler"
+        # EA dokumentiert mom = "1" für die Auszeichnung in diesem Match.
+        mom = str(stats.get("mom", "")).strip() == "1"
+        result.append({"name": name, "motm": mom})
+    result.sort(key=lambda p: p["name"].casefold())
     return result
 
 
@@ -203,15 +197,14 @@ def do_club(club_id):
         gf = int(our.get("goals") or 0)
         ga = int(our.get("goalsAgainst") or 0)
         result = "W" if gf > ga else "L" if gf < ga else "D"
+        ours = match_players_for_club(game, club_id)
+        theirs = match_players_for_club(game, opponent_id) if opponent_id else []
         matches.append({
             "id": str(game.get("matchId") or ""),
             "timestamp": game.get("timestamp"),
             "opponent": (other.get("details") or {}).get("name") or "Unbekannter Gegner",
             "goals": gf, "against": ga, "result": result,
-            "lineup": {
-                "ours": match_players_for_club(game, club_id),
-                "opponents": match_players_for_club(game, opponent_id) if opponent_id else [],
-            },
+            "lineup": {"ours": ours, "opponents": theirs},
         })
     remember_roster(club_id, info.get("name") or "Unbekannter Club", members)
     return {

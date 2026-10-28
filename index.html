@@ -27,7 +27,7 @@
     .two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.inner{padding:23px}.bar-stack{height:12px;background:#31363d;display:flex;overflow:hidden;border-radius:9px;gap:2px;margin:26px 0 11px}.bar-stack>span{transition:width .2s}.bar-win{background:var(--green)}.bar-draw{background:var(--yellow)}.bar-loss{background:var(--red)}.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#aab1bb}.legend b{color:#e6eaf0}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}.form-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:21px}.form-cell{height:31px;min-width:31px;display:grid;place-items:center;border-radius:8px;font-size:12px;font-weight:900}.form-cell.W{background:#23553f;color:#7ce6a4}.form-cell.D{background:#605138;color:#ffd07a}.form-cell.L{background:#5b3333;color:#ffa5a5}.empty{font-size:13px;color:var(--muted);padding:18px 0}.note{font-size:12px;color:var(--muted);margin-top:13px}
     .player-filters{display:flex;gap:9px;align-items:center}.filter{background:#1c222a;color:#e7e9ed;border:1px solid #39414a;border-radius:10px;padding:10px 12px;outline:0;min-width:185px;max-width:100%}select.filter{min-width:150px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;color:#919ba6;text-transform:uppercase;letter-spacing:1px;font-size:10px;font-weight:800;border-bottom:1px solid #303641;padding:16px 19px;cursor:pointer;user-select:none}th:hover{color:var(--accent)}td{padding:15px 19px;border-bottom:1px solid #292f37;font-size:13px}tr:last-child td{border-bottom:0}tbody tr{cursor:pointer}tbody tr:hover{background:#202720}.player-name{font-weight:800;display:flex;align-items:center;gap:11px}.avatar{width:33px;height:33px;border-radius:10px;background:#34412a;color:var(--accent);font-weight:900;display:grid;place-items:center;flex-shrink:0}.pos{font-size:10px;letter-spacing:.8px;padding:5px 8px;border-radius:6px;background:#303840;color:#e2e8ea}.good{color:var(--accent);font-weight:800}
     .matches{display:flex;flex-direction:column}.match{padding:13px 20px;border-bottom:1px solid #2b3139;display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:16px}.match:last-child{border:0}.match-result{height:30px;width:30px;display:grid;place-items:center;border-radius:9px;font-size:12px;font-weight:800}.match-result.W{background:#214734;color:#7be39e}.match-result.L{background:#4d2e30;color:#ffa1a1}.match-result.D{background:#5c4d2f;color:#f7d282}.match strong{font-size:13px}.match small{font-size:11px;color:#7e8792}.match-score{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:800;font-size:18px}.match-date{font-size:11px;color:#8c959e;min-width:83px;text-align:right}.footer{text-align:center;border-top:1px solid #242931;color:#7e8792;font-size:12px;margin-top:60px;padding:28px 0 40px}
-    /* Matchkader: einzelne Partien ohne zusätzliche EA-Anfrage aufklappen. */
+    /* Kompakte Teilnehmeransicht: keine Match-Statistiken, nur Namen und MOTM. */
     .match-entry{border-bottom:1px solid #2b3139}
     .match-entry:last-child{border-bottom:0}
     .match-entry[open]{background:#192019}
@@ -43,16 +43,17 @@
     .match-expanded-head{font-size:12px;color:#b3bea9;margin:13px 0 14px}
     .match-rosters{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-items:start}
     .roster-side{border:1px solid #333e39;border-radius:12px;background:#141a1b;min-width:0;overflow:hidden}
-    .roster-top{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #303a33}
-    .roster-top strong{font-size:13px}.roster-top span{font-size:11px;color:#9ca9a4}
-    .roster-scroll{overflow-x:auto}
-    .roster-side .match-player-table{min-width:520px;width:100%}
-    .match-player-table th{padding:10px 9px;color:#9cacaa;cursor:default;font-size:9px;white-space:nowrap}
-    .match-player-table th:hover{color:#9cacaa}
-    .match-player-table td{padding:11px 9px;font-size:12px;white-space:nowrap}
-    .match-player-table tbody tr{cursor:default}
-    .match-player-table tbody tr:hover{background:#202820}
-    .match-player-table td:first-child{max-width:158px;overflow:hidden;text-overflow:ellipsis;font-weight:750}
+    .roster-top{padding:13px 15px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #303a33}
+    .roster-top strong{font-size:13px;overflow-wrap:anywhere}
+    .roster-top span{font-size:11px;color:#d3e9bb;white-space:nowrap;background:#253126;padding:5px 9px;border-radius:100px}
+    .roster-names{list-style:none;margin:0;padding:8px 9px 10px}
+    .roster-names li{display:flex;align-items:center;gap:11px;padding:11px 9px;border-radius:9px;font-size:13px}
+    .roster-names li:nth-child(even){background:#1c2320}
+    .roster-index{color:#8b9c94;font-size:11px;font-weight:800;flex:0 0 22px;font-variant-numeric:tabular-nums}
+    .roster-player-name{flex:1;min-width:0;overflow-wrap:anywhere;font-weight:700}
+    .motm-tag{font-size:10px;font-weight:900;color:#ffebaa;border:1px solid #755f30;background:#3d3520;border-radius:6px;padding:5px 7px;white-space:nowrap}
+    .match-motm{border:1px solid #665629;background:#2c291d;color:#ffe2a1;font-size:12px;margin:13px 0 0;padding:11px 13px;border-radius:9px}
+    .match-motm strong{color:#ffeab7}
     .match-no-players{padding:16px;font-size:12px;color:#a0aaa5}
     @media(max-width:850px){.match-rosters{grid-template-columns:1fr}}
     @media(max-width:760px){.match-entry .match{grid-template-columns:30px minmax(0,1fr) auto 20px;gap:9px}.match-expanded{padding:2px 11px 15px}.match-date{display:none}}
@@ -172,7 +173,7 @@
       <p class="note">Spielerstatistiken: aktuelle Saison. Karrierewerte beziehen sich auf den gewählten Club, soweit EA sie liefert.</p>
     </section>
     <section class="section">
-      <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>Tippe auf ein Ergebnis, um die Spieler beider Teams und ihre Match-Statistiken zu sehen. EA liefert maximal zehn Ligaspiele.</p></div></div>
+      <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>Tippe auf ein Ergebnis, um die beteiligten Spieler beider Teams und – falls verfügbar – den Man of the Match zu sehen. EA liefert maximal zehn Ligaspiele.</p></div></div>
       <div class="panel matches" id="matches-view"></div>
     </section>
   </div>
@@ -365,19 +366,25 @@ function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').cl
  $('#matches-view').innerHTML=matches.length?matches.map(renderMatch).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
  renderPlayers();
 }
-function renderMatchSquad(players, teamName, isOwn){
+function renderMatchSquad(players, teamName, isOwn, motmSide, motmIndex){
  const list=Array.isArray(players)?players:[];
- const columns=[['Spieler','name'],['Pos.','position'],['Tore','goals'],['Assists','assists'],['Bew.','rating'],['Schüsse','shots'],['Pässe','passes'],['Paraden','saves']];
- const header=`<thead><tr>${columns.map(c=>`<th>${esc(c[0])}</th>`).join('')}</tr></thead>`;
- const cells=list.map(p=>`<tr><td title="${esc(p.name||'Unbekannt')}">${esc(p.name||'Unbekannt')}</td><td><span class="pos">${esc(posText[p.position]||p.position||'–')}</span></td><td class="good">${esc(disp(p.goals))}</td><td>${esc(disp(p.assists))}</td><td>${esc(dec(p.rating))}</td><td>${esc(disp(p.shots))}</td><td>${esc(disp(p.passes))}</td><td>${esc(disp(p.saves))}</td></tr>`).join('');
- return `<section class="roster-side" aria-label="${esc(teamName)}"><div class="roster-top"><strong>${isOwn?'🟢 ':''}${esc(teamName)}</strong><span>${list.length} Spieler</span></div>${list.length?`<div class="roster-scroll"><table class="match-player-table">${header}<tbody>${cells}</tbody></table></div>`:'<div class="match-no-players">EA liefert für diese Mannschaft keinen Spielkader.</div>'}</section>`;
+ const names=list.map((p,i)=>{
+   const winner=motmSide===(isOwn?'ours':'opponents')&&motmIndex===i;
+   return `<li><span class="roster-index">${String(i+1).padStart(2,'0')}</span><span class="roster-player-name">${esc(p.name||'Unbekannter Spieler')}</span>${winner?'<span class="motm-tag" title="Man of the Match">★ MOTM</span>':''}</li>`;
+ }).join('');
+ const countText=list.length+' '+(list.length===1?'Spieler':'Spieler');
+ return `<section class="roster-side" aria-label="${esc(teamName)}"><div class="roster-top"><strong>${isOwn?'🟢 ':''}${esc(teamName)}</strong><span>${countText}</span></div>${list.length?`<ol class="roster-names">${names}</ol>`:'<div class="match-no-players">EA hat keine Spielernamen für diese Mannschaft geliefert.</div>'}</section>`;
 }
 function renderMatch(m){
- const ours=m.lineup?.ours||[],them=m.lineup?.opponents||[];
+ const ours=Array.isArray(m.lineup?.ours)?m.lineup.ours:[];
+ const them=Array.isArray(m.lineup?.opponents)?m.lineup.opponents:[];
+ const winners=[...ours.map((p,i)=>({p,i,side:'ours'})),...them.map((p,i)=>({p,i,side:'opponents'}))].filter(x=>x.p.motm===true);
+ // Nur eindeutig als MOTM markierte EA-Einträge hervorheben, nichts aus Bewertungen schätzen.
+ const winner=winners.length===1?winners[0]:null;
  const count=ours.length+them.length;
- const label=count?'Spielkader anzeigen':'Spielkader prüfen';
+ const label=count?`${ours.length} + ${them.length} Spieler anzeigen`:'Spieler prüfen';
  const result=['W','D','L'].includes(m.result)?m.result:'D';
- return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Kader anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">Diese Spieler haben laut EA in diesem Match mitgespielt. Die Werte gelten nur für dieses Spiel.</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true)}${renderMatchSquad(them,m.opponent||'Gegner',false)}</div><p class="note">Werte werden aus EA-Matchdaten übernommen. Falls EA keinen Kader bereitstellt, erscheint ein Hinweis.</p></div></details>`;
+ return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Spieler anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">Von EA für dieses Spiel erfasste Spieler (${count} insgesamt). Keine individuellen Match-Statistiken.</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true,winner?.side,winner?.i)}${renderMatchSquad(them,m.opponent||'Gegner',false,winner?.side,winner?.i)}</div>${winner?`<p class="match-motm">★ <strong>Man of the Match:</strong> ${esc(winner.p.name||'Unbekannter Spieler')} (${esc(winner.side==='ours'?(clubData?.name||'Dein Club'):(m.opponent||'Gegner'))})</p>`:''}<p class="note">Quelle: EA clubs/matches → players. Die Anzahl zählt nur von EA erfasste Profile; KI-Spieler oder fehlende Datensätze werden möglicherweise nicht angezeigt. MOTM nur bei eindeutiger EA-Kennzeichnung.</p></div></details>`;
 }
 function renderPlayers(){const all=clubData?.members||[];const text=$('#player-filter').value.trim().toLowerCase();const filtered=all.filter(p=>[p.name,p.proName].some(v=>String(v||'').toLowerCase().includes(text)));filtered.sort((a,b)=>sortKey==='name'?String(a.name).localeCompare(String(b.name),'de'):sortKey==='favoritePosition'?String(a.favoritePosition).localeCompare(String(b.favoritePosition)):num(b[sortKey])-num(a[sortKey]));
  $('#players-body').replaceChildren();const tbody=$('#players-body');for(const p of filtered){const row=document.createElement('tr');row.tabIndex=0;row.setAttribute('aria-label','Spieler '+(p.name||''));row.innerHTML=`<td><div class="player-name"><span class="avatar">${esc(monogram(p.name))}</span><span>${esc(p.name||'Unbekannt')}<br><small class="muted" style="font-size:11px;font-weight:400">${esc(p.proName||'')}</small></span></div></td><td><span class="pos">${esc(posText[p.favoritePosition]||p.favoritePosition||'–')}</span></td><td>${esc(disp(p.gamesPlayed))}</td><td class="good">${esc(disp(p.goals))}</td><td>${esc(disp(p.assists))}</td><td>${esc(dec(p.ratingAve))}</td><td>${esc(disp(p.proOverall))}</td>`;row.addEventListener('click',()=>openPlayer(p));row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlayer(p)}});tbody.appendChild(row)}
