@@ -3,6 +3,17 @@
   "notice": "Der 3. Dezember ist für das Ende von FC-27-Saison 2 bestätigt (Saisonpass); er ist nicht automatisch der bestätigte Start oder das Ende der Clubs-Liga-Playoffs. Der 26. November ist eine Schätzung aus der üblichen einwöchigen Playoff-Phase. Die Daten sind manuell gepflegt.",
   "items": [
     {
+      "id": "event-05a4aecbb4104149",
+      "category": "News",
+      "title": "Test Event",
+      "start": "2026-10-28",
+      "end": "2026-10-28",
+      "description": "Test",
+      "source": "",
+      "sourceLabel": "",
+      "dateStatus": "confirmed"
+    },
+    {
       "id": "playoffs",
       "category": "Playoffs",
       "title": "Nächste Clubs-Playoffs (voraussichtlich)",
