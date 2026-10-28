@@ -1,0 +1,46 @@
+{
+  "lastChecked": "2026-10-28",
+  "notice": "Die Daten werden redaktionell aktualisiert und nicht automatisch von EA synchronisiert. Bitte bestätigte Startzeiten im Spiel prüfen.",
+  "items": [
+    {
+      "id": "playoffs",
+      "category": "Playoffs",
+      "title": "Nächste Clubs-Playoffs",
+      "start": null,
+      "end": null,
+      "description": "Die Playoffs bilden den Abschluss der Clubs-Liga-Saison. Für den nächsten Start liegt uns noch kein offiziell bestätigtes Datum vor. Schau für aktuelle Zeitangaben im Clubs-Bereich von The Grounds nach.",
+      "source": "https://www.ea.com/de-de/games/ea-sports-fc/clubs",
+      "sourceLabel": "Offizielle EA-Clubs-Seite"
+    },
+    {
+      "id": "live-tournaments",
+      "category": "Turniere",
+      "title": "Nächstes Clubs-Live-Turnier",
+      "start": null,
+      "end": null,
+      "description": "FC 27 bietet separate 11-gegen-11-Live-Turniere mit eigenen Regeln und Belohnungen. Termine und Teilnahmebedingungen werden im Clubhaus angezeigt; ein künftiger Termin ist hier noch nicht bestätigt.",
+      "source": "https://www.ea.com/de/games/ea-sports-fc/fc-27/news/pitch-notes-fc27-launch-update",
+      "sourceLabel": "EA FC 27 Launch-Update"
+    },
+    {
+      "id": "archetype-update",
+      "category": "News",
+      "title": "Entwickler-Update: Archetypen",
+      "start": "2026-10-19",
+      "end": null,
+      "description": "EA veröffentlichte Informationen zu Anpassungen an Attributpunkten und Archetypen in The Grounds und Clubs. Das ist eine News-Meldung, kein Playoff-Termin.",
+      "source": "https://www.ea.com/de/games/ea-sports-fc/fc-27/news/fc-27-the-grounds-developer-archetypes-update",
+      "sourceLabel": "EA-Entwickler-Update"
+    },
+    {
+      "id": "first-club-tournament",
+      "category": "Turniere",
+      "title": "Erstes 11-gegen-11 Club-Turnier",
+      "start": "2026-09-18",
+      "end": null,
+      "description": "Zum Vorabzugriff von FC 27 startete das erste 11-gegen-11-Turnier im Stadionformat. Der Termin gehört zur Vergangenheit und ist kein nächster Playoff-Termin.",
+      "source": "https://www.ea.com/de/games/ea-sports-fc/fc-27/news/pitch-notes-fc27-launch-update",
+      "sourceLabel": "EA FC 27 Launch-Update"
+    }
+  ]
+}

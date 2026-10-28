@@ -29,6 +29,14 @@
     .matches{display:flex;flex-direction:column}.match{padding:13px 20px;border-bottom:1px solid #2b3139;display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:16px}.match:last-child{border:0}.match-result{height:30px;width:30px;display:grid;place-items:center;border-radius:9px;font-size:12px;font-weight:800}.match-result.W{background:#214734;color:#7be39e}.match-result.L{background:#4d2e30;color:#ffa1a1}.match-result.D{background:#5c4d2f;color:#f7d282}.match strong{font-size:13px}.match small{font-size:11px;color:#7e8792}.match-score{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:800;font-size:18px}.match-date{font-size:11px;color:#8c959e;min-width:83px;text-align:right}.footer{text-align:center;border-top:1px solid #242931;color:#7e8792;font-size:12px;margin-top:60px;padding:28px 0 40px}
     .feat-wrap{margin-top:27px;display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.feat{padding:25px 24px}.feat .pic{height:45px;width:45px;background:#27331e;color:var(--accent);border-radius:12px;display:grid;place-items:center;font-size:22px}.feat h3{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:17px;margin:19px 0 7px}.feat p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}
     .overlay{position:fixed;inset:0;z-index:10;background:#030403ce;display:flex;align-items:center;justify-content:center;padding:15px}.modal{max-width:590px;width:100%;max-height:92vh;overflow:auto;background:#171b22;border:1px solid #3d453c;border-radius:23px;padding:26px;box-shadow:0 30px 90px #0009}.modal-head{display:flex;align-items:start;justify-content:space-between;gap:15px}.modal-head h2{margin:5px 0;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:30px}.x{border:0;border-radius:10px;background:#292f35;color:white;font-size:20px;width:36px;height:36px}.player-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}.mini-metric{background:#222832;border:1px solid #343b45;border-radius:12px;padding:14px}.mini-metric small{display:block;font-size:10px;color:#9ba6b2}.mini-metric strong{display:block;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:26px;margin-top:7px}.section-sub{margin:23px 0 7px;color:var(--accent);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800}.loading{display:flex;gap:11px;align-items:center;justify-content:center;color:#acb7bc;font-size:14px;padding:18px}.spinner{height:19px;width:19px;border:2px solid #465045;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    /* Events: eigenständiger dritter Reiter */
+    .events-section{margin-top:4px}.events-hero{padding:27px 29px;margin-bottom:22px;background:radial-gradient(circle at 93% 0%,#3d522a 0%,transparent 45%),linear-gradient(125deg,#1c271a,#151a1f);border:1px solid #3b4c32;border-radius:21px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .events-hero h2{font-family:'Space Grotesk',system-ui,Arial,sans-serif;margin:4px 0 8px;font-size:clamp(25px,4vw,37px);letter-spacing:-1.2px}.events-hero p{margin:0;color:#aebaa8;font-size:14px;max-width:600px}.events-hero-mark{font-size:52px;line-height:1;flex-shrink:0}
+    .events-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:17px}.events-filter{padding:9px 15px;background:#20252c;border:1px solid #353c44;color:#c6d0d8;border-radius:10px;font-size:13px;font-weight:800}.events-filter.active{background:var(--accent);border-color:var(--accent);color:#17210f}
+    .events-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.event-card{padding:22px;display:flex;flex-direction:column;gap:12px;min-height:254px}.event-top{display:flex;justify-content:space-between;align-items:center;gap:9px;flex-wrap:wrap}.event-type{color:var(--accent);font-size:10px;letter-spacing:1.5px;font-weight:900;text-transform:uppercase}.event-state{font-size:11px;font-weight:800;padding:5px 9px;border-radius:20px;border:1px solid #414b48;color:#b7c6c3}.event-state.pending{color:#ffdc9b;border-color:#67573b;background:#30291c}.event-state.known{color:#b7f78e;border-color:#435f33;background:#222e20}.event-state.past{color:#a7abb3;border-color:#3b4149}
+    .event-date{font:700 19px 'Space Grotesk',system-ui,sans-serif;letter-spacing:-.35px}.event-card h3{font-family:'Space Grotesk',system-ui,sans-serif;letter-spacing:-.5px;font-size:21px;line-height:1.2;margin:0}.event-card p{color:#aeb6c0;font-size:13px;line-height:1.65;margin:0;flex:1}.event-link{font-size:13px;font-weight:800;text-decoration:none}.event-link:hover{text-decoration:underline}.event-updated{color:#818d99;font-size:12px;margin:13px 0 25px}
+    @media(max-width:760px){.events-grid{grid-template-columns:1fr}.events-hero{padding:22px}.events-hero-mark{font-size:35px}}
+    @media(max-width:460px){.search-tab{padding:10px 12px;font-size:12px}.events-hero-mark{display:none}.event-card{min-height:auto}}
     @media(max-width:760px){.topbar{height:72px}.topright a{display:none}.hero{padding:53px 0 42px}.hero h1{letter-spacing:-2.2px}.club-stats{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.feat-wrap{grid-template-columns:1fr}.results{grid-template-columns:1fr}.club-heading{flex-direction:column;align-items:flex-start}.club-right{width:100%;justify-content:flex-start}.player-filters{flex-direction:column;align-items:stretch}.section-head{align-items:flex-start}.section-head:not(.compact){flex-direction:column}.match{grid-template-columns:30px 1fr auto;gap:9px}.match-date{display:none}}
     @media(max-width:600px){.topright:has(#my-player-button:not(.hidden)) .tag{display:none}.player-search-fields{grid-template-columns:1fr}.search-box{flex-wrap:wrap}.search-box .button{width:100%}.search-box input{min-height:44px}}
     @media(max-width:460px){.wrap{width:min(100% - 26px,1160px)}.brand{font-size:21px}.topright .tag{font-size:9px;letter-spacing:.4px;padding:6px 8px}.hero h1{font-size:40px}.search-box{padding:5px}.search-box input{font-size:13px}.search-icon{width:35px}.button{padding:12px 15px;font-size:13px}.club-stats{gap:8px}.metric{padding:17px 14px}.metric .value{font-size:30px}.inner{padding:19px}.player-grid{gap:6px}.mini-metric{padding:11px}.mini-metric strong{font-size:22px}}
@@ -47,6 +55,7 @@
     <div class="search-switch" role="tablist" aria-label="Suchmodus">
       <button type="button" class="search-tab active" id="tab-club" role="tab" aria-selected="true" aria-controls="search-form">⚽ Clubsuche</button>
       <button type="button" class="search-tab" id="tab-player" role="tab" aria-selected="false" aria-controls="player-search-form">◉ Spielersuche</button>
+      <button type="button" class="search-tab" id="tab-events" role="tab" aria-selected="false" aria-controls="events-section">▣ Events</button>
     </div>
     <form id="search-form" class="search-box" autocomplete="off">
       <span class="search-icon">⌕</span>
@@ -55,14 +64,10 @@
     </form>
     <form id="player-search-form" class="hidden" autocomplete="off">
       <div class="search-box"><span class="search-icon">⌕</span>
-        <input id="player-input" type="search" placeholder="Spieler-ID / PSN-Online-ID" aria-label="Spieler-ID oder PSN-Online-ID" minlength="2" maxlength="60" required>
+        <input id="player-input" type="search" placeholder="Spielername / PSN-ID" aria-label="Spielername oder PSN-Online-ID" minlength="2" maxlength="60" required>
         <button id="player-search-button" type="submit" class="button">Spieler suchen ↗</button>
       </div>
-      <div class="player-search-fields">
-        <input id="player-club-input" type="search" placeholder="Clubname (empfohlen)" aria-label="Clubname für Spielersuche" maxlength="80">
-        <div style="align-self:center;text-align:left;color:var(--muted);font-size:12px">Mit Clubnamen wird dessen Kader bei EA durchsucht. Ohne Clubnamen nur bereits aufgerufene Clubs.</div>
-      </div>
-      <p class="search-explainer">Keine globale EA-Spielerdatenbank und keine PlayStation-Anmeldung. Verwende den öffentlichen Gamertag, nicht dein Passwort.</p>
+      <p class="search-explainer">Nur den öffentlichen Gamertag eingeben. CLUBPULSE sucht automatisch in vorgemerkten und bereits besuchten Clubs. Da EA keine weltweite Spielersuche anbietet, werden möglicherweise nicht alle Spieler gefunden. Kein PlayStation-Login – niemals ein Passwort eingeben.</p>
     </form>
     <div class="below-search"><span>✓ Echte EA-Daten</span><span>✓ Kein Login</span><span>✓ PS5 · Xbox Series · PC</span></div>
     <p id="status" class="signal hidden" role="status" aria-live="polite"></p>
@@ -95,6 +100,22 @@
       <div class="panel matches" id="matches-view"></div>
     </section>
   </div>
+  <section id="events-section" class="section events-section hidden" aria-labelledby="events-heading">
+    <div class="events-hero">
+      <div><div class="eyebrow" style="margin-bottom:7px">// FC 27 CLUBS · TERMINE & EVENTS</div><h2 id="events-heading">Verpass keine Playoffs.</h2><p>Playoffs, Club-Turniere und wichtige The-Grounds-Neuigkeiten – mit offiziellen Quellen und ehrlich gekennzeichneten Terminen.</p></div>
+      <div class="events-hero-mark" aria-hidden="true">🏆</div>
+    </div>
+    <div class="section-head"><div><div class="label">// EVENT-KALENDER</div><h2>Alle Clubs-Events</h2><p>Bekannte Daten sowie Veranstaltungen, deren Termin EA noch nicht veröffentlicht hat.</p></div></div>
+    <div class="events-filters" role="group" aria-label="Events filtern">
+      <button class="events-filter active" type="button" data-event-filter="Alle" aria-pressed="true">Alle</button>
+      <button class="events-filter" type="button" data-event-filter="Playoffs" aria-pressed="false">Playoffs</button>
+      <button class="events-filter" type="button" data-event-filter="Turniere" aria-pressed="false">Turniere</button>
+      <button class="events-filter" type="button" data-event-filter="News" aria-pressed="false">News</button>
+    </div>
+    <div id="events-cards" class="events-grid" aria-live="polite"><div class="panel inner muted">Events werden geladen …</div></div>
+    <p id="events-updated" class="event-updated"></p>
+    <p class="note">Offizielle Zeitangaben und Teilnahmebedingungen findest du im Spiel unter The Grounds / Clubs. Diese Fan-Seite aktualisiert die Events nicht automatisch.</p>
+  </section>
   <section id="intro" class="section"><div class="section-head"><div><div class="label">// ALLES AUF EINEN BLICK</div><h2>Mehr als nur Ergebnisse.</h2></div></div>
     <div class="feat-wrap"><article class="panel feat"><div class="pic">⚽</div><h3>Club-Performance</h3><p>Siege, Tore, Niederlagen, Skill Rating und den Verlauf der letzten Partien an einem Ort.</p></article><article class="panel feat"><div class="pic">◉</div><h3>Spielervergleich</h3><p>Wer trifft am häufigsten? Wer legt die meisten Tore auf? Vergleiche deinen Kader.</p></article><article class="panel feat"><div class="pic">▥</div><h3>Echte Matchdaten</h3><p>Die Daten werden über eine inoffizielle Schnittstelle aus den EA-Clubs-Statistiken abgerufen.</p></article></div>
   </section>
@@ -106,6 +127,9 @@
 const $ = s => document.querySelector(s);
 let clubData = null, sortKey = 'goals', busy = false, searchMode = 'club', openedPlayer = null;
 const MY_PLAYER_KEY = 'clubpulse.my-player.v1';
+const RECENT_CLUBS_KEY = 'clubpulse.recent-clubs.v1';
+function recentClubIds(){try{return (JSON.parse(localStorage.getItem(RECENT_CLUBS_KEY)||'[]')||[]).filter(id=>/^\d{1,20}$/.test(String(id))).slice(0,10)}catch{return []}}
+function rememberClubId(id){try{const ids=[String(id),...recentClubIds().filter(x=>String(x)!==String(id))].slice(0,10);localStorage.setItem(RECENT_CLUBS_KEY,JSON.stringify(ids))}catch{}}
 function readMyPlayer(){try{return JSON.parse(localStorage.getItem(MY_PLAYER_KEY)||'null')}catch{return null}}
 function updateMyPlayerButton(){const saved=readMyPlayer();$('#my-player-button').classList.toggle('hidden',!saved?.clubId||!saved?.name)}
 const esc = v => String(v ?? '').replace(/[&<>"']/g,ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -121,23 +145,70 @@ async function api(path) {const response=await fetch(path,{headers:{Accept:'appl
 function clearDashboard(){$('#dashboard').classList.add('hidden');$('#intro').classList.remove('hidden');}
 function setSearchMode(mode){
  searchMode=mode;
- for(const m of ['club','player']){$('#tab-'+m).classList.toggle('active',m===mode);$('#tab-'+m).setAttribute('aria-selected',String(m===mode))}
+ for(const m of ['club','player','events']){$('#tab-'+m).classList.toggle('active',m===mode);$('#tab-'+m).setAttribute('aria-selected',String(m===mode))}
  $('#search-form').classList.toggle('hidden',mode!=='club');$('#player-search-form').classList.toggle('hidden',mode!=='player');
- $('#search-section').classList.add('hidden');status('');
+ $('#events-section').classList.toggle('hidden',mode!=='events');
+ document.querySelector('.below-search').classList.toggle('hidden',mode==='events');
+ $('#search-section').classList.add('hidden');
+ $('#dashboard').classList.toggle('hidden',mode==='events'||!clubData);
+ $('#intro').classList.toggle('hidden',mode==='events'||!!clubData);
+ status('');
+ if(mode==='events')loadEvents();
 }
-async function searchPlayer(tag,club){
- if(busy)return;setBusy(true);status('Suche nach Spielern in verfügbaren Clubs …');
+let eventEntries=[], selectedEventFilter='Alle', eventsLoading=false, eventsReady=false;
+function formatEventDate(iso){if(!iso)return 'Termin noch offen';
+  const d=new Date(iso+'T12:00:00');return Number.isNaN(d.getTime())?'Termin noch offen':d.toLocaleDateString('de-AT',{day:'numeric',month:'long',year:'numeric'});
+}
+function renderEvents(){
+  const shown=eventEntries.filter(e=>selectedEventFilter==='Alle'||e.category===selectedEventFilter);
+  const target=$('#events-cards');
+  const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Europe/Vienna'});
+  target.innerHTML=shown.length?shown.map(e=>{
+    const past=!!e.start&&e.start<today;
+    const pending=!e.start;
+    const label=pending?'Termin offen':past?'Vergangen':'Bestätigter Termin';
+    const state=pending?'pending':past?'past':'known';
+    const validLink=typeof e.source==='string'&&/^https:\/\//.test(e.source);
+    return `<article class="panel event-card"><div class="event-top"><span class="event-type">${esc(e.category||'Event')}</span><span class="event-state ${state}">${esc(label)}</span></div><div class="event-date">${esc(formatEventDate(e.start))}</div><h3>${esc(e.title)}</h3><p>${esc(e.description||'')}</p>${validLink?`<a class="event-link" href="${esc(e.source)}" target="_blank" rel="noopener noreferrer">${esc(e.sourceLabel||'Offizielle Quelle')} ↗</a>`:''}</article>`;
+  }).join(''):'<div class="panel inner muted">Für diesen Filter gibt es noch keine Einträge.</div>';
+}
+async function loadEvents(){
+  if(eventsLoading)return;
+  if(eventsReady){renderEvents();return}
+  eventsLoading=true;
+  $('#events-cards').innerHTML='<div class="panel inner muted">Events werden geladen …</div>';
+  try{const data=await api('/api/events');if(!Array.isArray(data.items))throw Error('Die Eventdaten haben ein ungültiges Format.');
+    eventEntries=data.items;eventsReady=true;
+    $('#events-updated').textContent='Zuletzt manuell geprüft: '+formatEventDate(data.lastChecked)+'. Keine Live-Synchronisierung mit EA.';
+    renderEvents();
+  }catch(error){$('#events-cards').innerHTML=`<div class="panel inner">Eventdaten konnten nicht geladen werden. <a href="https://www.ea.com/de-de/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">Offizielle EA-Clubs-Seite öffnen ↗</a></div>`;
+    $('#events-updated').textContent=error.message;
+  }finally{eventsLoading=false}
+}
+document.querySelectorAll('[data-event-filter]').forEach(button=>button.addEventListener('click',()=>{
+  selectedEventFilter=button.dataset.eventFilter;
+  document.querySelectorAll('[data-event-filter]').forEach(b=>{const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+  renderEvents();
+}));
+async function searchPlayer(tag){
+ if(busy)return;setBusy(true);status('Suche nach deinem Spielernamen in verfügbaren Vereins-Kadern …');
  $('#search-section').classList.add('hidden');clearDashboard();
  try{
-   const data=await api('/api/player?q='+encodeURIComponent(tag)+'&club='+encodeURIComponent(club));
+   const ids=recentClubIds();
+   const saved=readMyPlayer();
+   if(saved?.clubId&&!ids.includes(String(saved.clubId)))ids.unshift(String(saved.clubId));
+   const data=await api('/api/player?q='+encodeURIComponent(tag)+'&ids='+encodeURIComponent(ids.slice(0,10).join(',')));
    const players=data.players||[];const container=$('#results');container.replaceChildren();
    $('#results-title').textContent='Spieler auswählen';
-   $('#results-hint').textContent=players.length?`${players.length} Treffer in ${data.searchedClubs} geprüften Clubs. Klicke auf ein Profil.`:
-     data.mode==='known'?'Kein Treffer in den bisher aufgerufenen Clubs. Gib zusätzlich den Clubnamen ein, damit wir bei EA suchen können.':'Kein Treffer in den geprüften Clubs. Prüfe Spieler-ID und Clubnamen.';
+   const count=data.searchedClubs||0;
+   $('#results-hint').textContent=players.length
+     ? `${players.length} Treffer in ${count} automatisch geprüften Clubs. Klicke auf dein Profil. Die Suche ist nicht weltweit vollständig.`
+     : `Kein Treffer in ${count} bekannten Clubs. EA bietet keine weltweite Spielersuche; dein Verein ist eventuell noch nicht im Suchindex.`;
    for(const entry of players){const p=entry.player;const button=document.createElement('button');button.type='button';button.className='result';
      button.innerHTML=`<span class="result-logo">${esc(monogram(p.name))}</span><span class="result-main"><strong>${esc(p.name)}</strong><small>${esc(entry.clubName)} · ${esc(disp(p.goals))} Tore · ${esc(disp(p.assists))} Assists</small></span><span class="result-arrow">↗</span>`;
      button.addEventListener('click',()=>loadClub(entry.clubId,p.name));container.appendChild(button);
    }
+   if(data.hadErrors)$('#results-hint').textContent+=' Einige EA-Anfragen konnten nicht geladen werden.';
    $('#search-section').classList.remove('hidden');status('');$('#search-section').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(error){status(error.message,'error')}finally{setBusy(false)}
 }
@@ -148,7 +219,7 @@ async function searchClub(name){if(busy)return;setBusy(true);status('Suche Verei
   $('#search-section').classList.remove('hidden');status('');$('#search-section').scrollIntoView({behavior:'smooth',block:'start'});
 }catch(error){status(error.message,'error')}finally{setBusy(false)}}
 async function loadClub(id,playerName=null){if(busy)return;setBusy(true);status('Lade Club, Spieler und Spielverlauf von EA …');$('#search-section').classList.add('hidden');try{
-   clubData=await api('/api/club?id='+encodeURIComponent(id));renderClub(clubData);status('');const url=new URL(location.href);url.searchParams.set('club',id);history.replaceState(null,'',url);$('#dashboard').scrollIntoView({behavior:'smooth',block:'start'});
+   clubData=await api('/api/club?id='+encodeURIComponent(id));rememberClubId(id);renderClub(clubData);status('');const url=new URL(location.href);url.searchParams.set('club',id);history.replaceState(null,'',url);$('#dashboard').scrollIntoView({behavior:'smooth',block:'start'});
    if(playerName){const player=(clubData.members||[]).find(p=>String(p.name).toLowerCase()===playerName.toLowerCase());if(player)openPlayer(player);else status('Der Spieler ist in diesem Club aktuell nicht mehr sichtbar.','error')}
  }catch(error){status(error.message,'error')}finally{setBusy(false)}}
 function metric(label,value,description='',accent=false){return `<div class="panel metric"><div class="name">${esc(label)}</div><div class="value${accent?' accent':''}">${esc(disp(value))}</div><div class="extra">${esc(description)}</div></div>`;}
@@ -174,9 +245,10 @@ function openPlayer(p){openedPlayer=p;const name=p.name||'Unbekannter Spieler';
  $('#overlay').classList.remove('hidden');$('#close-modal').focus();
 }
 $('#search-form').addEventListener('submit',e=>{e.preventDefault();searchClub($('#club-input').value)});
-$('#player-search-form').addEventListener('submit',e=>{e.preventDefault();searchPlayer($('#player-input').value,$('#player-club-input').value)});
+$('#player-search-form').addEventListener('submit',e=>{e.preventDefault();searchPlayer($('#player-input').value)});
 $('#tab-club').addEventListener('click',()=>setSearchMode('club'));
 $('#tab-player').addEventListener('click',()=>setSearchMode('player'));
+$('#tab-events').addEventListener('click',()=>setSearchMode('events'));
 $('#save-player-button').addEventListener('click',()=>{if(!clubData||!openedPlayer)return;try{
   localStorage.setItem(MY_PLAYER_KEY,JSON.stringify({clubId:clubData.id,name:openedPlayer.name}));
   $('#save-player-button').textContent='✓ Als „Mein Spieler“ gespeichert';updateMyPlayerButton();
@@ -189,7 +261,7 @@ document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('clic
 $('#refresh-button').addEventListener('click',()=>{if(clubData)loadClub(clubData.id)});
 $('#copy-button').addEventListener('click',async()=>{if(!clubData)return;const url=new URL(location.href);url.searchParams.set('club',clubData.id);try{await navigator.clipboard.writeText(url.toString());$('#copy-button').textContent='✓ Kopiert';setTimeout(()=>$('#copy-button').textContent='🔗 Link kopieren',1700)}catch{window.prompt('Link kopieren:',url.toString())}});
 const closeModal=()=>$('#overlay').classList.add('hidden');$('#close-modal').addEventListener('click',closeModal);$('#overlay').addEventListener('click',e=>{if(e.target===$('#overlay'))closeModal()});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-const startClub=new URLSearchParams(location.search).get('club');if(startClub && /^\d{1,20}$/.test(startClub)) loadClub(startClub);
+const startParams=new URLSearchParams(location.search);const startClub=startParams.get('club');if(startParams.get('view')==='events')setSearchMode('events');else if(startClub && /^\d{1,20}$/.test(startClub)) loadClub(startClub);
 </script>
 </body>
 </html>

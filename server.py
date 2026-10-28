@@ -188,45 +188,90 @@ def do_club(club_id):
 
 
 
-def do_player_search(gamertag, club_name=""):
-    """Sucht nach EA-Plattformnamen in Kadern, NICHT global nach PSN-Konten.
+# Vereine, die bei der Spielersuche AUTOMATISCH geprüft werden, ohne dass
+# Besucher zuvor einen Clubnamen eintippen müssen. Optional mit der Render-
+# Umgebungsvariable AUTO_CLUBS anpassen: "Viennas Finest,Club Zwei".
+AUTO_CLUBS = [n.strip() for n in os.environ.get("AUTO_CLUBS", "Viennas Finest").split(",") if n.strip()][:5]
 
-    Mit Clubnamen: per EA-Clubsuche passende Clubs finden und dort Kader prüfen.
-    Ohne Clubnamen: nur die im aktuellen Serverprozess kürzlich geöffneten Kader.
+
+def do_player_search(gamertag, saved_club_ids=""):
+    """Ein Feld: Gamertag. Prüft bekannte, gemerkte und automatisch vorgemerkte Clubs.
+
+    EA stellt KEINE globale Spielersuche bereit. Auch diese Suche ist daher
+    bewusst eine Teilmenge, und das meldet die API offen zurück.
     """
     gamertag = gamertag.strip()
-    club_name = club_name.strip()
     if not 2 <= len(gamertag) <= 60:
-        raise ValueError("Bitte eine Spieler-ID mit 2 bis 60 Zeichen eingeben.")
-    if len(club_name) > 80:
-        raise ValueError("Der Clubname ist zu lang.")
-    candidates = []
-    mode = "club" if club_name else "known"
-    if club_name:
-        clubs = do_search(club_name)["clubs"]
-        # Die exaktesten Namensübereinstimmungen zuerst. Maximal fünf Clubs
-        # pro Suche, damit die öffentliche EA-Schnittstelle geschont wird.
-        clubs.sort(key=lambda c: (str(c["name"]).casefold() != club_name.casefold(),
-                                  not str(c["name"]).casefold().startswith(club_name.casefold())))
-        for c in clubs[:5]:
-            members_raw = api_get("members/stats", clubId=c["id"])
-            members = members_raw.get("members", []) if isinstance(members_raw, dict) else []
-            remember_roster(c["id"], c["name"], members)
-            candidates.append((c["id"], c["name"], members))
-    else:
-        candidates = known_rosters()
+        raise ValueError("Bitte einen Spielernamen mit 2 bis 60 Zeichen eingeben.")
+
+    # Serverweit gemerkte Kader aus aufgerufenen Clubs (aktueller Prozess).
+    candidates = {str(cid): (str(name), members)
+                  for cid, name, members in known_rosters()}
+
+    # Vereine, die auf DIESEM Browser früher besucht wurden, helfen auch nach
+    # einem Neustart des kostenlosen Render-Servers.
+    given_ids = []
+    for item in saved_club_ids.split(",")[:12]:
+        item = item.strip()
+        if item.isdecimal() and 1 <= len(item) <= 20 and item not in given_ids:
+            given_ids.append(item)
+
+    # Die konfigurierten Vereine werden ohne Benutzer-Eingabe gefunden.
+    # Fehler eines einzelnen Vereins sollen die ganze Suche nicht abbrechen.
+    errors = []
+    for name in AUTO_CLUBS:
+        try:
+            found = do_search(name)["clubs"]
+            found.sort(key=lambda c: (
+                c["name"].casefold() != name.casefold(),
+                not c["name"].casefold().startswith(name.casefold())))
+            for c in found[:2]:
+                cid = str(c["id"])
+                if cid not in candidates and cid not in given_ids:
+                    given_ids.append(cid)
+        except EAError as exc:
+            errors.append(str(exc))
+
+    # Wenige Netzwerkzugriffe parallel. Die EA-API wird nicht massenhaft
+    # abgefragt; bis zu 12 bekannte/vorgemerkte Clubs pro Anfrage.
+    missing = [cid for cid in given_ids if cid not in candidates][:12]
+
+    def fetch_members(cid):
+        raw = api_get("members/stats", clubId=cid)
+        members = raw.get("members", []) if isinstance(raw, dict) else []
+        # Für browserseitig gemerkte Clubs fehlt eventuell der Clubname.
+        club_name = candidates.get(cid, ("", []))[0]
+        if not club_name:
+            try:
+                info_raw = api_get("clubs/info", clubIds=cid)
+                club_name = (info_raw.get(cid, {}) if isinstance(info_raw, dict) else {}).get("name") or "Club " + cid
+            except EAError:
+                club_name = "Club " + cid
+        return cid, club_name, members
+
+    if missing:
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            for future in [pool.submit(fetch_members, cid) for cid in missing]:
+                try:
+                    cid, name, members = future.result()
+                    candidates[cid] = (name, members)
+                    remember_roster(cid, name, members)
+                except EAError as exc:
+                    errors.append(str(exc))
+
+    if not candidates and errors:
+        raise EAError("EA ist für die automatische Spielersuche gerade nicht erreichbar.")
+
     needle = gamertag.casefold()
     results = []
-    for club_id, name, members in candidates:
+    for cid, (name, members) in candidates.items():
         for player in members:
             if not isinstance(player, dict):
                 continue
-            # EA nennt dieses Feld "name": den angezeigten Plattform-Gamertag.
-            # "proName" ist hingegen der Name des virtuellen Profis.
             username = str(player.get("name") or "")
             pro_name = str(player.get("proName") or "")
             if needle in username.casefold() or (pro_name and needle in pro_name.casefold()):
-                results.append({"clubId": club_id, "clubName": name, "player": {
+                results.append({"clubId": cid, "clubName": name, "player": {
                     "name": username, "proName": pro_name,
                     "gamesPlayed": player.get("gamesPlayed"),
                     "goals": player.get("goals"), "assists": player.get("assists"),
@@ -238,8 +283,8 @@ def do_player_search(gamertag, club_name=""):
         r["player"]["proName"].casefold() != needle,
         r["player"]["name"].casefold()
     ))
-    return {"players": results[:25], "mode": mode, "searchedClubs": len(candidates),
-            "partial": True, "updated": int(time())}
+    return {"players": results[:25], "searchedClubs": len(candidates),
+            "partial": True, "hadErrors": bool(errors), "updated": int(time())}
 
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -267,7 +312,11 @@ class Handler(SimpleHTTPRequestHandler):
                 elif p.path == "/api/club":
                     result = do_club(query.get("id", [""])[0])
                 elif p.path == "/api/player":
-                    result = do_player_search(query.get("q", [""])[0], query.get("club", [""])[0])
+                    result = do_player_search(query.get("q", [""])[0], query.get("ids", [""])[0])
+                elif p.path == "/api/events":
+                    # Öffentlich kuratierte Termine aus events.json, ohne EA-API-Abhängigkeit.
+                    with (HERE / "events.json").open(encoding="utf-8") as events_file:
+                        result = json.load(events_file)
                 elif p.path == "/api/status":
                     result = {"ok": True}
                 else:
