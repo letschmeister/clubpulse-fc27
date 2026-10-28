@@ -136,6 +136,23 @@
     @media(max-width:380px){.brand{font-size:15px}.menu-text{display:none}.hero h1{font-size:39px}.favorite-quick .favorite-glow{display:none}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
+    /* Suchfeld: dezenter neutraler Rand statt grüner Fokus-Rahmen. */
+    .search-box,.search-box:focus-within{border-color:#343e43;box-shadow:0 15px 44px #0006;background:#141f22df}
+    .search-box:focus-within{border-color:#5b696f;box-shadow:0 16px 46px #0007}
+    .search-box input:focus,.search-box input:focus-visible{border:0;outline:none!important;outline-offset:0;box-shadow:none}
+    /* Lieblingsclub und Lieblingsspieler als zwei gleichwertige Schnellzugriffe. */
+    .favorites-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:900px;margin:24px auto 0}
+    .favorites-row .favorite-quick{max-width:none;margin:0;width:100%;min-width:0;min-height:86px;animation:slide-in .5s ease both}
+    .favorites-row .favorite-player-quick{background:linear-gradient(110deg,#232f3c,#1b292e);border-color:#4a6370;animation-delay:.08s}
+    .favorite-player-quick .favorite-glow{color:#a8d6e5}
+    .favorite-player-quick .favorite-quick-open{background:#bfdced;color:#142633}
+    .favorite-quick span:nth-child(2){overflow:hidden}
+    .favorite-player-club{font-size:10px!important;letter-spacing:0!important;color:#aabac1!important;font-weight:500!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .favorites-row .favorite-quick-open{transition:transform .2s ease,filter .2s ease;flex-shrink:0}
+    .favorites-row .favorite-quick-open:hover{filter:brightness(1.09);transform:translateY(-2px)}
+    @media(max-width:750px){.favorites-row{grid-template-columns:1fr;max-width:615px}}
+    @media(max-width:380px){.favorites-row .favorite-quick{padding-left:11px}.favorites-row .favorite-quick strong{font-size:13px}.favorites-row .favorite-quick-open{padding:9px 10px;font-size:10px}}
+
   </style>
 </head>
 <body>
@@ -173,7 +190,10 @@
       </div>
       <p class="search-explainer">Nur den öffentlichen Gamertag eingeben. FC27 STATS sucht automatisch in vorgemerkten und bereits besuchten Clubs. Da EA keine weltweite Spielersuche anbietet, werden möglicherweise nicht alle Spieler gefunden. Kein PlayStation-Login – niemals ein Passwort eingeben.</p>
     </form>
-    <div id="favorite-quick" class="favorite-quick hidden"><span class="favorite-glow">★</span><span><small>DEIN LIEBLINGSCLUB</small><strong id="favorite-quick-name"></strong></span><button id="favorite-quick-open" type="button" class="favorite-quick-open">Club öffnen ↗</button></div>
+    <div class="favorites-row" aria-label="Deine Favoriten">
+      <div id="favorite-quick" class="favorite-quick"><span class="favorite-glow" aria-hidden="true">★</span><span><small>DEIN LIEBLINGSCLUB</small><strong id="favorite-quick-name">Noch keinen Club gewählt</strong></span><button id="favorite-quick-open" type="button" class="favorite-quick-open">Club suchen ↗</button></div>
+      <div id="favorite-player-quick" class="favorite-quick favorite-player-quick"><span class="favorite-glow" aria-hidden="true">☆</span><span><small>DEIN LIEBLINGSSPIELER</small><strong id="favorite-player-quick-name">Noch keinen Spieler gewählt</strong><small id="favorite-player-quick-club" class="favorite-player-club">Wähle ihn im Kader aus</small></span><button id="favorite-player-quick-open" type="button" class="favorite-quick-open">Spieler suchen ↗</button></div>
+    </div>
     <div class="below-search"><span>✓ Echte EA-Daten</span><span>✓ Kein Login</span><span>✓ PS5 · Xbox Series · PC</span></div>
     <p id="status" class="signal hidden" role="status" aria-live="polite"></p>
   </section>
@@ -233,7 +253,7 @@
   </section>
 </main>
 <footer class="footer wrap">FC27 STATS · Unabhängiges Fanprojekt, keine Verbindung zu Electronic Arts. EA-Daten können verzögert oder vorübergehend nicht verfügbar sein.</footer>
-<div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div class="modal-actions"><button id="save-player-button" type="button" class="button secondary sm">☆ Als „Mein Spieler“ merken</button><button id="share-player-button" type="button" class="button sm">↗ Spielerkarte erstellen</button></div></div></div>
+<div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div class="modal-actions"><button id="save-player-button" type="button" class="button secondary sm">☆ Als „Mein Spieler“ merken</button><button id="favorite-player-button" type="button" class="button secondary sm favorite-btn" aria-pressed="false">☆ Als Lieblingsspieler speichern</button><button id="share-player-button" type="button" class="button sm">↗ Spielerkarte erstellen</button></div></div></div>
 <div id="card-overlay" class="card-overlay hidden" role="presentation">
   <div class="card-dialog" role="dialog" aria-modal="true" aria-labelledby="card-title">
     <div class="modal-head"><div><div class="label">// FC27 STATS · PLAYER CARD</div><h2 id="card-title">Deine Spielerkarte</h2><p class="muted" style="margin:0;font-size:13px">Saisonstatistiken als Bild speichern oder teilen.</p></div><button type="button" id="card-close" class="x" aria-label="Spielerkarte schließen">×</button></div>
@@ -284,6 +304,7 @@ const $ = s => document.querySelector(s);
 let clubData = null, sortKey = 'goals', busy = false, searchMode = 'club', openedPlayer = null;
 const MY_PLAYER_KEY = 'fc27stats.my-player.v1';
 const FAVORITE_CLUB_KEY = 'fc27stats.favorite-club.v1';
+const FAVORITE_PLAYER_KEY = 'fc27stats.favorite-player.v1';
 for(const [previous,current] of [['clubpulse.my-player.v1',MY_PLAYER_KEY],['clubpulse.recent-clubs.v1','fc27stats.recent-clubs.v1']]){try{if(!localStorage.getItem(current) && localStorage.getItem(previous))localStorage.setItem(current,localStorage.getItem(previous))}catch{}}
 const RECENT_CLUBS_KEY = 'fc27stats.recent-clubs.v1';
 function recentClubIds(){try{return (JSON.parse(localStorage.getItem(RECENT_CLUBS_KEY)||'[]')||[]).filter(id=>/^\d{1,20}$/.test(String(id))).slice(0,10)}catch{return []}}
@@ -294,8 +315,35 @@ function updateFavoriteClub(){
  const btn=$('#favorite-club-button');
  if(clubData){const active=favorite&&String(favorite.id)===String(clubData.id);btn.textContent=active?'★ Lieblingsclub':'☆ Als Lieblingsclub speichern';btn.setAttribute('aria-pressed',String(!!active));}
  const quick=$('#favorite-quick');const named=$('#favorite-quick-name');
- quick.classList.toggle('hidden',!favorite);if(favorite)named.textContent=favorite.name||'Lieblingsclub';
+ named.textContent=favorite?(favorite.name||'Lieblingsclub'):'Noch keinen Club gewählt';
+ $('#favorite-quick-open').textContent=favorite?'Club öffnen ↗':'Club suchen ↗';
  const item=$('#menu-favorite');item.classList.toggle('hidden',!favorite);
+}
+function readFavoritePlayer(){try{const v=JSON.parse(localStorage.getItem(FAVORITE_PLAYER_KEY)||'null');return v&&/^\d{1,20}$/.test(String(v.clubId))&&typeof v.name==='string'&&v.name.trim()?v:null}catch{return null}}
+function updateFavoritePlayer(){
+ const favorite=readFavoritePlayer();
+ $('#favorite-player-quick-name').textContent=favorite?favorite.name:'Noch keinen Spieler gewählt';
+ $('#favorite-player-quick-club').textContent=favorite?(favorite.clubName||'Gespeicherter Club'):'Wähle ihn im Kader aus';
+ $('#favorite-player-quick-open').textContent=favorite?'Profil öffnen ↗':'Spieler suchen ↗';
+ const btn=$('#favorite-player-button');
+ if(btn&&openedPlayer&&clubData){
+   const selected=!!favorite&&String(favorite.clubId)===String(clubData.id)&&favorite.name.toLowerCase()===String(openedPlayer.name||'').toLowerCase();
+   btn.textContent=selected?'★ Lieblingsspieler entfernen':'☆ Als Lieblingsspieler speichern';
+   btn.setAttribute('aria-pressed',String(selected));
+ }
+}
+function toggleFavoritePlayer(){
+ if(!openedPlayer||!clubData)return;
+ try{
+  const saved=readFavoritePlayer();
+  if(saved&&String(saved.clubId)===String(clubData.id)&&saved.name.toLowerCase()===String(openedPlayer.name||'').toLowerCase()){
+   localStorage.removeItem(FAVORITE_PLAYER_KEY);notify('Lieblingsspieler entfernt.');
+  }else{
+   localStorage.setItem(FAVORITE_PLAYER_KEY,JSON.stringify({clubId:String(clubData.id),name:String(openedPlayer.name),clubName:String(clubData.name||'Club')}));
+   notify('Dein Lieblingsspieler wurde gespeichert.');
+  }
+  updateFavoritePlayer();
+ }catch{notify('Browser-Speicherung ist nicht verfügbar.',true)}
 }
 function toggleFavoriteClub(){if(!clubData)return;try{
  const previous=readFavoriteClub();if(previous&&String(previous.id)===String(clubData.id)){localStorage.removeItem(FAVORITE_CLUB_KEY);notify('Lieblingsclub entfernt.');}
@@ -390,6 +438,8 @@ async function searchPlayer(tag){
    const ids=recentClubIds();
    const saved=readMyPlayer();
    if(saved?.clubId&&!ids.includes(String(saved.clubId)))ids.unshift(String(saved.clubId));
+   const favoritePlayer=readFavoritePlayer();
+   if(favoritePlayer?.clubId&&!ids.includes(String(favoritePlayer.clubId)))ids.unshift(String(favoritePlayer.clubId));
    const data=await api('/api/player?q='+encodeURIComponent(tag)+'&ids='+encodeURIComponent(ids.slice(0,10).join(',')));
    const players=data.players||[];const container=$('#results');container.replaceChildren();
    $('#results-title').textContent='Spieler auswählen';
@@ -468,12 +518,14 @@ function openPlayer(p){openedPlayer=p;const name=p.name||'Unbekannter Spieler';
  $('#modal-title').textContent=name;$('#modal-desc').textContent=[p.proName||null,posText[p.favoritePosition]||p.favoritePosition||null,p.proOverall?'OVR '+p.proOverall:null].filter(Boolean).join(' · ');
  const m=(label,v)=>`<div class="mini-metric"><small>${esc(label)}</small><strong>${esc(disp(v))}</strong></div>`;
  $('#modal-content').innerHTML=`<div class="section-sub">Aktuelle Saison</div><div class="player-grid">${m('Spiele',p.gamesPlayed)}${m('Tore',p.goals)}${m('Assists',p.assists)}${m('Bewertung',p.ratingAve===undefined?'–':dec(p.ratingAve))}${m('Man of the Match',p.manOfTheMatch)}${m('Passquote %',p.passSuccessRate)}</div><div class="section-sub">Karriere in diesem Club</div><div class="player-grid">${m('Spiele',career.gamesPlayed)}${m('Tore',career.goals)}${m('Assists',career.assists)}${m('Bewertung',career.ratingAve===undefined?'–':dec(career.ratingAve))}${m('Man of the Match',career.manOfTheMatch)}${m('Position',posText[career.favoritePosition]||career.favoritePosition||'–')}</div><p class="note">Die Werte werden von EA geliefert und können von der Anzeige im Spiel abweichen.</p>`;
+ updateFavoritePlayer();
  $('#overlay').classList.remove('hidden');$('#close-modal').focus();
 }
 $('#search-form').addEventListener('submit',e=>{e.preventDefault();searchClub($('#club-input').value)});
 $('#player-search-form').addEventListener('submit',e=>{e.preventDefault();searchPlayer($('#player-input').value)});
 $('#tab-club').addEventListener('click',()=>setSearchMode('club'));
 $('#tab-player').addEventListener('click',()=>setSearchMode('player'));
+$('#favorite-player-button').addEventListener('click',toggleFavoritePlayer);
 $('#save-player-button').addEventListener('click',()=>{if(!clubData||!openedPlayer)return;try{
   localStorage.setItem(MY_PLAYER_KEY,JSON.stringify({clubId:clubData.id,name:openedPlayer.name}));
   $('#save-player-button').textContent='✓ Als „Mein Spieler“ gespeichert';updateMyPlayerButton();
@@ -481,9 +533,11 @@ $('#save-player-button').addEventListener('click',()=>{if(!clubData||!openedPlay
 $('#my-player-button').addEventListener('click',()=>{const saved=readMyPlayer();if(saved?.clubId&&saved?.name){setSearchMode('club');loadClub(saved.clubId,saved.name)}});
 updateMyPlayerButton();
 $('#favorite-club-button').addEventListener('click',toggleFavoriteClub);
-$('#favorite-quick-open').addEventListener('click',()=>{const f=readFavoriteClub();if(f){setSearchMode('club');loadClub(f.id)}});
+$('#favorite-quick-open').addEventListener('click',()=>{const f=readFavoriteClub();setSearchMode('club');if(f){loadClub(f.id)}else{$('#club-input').focus()}});
+$('#favorite-player-quick-open').addEventListener('click',()=>{const f=readFavoritePlayer();if(f){setSearchMode('club');loadClub(f.clubId,f.name)}else{setSearchMode('player');$('#player-input').focus()}});
 $('#menu-favorite').addEventListener('click',()=>{toggleMenu(false);const f=readFavoriteClub();if(f){setSearchMode('club');loadClub(f.id)}});
 updateFavoriteClub();
+updateFavoritePlayer();
 $('#leader-category').addEventListener('change',renderTopPlayers);
 $('#sort-select').addEventListener('change',e=>{sortKey=e.target.value;renderPlayers()});
 $('#player-filter').addEventListener('input',renderPlayers);
