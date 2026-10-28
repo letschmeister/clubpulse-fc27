@@ -4,10 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="CLUBPULSE: EA FC 27 Clubs-Statistiken für Vereine und Spieler.">
+  <meta name="apple-mobile-web-app-title" content="FC27 STATS">
+  <meta name="theme-color" content="#0c0e12">
+  <meta name="description" content="FC27 STATS: EA FC 27 Clubs-Statistiken für Vereine und Spieler.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <title>CLUBPULSE — FC 27 Clubs Tracker</title>
+  <title>FC27 STATS — FC 27 Clubs Tracker</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
     :root{--bg:#0c0e12;--panel:#151820;--panel2:#1b1f28;--stroke:#2d323b;--main:#e9eef5;--muted:#929aa7;--accent:#c7f767;--accent2:#a2d542;--red:#fc8181;--yellow:#ffce7a;--green:#73e5a0;--radius:18px}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--main);background:radial-gradient(ellipse 50% 25% at 50% -7%,#24321b 0%,transparent 90%),var(--bg);font-family:'DM Sans',system-ui,Arial,sans-serif;line-height:1.5;min-height:100vh}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:not-allowed}a{color:var(--accent)}.wrap{width:min(1160px,calc(100% - 44px));margin:auto}.hidden{display:none!important}
     .topbar{height:86px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #20242a}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--main);font-family:'Space Grotesk',system-ui,Arial,sans-serif;letter-spacing:-1.1px;font-size:25px;font-weight:800}.mark{width:37px;height:37px;background:var(--accent);border-radius:11px;display:grid;place-items:center;color:#151a10;font-weight:900;font-size:23px;transform:rotate(-6deg)}.brand span{color:var(--accent)}.brand .mark{color:#151a10}.topright{display:flex;align-items:center;gap:15px}.tag{display:inline-flex;align-items:center;gap:9px;padding:7px 12px;border:1px solid #333a31;border-radius:30px;font-size:11px;letter-spacing:1.2px;font-weight:800;color:#cfe8aa}.dot{width:7px;height:7px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px #c7f76766}.muted{color:var(--muted)}.topright a{color:#d3d7dc;text-decoration:none;font-size:13px;font-weight:700}
@@ -23,7 +27,7 @@
     .search-explainer{max-width:740px;margin:13px auto 0!important;font-size:12px!important;color:#9ba5af!important}
     .section{margin:0 0 35px}.label{font-size:11px;letter-spacing:2.1px;color:var(--accent);font-weight:800;text-transform:uppercase;margin-bottom:12px}.section-head{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px}.section-head h2{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:24px;letter-spacing:-.7px;margin:0}.section-head p{margin:4px 0 0;font-size:13px;color:var(--muted)}.panel{border:1px solid var(--stroke);border-radius:var(--radius);background:linear-gradient(145deg,#191e25,#14171d);overflow:hidden}
     .results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.result{border:1px solid var(--stroke);border-radius:15px;background:#171b22;color:inherit;text-align:left;padding:18px;display:flex;align-items:center;gap:15px}.result:hover{border-color:var(--accent);background:#1b241b}.result-logo{width:47px;height:47px;display:grid;place-items:center;flex-shrink:0;border-radius:13px;background:#2c3520;color:var(--accent);font-weight:800;font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:20px}.result-main{min-width:0;flex:1}.result-main strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.result-main small{color:var(--muted);font-size:12px}.result-arrow{color:var(--accent);font-size:21px}
-    .club-heading{padding:23px 25px;display:flex;gap:18px;align-items:center;justify-content:space-between}.club-left{display:flex;align-items:center;gap:16px;min-width:0}.crest{display:grid;place-items:center;background:linear-gradient(145deg,#343d29,#242d22);border:1px solid #526343;width:72px;height:76px;border-radius:18px;color:var(--accent);font-weight:800;font-size:27px;font-family:'Space Grotesk',system-ui,Arial,sans-serif;flex-shrink:0;clip-path:polygon(50% 0%,95% 15%,95% 80%,50% 100%,5% 80%,5% 15%)}.club-heading h2{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:clamp(22px,3.8vw,34px);letter-spacing:-1.2px;line-height:1.2;margin:4px 0}.club-heading small{color:var(--muted)}.division-current{display:inline-flex;align-items:center;gap:8px;border:1px solid #506f35;background:#26341e;color:#d3fb8b;font-size:12px;font-weight:800;border-radius:999px;padding:7px 12px;margin:2px 0 7px}.division-current.unknown{background:#242830;border-color:#3b414b;color:#aeb8c3}.division-current .division-dot{height:7px;width:7px;border-radius:50%;background:currentColor}.club-right{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.club-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:15px}.metric{padding:21px 19px;min-height:115px}.metric .name{font-size:12px;font-weight:700;color:#a4acb7;margin-bottom:10px}.metric .value{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:700;letter-spacing:-1.2px;font-size:35px;line-height:1.1}.metric .extra{font-size:11px;color:#7e8994;margin-top:7px}.metric .value.accent{color:var(--accent)}
+    .club-heading{padding:23px 25px;display:flex;gap:18px;align-items:center;justify-content:space-between}.club-left{display:flex;align-items:center;gap:16px;min-width:0}.crest{display:grid;place-items:center;background:linear-gradient(145deg,#343d29,#242d22);border:1px solid #526343;width:72px;height:76px;border-radius:18px;color:var(--accent);font-weight:800;font-size:27px;font-family:'Space Grotesk',system-ui,Arial,sans-serif;flex-shrink:0;clip-path:polygon(50% 0%,95% 15%,95% 80%,50% 100%,5% 80%,5% 15%)}.club-heading h2{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-size:clamp(22px,3.8vw,34px);letter-spacing:-1.2px;line-height:1.2;margin:4px 0}.club-heading small{color:var(--muted)}.club-right{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}.club-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:15px}.metric{padding:21px 19px;min-height:115px}.metric .name{font-size:12px;font-weight:700;color:#a4acb7;margin-bottom:10px}.metric .value{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:700;letter-spacing:-1.2px;font-size:35px;line-height:1.1}.metric .extra{font-size:11px;color:#7e8994;margin-top:7px}.metric .value.accent{color:var(--accent)}
     .two-col{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.inner{padding:23px}.bar-stack{height:12px;background:#31363d;display:flex;overflow:hidden;border-radius:9px;gap:2px;margin:26px 0 11px}.bar-stack>span{transition:width .2s}.bar-win{background:var(--green)}.bar-draw{background:var(--yellow)}.bar-loss{background:var(--red)}.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#aab1bb}.legend b{color:#e6eaf0}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}.form-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:21px}.form-cell{height:31px;min-width:31px;display:grid;place-items:center;border-radius:8px;font-size:12px;font-weight:900}.form-cell.W{background:#23553f;color:#7ce6a4}.form-cell.D{background:#605138;color:#ffd07a}.form-cell.L{background:#5b3333;color:#ffa5a5}.empty{font-size:13px;color:var(--muted);padding:18px 0}.note{font-size:12px;color:var(--muted);margin-top:13px}
     .player-filters{display:flex;gap:9px;align-items:center}.filter{background:#1c222a;color:#e7e9ed;border:1px solid #39414a;border-radius:10px;padding:10px 12px;outline:0;min-width:185px;max-width:100%}select.filter{min-width:150px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th{text-align:left;color:#919ba6;text-transform:uppercase;letter-spacing:1px;font-size:10px;font-weight:800;border-bottom:1px solid #303641;padding:16px 19px;cursor:pointer;user-select:none}th:hover{color:var(--accent)}td{padding:15px 19px;border-bottom:1px solid #292f37;font-size:13px}tr:last-child td{border-bottom:0}tbody tr{cursor:pointer}tbody tr:hover{background:#202720}.player-name{font-weight:800;display:flex;align-items:center;gap:11px}.avatar{width:33px;height:33px;border-radius:10px;background:#34412a;color:var(--accent);font-weight:900;display:grid;place-items:center;flex-shrink:0}.pos{font-size:10px;letter-spacing:.8px;padding:5px 8px;border-radius:6px;background:#303840;color:#e2e8ea}.good{color:var(--accent);font-weight:800}
     .matches{display:flex;flex-direction:column}.match{padding:13px 20px;border-bottom:1px solid #2b3139;display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:16px}.match:last-child{border:0}.match-result{height:30px;width:30px;display:grid;place-items:center;border-radius:9px;font-size:12px;font-weight:800}.match-result.W{background:#214734;color:#7be39e}.match-result.L{background:#4d2e30;color:#ffa1a1}.match-result.D{background:#5c4d2f;color:#f7d282}.match strong{font-size:13px}.match small{font-size:11px;color:#7e8792}.match-score{font-family:'Space Grotesk',system-ui,Arial,sans-serif;font-weight:800;font-size:18px}.match-date{font-size:11px;color:#8c959e;min-width:83px;text-align:right}.footer{text-align:center;border-top:1px solid #242931;color:#7e8792;font-size:12px;margin-top:60px;padding:28px 0 40px}
@@ -110,6 +114,28 @@
     .admin-item button:hover{border-color:var(--accent)}
     .admin-hint{font-size:12px;color:#9eabb4;line-height:1.5}
     @media(max-width:600px){.admin-entry span{display:none}.admin-dialog{padding:18px}.admin-fields-two{grid-template-columns:1fr}.admin-item{align-items:flex-start}.admin-actions{flex-direction:column;align-items:stretch}.admin-actions .button{width:100%}}
+
+    /* FC27 STATS v2 — visuelles Upgrade */
+    :root{--bg:#090e14;--panel:#141d23;--panel2:#1a252b;--stroke:#2d3a3e;--main:#f0f9f2;--muted:#9fb1b1;--accent:#ccfc70;--accent2:#9cde5e;--radius:20px}
+    body{background:radial-gradient(ellipse 55% 22% at 50% -3%,#294c35 0%,transparent 100%),linear-gradient(115deg,#0c1419,#090d13 55%,#10191a);background-attachment:fixed}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.14;z-index:-1;background-image:linear-gradient(#7de18a10 1px,transparent 1px),linear-gradient(90deg,#7de18a10 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,#000,transparent 76%)}
+    .wrap{width:min(1200px,calc(100% - 48px))}.topbar{border-color:#2c4137}.brand{font-size:23px;letter-spacing:-1.2px}.mark{width:39px;height:39px;font-size:17px;border-radius:12px;transform:rotate(-5deg);box-shadow:0 6px 24px #baff5d34}
+    .hero{padding:91px 0 66px;isolation:isolate}.hero::before{content:'';position:absolute;width:min(820px,110vw);height:390px;top:27px;left:50%;transform:translateX(-50%);z-index:-1;border-radius:50%;background:radial-gradient(ellipse at center,#86d65d26 0%,#55b3730b 36%,transparent 72%);filter:blur(4px);animation:hero-halo 9s ease-in-out infinite alternate}
+    .hero h1{font-size:clamp(48px,7.5vw,91px);letter-spacing:-.073em;line-height:1.04;text-wrap:balance}.hero h1 em{background:linear-gradient(110deg,#ecffae 0%,#c7f86c 48%,#78e4a1 98%);background-clip:text;color:transparent}.hero-crest{font-size:.42em;color:#c8ff71;display:inline-block;vertical-align:top;animation:twinkle 4s ease-in-out infinite}
+    .hero p{max-width:630px;color:#afc3bb}.eyebrow{display:inline-flex;align-items:center;gap:10px;letter-spacing:2.5px}.eyebrow-pulse{width:9px;height:9px;background:var(--accent);border-radius:50%;box-shadow:0 0 0 5px #c7fa6120,0 0 20px #c7fa61aa;animation:pulse-ring 2.5s infinite}
+    .search-box{max-width:820px;background:#141f22df;backdrop-filter:blur(18px);border:1px solid #567448;box-shadow:0 18px 55px #0006,0 0 38px #d0ff6613}.search-box:focus-within{border-color:#c9fa76;box-shadow:0 22px 60px #0008,0 0 0 3px #c8fa7021}.button{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s,filter .2s}.button:hover{box-shadow:0 9px 25px #b3fc6230;transform:translateY(-2px)}.button:active{transform:translateY(0)}.button:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #ccff70;outline-offset:3px}
+    .panel{background:linear-gradient(145deg,#1a2529,#111a20);border-color:#324241;box-shadow:0 12px 40px #01070838}.result,.leader-card,.feat{transition:transform .23s,box-shadow .23s,border-color .23s}.result:hover,.feat:hover{transform:translateY(-3px);box-shadow:0 18px 40px #050e1366}.metric{position:relative}.metric::after{content:'';position:absolute;top:0;left:18px;right:18px;height:2px;background:linear-gradient(90deg,transparent,#d3f68c33,transparent)}.metric:hover{background:#1c2924}.crest{box-shadow:0 10px 26px #ccf96618}.section-head h2{letter-spacing:-1.1px;font-size:clamp(23px,3vw,30px)}.heading-flair{color:#c6ff77}.section{margin-bottom:44px}
+    .favorite-btn{background:#202b25;border:1px solid #536044;color:#d9fbb0}.favorite-btn[aria-pressed=true]{background:#ccfc70;color:#162110;border-color:var(--accent)}
+    .favorite-quick{margin:22px auto 0;max-width:615px;padding:11px 12px 11px 17px;background:linear-gradient(110deg,#233c2b,#182a27);border:1px solid #49734a;border-radius:16px;display:flex;align-items:center;gap:14px;text-align:left;box-shadow:0 13px 38px #0005;animation:slide-in .5s ease both}.favorite-quick .favorite-glow{font-size:26px;color:#d3ff7c}.favorite-quick span:nth-child(2){display:flex;flex-direction:column;flex:1;min-width:0}.favorite-quick small{font-size:9px;font-weight:900;letter-spacing:1.5px;color:#bbd5b4}.favorite-quick strong{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.favorite-quick-open{background:#ccfc70;color:#13200f;border:0;border-radius:10px;padding:11px 15px;font-size:12px;font-weight:900;white-space:nowrap}
+    .leaders-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.leader-card{color:var(--main);text-align:left;position:relative;min-width:0;overflow:hidden;padding:18px;background:linear-gradient(156deg,#1d2c27,#131d24);border:1px solid #344540;border-radius:19px}.leader-card::before{content:'';position:absolute;width:180px;height:180px;right:-100px;top:-110px;border-radius:50%;background:#a7d56921;filter:blur(15px)}.leader-card:hover{transform:translateY(-6px);border-color:#bfff70;box-shadow:0 18px 50px #0008}.leader-card.is-first{background:linear-gradient(150deg,#314830,#182b2a 72%,#142122);border-color:#92b655}.leader-top{display:flex;align-items:center;justify-content:space-between;gap:5px}.leader-rank{font:800 26px 'Space Grotesk',sans-serif;color:#b0cfb1}.is-first .leader-rank{color:#d5ff79}.leader-crown,.leader-position{font-size:8px;letter-spacing:1px;font-weight:900;color:#d4ffa0}.leader-position{color:#95a9a7}.leader-avatar{height:65px;width:65px;margin:21px auto 18px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,#5d8050,#203b39);border:1px solid #8ebf78;color:#f0ffc9;font:800 25px 'Space Grotesk',sans-serif}.is-first .leader-avatar{width:77px;height:77px;margin-top:9px}.leader-name{font-weight:900;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.leader-meta{color:#9fb1ad;font-size:10px;margin-top:2px}.leader-score{font:800 39px 'Space Grotesk',sans-serif;color:#c8fc74;margin-top:16px;line-height:1}.leader-score small{display:block;font:900 10px 'DM Sans',sans-serif;letter-spacing:1.4px;color:#aac3a9;margin-top:8px}
+    .modal-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:20px}.card-overlay{position:fixed;inset:0;z-index:150;background:#050a0bdf;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px}.card-dialog{width:min(520px,100%);max-height:95vh;overflow:auto;border-radius:21px;border:1px solid #52604e;background:#16201f;padding:24px;box-shadow:0 20px 70px #000b}.card-dialog h2{font:800 27px 'Space Grotesk',sans-serif;letter-spacing:-1px;margin:4px 0}.card-dialog canvas{display:block;width:min(100%,315px);height:auto;margin:19px auto;border-radius:12px;box-shadow:0 14px 36px #0008}.toast{position:fixed;right:20px;bottom:22px;z-index:500;max-width:calc(100vw - 32px);border:1px solid #81aa6a;padding:13px 18px;border-radius:13px;box-shadow:0 12px 35px #000b;background:#20352b;color:#e5fcd9;font-weight:700;font-size:13px;opacity:0;transform:translateY(20px);pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translateY(0)}.toast-error{background:#503130;color:#ffe4e4;border-color:#bd7777}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+    .event-card,.player-grid,.results,.club-stats,.leaders-grid,.feat-wrap{animation:rise-in .42s ease-out both}.topbar{animation:slide-in .5s ease-out both}.hero .eyebrow{animation:slide-in .5s ease both}.hero h1{animation:slide-in .62s .1s ease both}.hero>p{animation:slide-in .68s .2s ease both}.search-switch,.hero .search-box{animation:slide-in .65s .28s ease both}
+    @keyframes rise-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes slide-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes hero-halo{from{opacity:.6;transform:translateX(-50%) scale(.93)}to{opacity:1;transform:translateX(-50%) scale(1.06)}}@keyframes pulse-ring{50%{box-shadow:0 0 0 9px #c7fa6105,0 0 28px #c7fa61dd}}@keyframes twinkle{50%{opacity:.5;transform:rotate(20deg) scale(.87)}}
+    @media(max-width:1050px){.leaders-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:640px){.wrap{width:calc(100% - 28px)}.topbar{gap:8px}.brand{font-size:17px;gap:7px}.mark{height:32px;width:32px;font-size:13px}.hero{padding:65px 0 43px}.hero h1{font-size:clamp(41px,10vw,65px)}.leaders-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.leader-card{padding:15px}.leader-card:nth-child(5){grid-column:1/-1}.club-right .button{flex:1}.favorite-quick{gap:9px}.favorite-quick-open{font-size:11px;padding:10px}.topright{gap:6px}.topright .tag{display:none}.modal-actions .button{width:100%}}
+    @media(max-width:380px){.brand{font-size:15px}.menu-text{display:none}.hero h1{font-size:39px}.favorite-quick .favorite-glow{display:none}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
   </style>
 </head>
 <body>
@@ -119,17 +145,18 @@
     <div id="menu-panel" class="menu-panel hidden">
       <button type="button" class="menu-item active" id="menu-home">⌂ <span>Startseite</span></button>
       <button type="button" class="menu-item" id="menu-events">🏆 <span>Events &amp; Termine</span></button>
+      <button type="button" class="menu-item hidden" id="menu-favorite">★ <span>Mein Lieblingsclub</span></button>
       <div class="menu-caption">FC 27 Clubs · unabhängiges Fanprojekt</div>
     </div>
   </nav>
-  <a class="brand" href="/" aria-label="Zur Startseite"><span class="mark">C</span> CLUB<span>PULSE</span></a>
-  <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><button type="button" class="button secondary sm hidden" id="my-player-button" title="Gespeichertes Spielerprofil aufrufen">★ Mein Spieler</button><span class="tag"><span class="dot"></span> EA FC 27 · CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
+  <a class="brand" href="/" aria-label="FC27 STATS – zur Startseite"><span class="mark">27</span> FC27 <span>STATS</span></a>
+  <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><button type="button" class="button secondary sm hidden" id="my-player-button" title="Gespeichertes Spielerprofil aufrufen">★ Mein Spieler</button><span class="tag"><span class="dot"></span> LIVE · FC 27 CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
 </header>
 <main class="wrap">
   <section class="hero" id="hero">
-    <div class="eyebrow">// DEIN CLUB. DEINE ZAHLEN.</div>
-    <h1>Jedes Spiel.<br><em>Jede Statistik.</em></h1>
-    <p>Entdecke die echten EA FC 27 Clubs-Daten deiner Mannschaft. Spieler vergleichen, Tore zählen und die letzten Spiele analysieren.</p>
+    <div class="eyebrow"><span class="eyebrow-pulse"></span> // FC27 STATS · DEIN MATCHCENTER</div>
+    <h1>Dein Club. <span class="hero-crest" aria-hidden="true">✦</span><br><em>Deine Legende.</em></h1>
+    <p>Suche deinen Club, entdecke die besten Spieler und erstelle deine eigene Spielerkarte. Alle Statistiken aus den öffentlich verfügbaren EA-Clubs-Daten.</p>
     <div class="search-switch" role="tablist" aria-label="Suchmodus">
       <button type="button" class="search-tab active" id="tab-club" role="tab" aria-selected="true" aria-controls="search-form">⚽ Clubsuche</button>
       <button type="button" class="search-tab" id="tab-player" role="tab" aria-selected="false" aria-controls="player-search-form">◉ Spielersuche</button>
@@ -144,8 +171,9 @@
         <input id="player-input" type="search" placeholder="Spielername / PSN-ID" aria-label="Spielername oder PSN-Online-ID" minlength="2" maxlength="60" required>
         <button id="player-search-button" type="submit" class="button">Spieler suchen ↗</button>
       </div>
-      <p class="search-explainer">Nur den öffentlichen Gamertag eingeben. CLUBPULSE sucht automatisch in vorgemerkten und bereits besuchten Clubs. Da EA keine weltweite Spielersuche anbietet, werden möglicherweise nicht alle Spieler gefunden. Kein PlayStation-Login – niemals ein Passwort eingeben.</p>
+      <p class="search-explainer">Nur den öffentlichen Gamertag eingeben. FC27 STATS sucht automatisch in vorgemerkten und bereits besuchten Clubs. Da EA keine weltweite Spielersuche anbietet, werden möglicherweise nicht alle Spieler gefunden. Kein PlayStation-Login – niemals ein Passwort eingeben.</p>
     </form>
+    <div id="favorite-quick" class="favorite-quick hidden"><span class="favorite-glow">★</span><span><small>DEIN LIEBLINGSCLUB</small><strong id="favorite-quick-name"></strong></span><button id="favorite-quick-open" type="button" class="favorite-quick-open">Club öffnen ↗</button></div>
     <div class="below-search"><span>✓ Echte EA-Daten</span><span>✓ Kein Login</span><span>✓ PS5 · Xbox Series · PC</span></div>
     <p id="status" class="signal hidden" role="status" aria-live="polite"></p>
   </section>
@@ -156,8 +184,8 @@
   <div id="dashboard" class="hidden">
     <section class="section">
       <div class="label">// CLUB-ÜBERSICHT</div>
-      <div class="panel club-heading"><div class="club-left"><div class="crest" id="club-monogram">FC</div><div><small id="club-subline">EA SPORTS FC 27</small><h2 id="club-title"></h2><div id="division-current" class="division-current unknown" role="status"><span class="division-dot"></span>Aktuelle Liga: Nicht verfügbar</div><div><small id="club-updated"></small></div></div></div>
-        <div class="club-right"><button type="button" class="button secondary sm" id="copy-button">🔗 Link kopieren</button><button type="button" class="button sm" id="refresh-button">↻ Aktualisieren</button></div>
+      <div class="panel club-heading"><div class="club-left"><div class="crest" id="club-monogram">FC</div><div><small id="club-subline">EA SPORTS FC 27</small><h2 id="club-title"></h2><div><small id="club-updated"></small></div></div></div>
+        <div class="club-right"><button type="button" class="button favorite-btn sm" id="favorite-club-button" aria-pressed="false">☆ Als Lieblingsclub speichern</button><button type="button" class="button secondary sm" id="copy-button">🔗 Link kopieren</button><button type="button" class="button sm" id="refresh-button">↻ Aktualisieren</button></div>
       </div>
       <div class="club-stats" id="summary-metrics"></div>
     </section>
@@ -171,6 +199,12 @@
       </div>
       <div class="panel scroll"><table><thead><tr><th data-sort="name">Spieler</th><th data-sort="favoritePosition">Position</th><th data-sort="gamesPlayed">Spiele</th><th data-sort="goals">Tore</th><th data-sort="assists">Assists</th><th data-sort="ratingAve">Bewertung</th><th data-sort="proOverall">OVR</th></tr></thead><tbody id="players-body"></tbody></table></div>
       <p class="note">Spielerstatistiken: aktuelle Saison. Karrierewerte beziehen sich auf den gewählten Club, soweit EA sie liefert.</p>
+    </section>
+    <section class="section top-players-section" id="top-players-section">
+      <div class="section-head"><div><div class="label">// TEAM LEADERBOARD</div><h2>Top-Spieler <span class="heading-flair">✦</span></h2><p>Die Top 5 deines Clubs in der aktuellen Saison – direkt aus den EA-Spielerstatistiken.</p></div>
+      <div class="leader-select"><label for="leader-category" class="sr-only">Rangliste auswählen</label><select id="leader-category" class="filter"><option value="goals">⚽ Tore</option><option value="assists">🎯 Assists</option><option value="gamesPlayed">🎮 Spiele</option><option value="ratingAve">⭐ Bewertung</option></select></div></div>
+      <div id="leaders-grid" class="leaders-grid" aria-live="polite"></div>
+      <p class="note">Die Bewertungsliste berücksichtigt nur Spieler mit mindestens 5 Einsätzen. Bei fehlenden EA-Werten wird keine Rangliste erfunden.</p>
     </section>
     <section class="section">
       <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>Tippe auf ein Ergebnis, um die beteiligten Spieler beider Teams und – falls verfügbar – den Man of the Match zu sehen. EA liefert maximal zehn Ligaspiele.</p></div></div>
@@ -198,11 +232,20 @@
     <div class="feat-wrap"><article class="panel feat"><div class="pic">⚽</div><h3>Club-Performance</h3><p>Siege, Tore, Niederlagen, Skill Rating und den Verlauf der letzten Partien an einem Ort.</p></article><article class="panel feat"><div class="pic">◉</div><h3>Spielervergleich</h3><p>Wer trifft am häufigsten? Wer legt die meisten Tore auf? Vergleiche deinen Kader.</p></article><article class="panel feat"><div class="pic">▥</div><h3>Echte Matchdaten</h3><p>Die Daten werden über eine inoffizielle Schnittstelle aus den EA-Clubs-Statistiken abgerufen.</p></article></div>
   </section>
 </main>
-<footer class="footer wrap">CLUBPULSE · Unabhängiges Fanprojekt, keine Verbindung zu Electronic Arts. EA-Daten können verzögert oder vorübergehend nicht verfügbar sein.</footer>
-<div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div style="display:flex;justify-content:flex-end;margin-top:20px"><button id="save-player-button" type="button" class="button secondary sm">☆ Als „Mein Spieler“ merken</button></div></div></div>
+<footer class="footer wrap">FC27 STATS · Unabhängiges Fanprojekt, keine Verbindung zu Electronic Arts. EA-Daten können verzögert oder vorübergehend nicht verfügbar sein.</footer>
+<div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div class="modal-actions"><button id="save-player-button" type="button" class="button secondary sm">☆ Als „Mein Spieler“ merken</button><button id="share-player-button" type="button" class="button sm">↗ Spielerkarte erstellen</button></div></div></div>
+<div id="card-overlay" class="card-overlay hidden" role="presentation">
+  <div class="card-dialog" role="dialog" aria-modal="true" aria-labelledby="card-title">
+    <div class="modal-head"><div><div class="label">// FC27 STATS · PLAYER CARD</div><h2 id="card-title">Deine Spielerkarte</h2><p class="muted" style="margin:0;font-size:13px">Saisonstatistiken als Bild speichern oder teilen.</p></div><button type="button" id="card-close" class="x" aria-label="Spielerkarte schließen">×</button></div>
+    <canvas id="player-card-canvas" width="900" height="1125" role="img" aria-label="Spielerkarte als Bildvorschau"></canvas>
+    <div class="modal-actions"><button type="button" id="card-download" class="button">↓ PNG herunterladen</button><button type="button" id="card-share" class="button secondary">↗ Teilen</button></div>
+    <p class="note">Die Karte enthält öffentliche EA-Spielerwerte der aktuellen Saison. Sie ist kein offizielles EA-Produkt.</p>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="admin-overlay" class="admin-overlay hidden" role="presentation">
   <div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title">
-    <div class="admin-top"><div><div class="label">// CLUBPULSE · VERWALTUNG</div><h2 id="admin-title">Events verwalten</h2><p>Neue Termine hinzufügen, bestehende ändern oder löschen.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
+    <div class="admin-top"><div><div class="label">// FC27 STATS · VERWALTUNG</div><h2 id="admin-title">Events verwalten</h2><p>Neue Termine hinzufügen, bestehende ändern oder löschen.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
     <div id="admin-login-view">
       <form id="admin-login-form">
         <label class="admin-field">Admin-Passwort<input id="admin-password" type="password" autocomplete="current-password" minlength="1" required placeholder="Dein Admin-Passwort"></label>
@@ -239,10 +282,27 @@
 'use strict';
 const $ = s => document.querySelector(s);
 let clubData = null, sortKey = 'goals', busy = false, searchMode = 'club', openedPlayer = null;
-const MY_PLAYER_KEY = 'clubpulse.my-player.v1';
-const RECENT_CLUBS_KEY = 'clubpulse.recent-clubs.v1';
+const MY_PLAYER_KEY = 'fc27stats.my-player.v1';
+const FAVORITE_CLUB_KEY = 'fc27stats.favorite-club.v1';
+for(const [previous,current] of [['clubpulse.my-player.v1',MY_PLAYER_KEY],['clubpulse.recent-clubs.v1','fc27stats.recent-clubs.v1']]){try{if(!localStorage.getItem(current) && localStorage.getItem(previous))localStorage.setItem(current,localStorage.getItem(previous))}catch{}}
+const RECENT_CLUBS_KEY = 'fc27stats.recent-clubs.v1';
 function recentClubIds(){try{return (JSON.parse(localStorage.getItem(RECENT_CLUBS_KEY)||'[]')||[]).filter(id=>/^\d{1,20}$/.test(String(id))).slice(0,10)}catch{return []}}
 function rememberClubId(id){try{const ids=[String(id),...recentClubIds().filter(x=>String(x)!==String(id))].slice(0,10);localStorage.setItem(RECENT_CLUBS_KEY,JSON.stringify(ids))}catch{}}
+function readFavoriteClub(){try{const v=JSON.parse(localStorage.getItem(FAVORITE_CLUB_KEY)||'null');return v&&/^\d{1,20}$/.test(String(v.id))?v:null}catch{return null}}
+function updateFavoriteClub(){
+ const favorite=readFavoriteClub();
+ const btn=$('#favorite-club-button');
+ if(clubData){const active=favorite&&String(favorite.id)===String(clubData.id);btn.textContent=active?'★ Lieblingsclub':'☆ Als Lieblingsclub speichern';btn.setAttribute('aria-pressed',String(!!active));}
+ const quick=$('#favorite-quick');const named=$('#favorite-quick-name');
+ quick.classList.toggle('hidden',!favorite);if(favorite)named.textContent=favorite.name||'Lieblingsclub';
+ const item=$('#menu-favorite');item.classList.toggle('hidden',!favorite);
+}
+function toggleFavoriteClub(){if(!clubData)return;try{
+ const previous=readFavoriteClub();if(previous&&String(previous.id)===String(clubData.id)){localStorage.removeItem(FAVORITE_CLUB_KEY);notify('Lieblingsclub entfernt.');}
+ else{localStorage.setItem(FAVORITE_CLUB_KEY,JSON.stringify({id:String(clubData.id),name:clubData.name||'Club'}));notify('Dein Lieblingsclub wurde gespeichert.');}
+ updateFavoriteClub();
+ }catch{notify('Browser-Speicherung ist nicht verfügbar.',true)}}
+function notify(message,error=false){const el=$('#toast');el.textContent=message;el.className='toast show'+(error?' toast-error':'');clearTimeout(notify.timeout);notify.timeout=setTimeout(()=>el.classList.remove('show'),3200)}
 function readMyPlayer(){try{return JSON.parse(localStorage.getItem(MY_PLAYER_KEY)||'null')}catch{return null}}
 function updateMyPlayerButton(){const saved=readMyPlayer();$('#my-player-button').classList.toggle('hidden',!saved?.clubId||!saved?.name)}
 const esc = v => String(v ?? '').replace(/[&<>"']/g,ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -348,7 +408,7 @@ async function searchPlayer(tag){
 async function searchClub(name){if(busy)return;setBusy(true);status('Suche Vereinsdaten bei EA …');$('#search-section').classList.add('hidden');clearDashboard();try{
   const data=await api('/api/search?q='+encodeURIComponent(name));const clubs=data.clubs||[];const container=$('#results');container.replaceChildren();$('#results-title').textContent='Clubs auswählen';
   $('#results-hint').textContent=clubs.length?`${clubs.length} passende Clubs gefunden. Wähle den richtigen aus.`:'Keine Treffer. Prüfe die Schreibweise oder suche nach einem kürzeren Teil des Namens.';
-  for(const club of clubs){const button=document.createElement('button');button.type='button';button.className='result';button.innerHTML=`<span class="result-logo">${esc(monogram(club.name))}</span><span class="result-main"><strong>${esc(club.name)}</strong><small>${club.division ? `Division ${esc(club.division)} · `:''}${esc(disp(club.wins))} Siege · ${esc(disp(club.games))} Spiele</small></span><span class="result-arrow">↗</span>`;button.addEventListener('click',()=>loadClub(club.id));container.appendChild(button)}
+  for(const club of clubs){const button=document.createElement('button');button.type='button';button.className='result';button.innerHTML=`<span class="result-logo">${esc(monogram(club.name))}</span><span class="result-main"><strong>${esc(club.name)}</strong><small>${esc(disp(club.wins))} Siege · ${esc(disp(club.games))} Spiele</small></span><span class="result-arrow">↗</span>`;button.addEventListener('click',()=>loadClub(club.id));container.appendChild(button)}
   $('#search-section').classList.remove('hidden');status('');$('#search-section').scrollIntoView({behavior:'smooth',block:'start'});
 }catch(error){status(error.message,'error')}finally{setBusy(false)}}
 async function loadClub(id,playerName=null){if(busy)return;setBusy(true);status('Lade Club, Spieler und Spielverlauf von EA …');$('#search-section').classList.add('hidden');try{
@@ -357,17 +417,27 @@ async function loadClub(id,playerName=null){if(busy)return;setBusy(true);status(
  }catch(error){status(error.message,'error')}finally{setBusy(false)}}
 function metric(label,value,description='',accent=false){return `<div class="panel metric"><div class="name">${esc(label)}</div><div class="value${accent?' accent':''}">${esc(disp(value))}</div><div class="extra">${esc(description)}</div></div>`;}
 function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').classList.remove('hidden');$('#club-title').textContent=data.name||'Unbekannter Club';$('#club-monogram').textContent=monogram(data.name);const s=data.stats||{};
- const division=Number(data.currentDivision);const hasDivision=Number.isInteger(division)&&division>=1&&division<=10&&data.currentDivision!==null&&data.currentDivision!==undefined&&data.currentDivision!=='';
- const divisionEl=$('#division-current');divisionEl.classList.toggle('unknown',!hasDivision);
- divisionEl.replaceChildren();const dot=document.createElement('span');dot.className='division-dot';divisionEl.append(dot,document.createTextNode(hasDivision?'Aktuelle Liga: Division '+division:'Aktuelle Liga: Nicht verfügbar'));
- $('#club-subline').textContent=[s.bestDivision?'Beste Division '+s.bestDivision:null,data.stadium||null,'Club-ID '+data.id].filter(Boolean).join(' · ');
+ $('#club-subline').textContent=[data.stadium||null,'Club-ID '+data.id].filter(Boolean).join(' · ');
  $('#club-updated').textContent='Abgerufen: '+new Date(data.updated*1000).toLocaleString('de-AT');
  $('#summary-metrics').innerHTML=[metric('Spiele',s.gamesPlayed,'Ligaspiele'),metric('Siege',s.wins,'Gewonnene Partien',true),metric('Unentschieden',s.ties,'Remis'),metric('Niederlagen',s.losses,'Verlorene Partien'),metric('Tore',s.goals,'Erzielte Tore',true),metric('Gegentore',s.goalsAgainst,'Kassierte Tore'),metric('Skill Rating',s.skillRating,'EA Skill-Bewertung',true),metric('Tordifferenz', num(s.goals)-num(s.goalsAgainst),'Tore minus Gegentore')].join('');
  const total=num(s.wins)+num(s.losses)+num(s.ties);const percent = n=>total?100*num(n)/total:0;
  $('#performance').innerHTML=`<div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 38px 'Space Grotesk';color:var(--accent)">${total?Math.round(percent(s.wins))+'%':'–'}</span><span class="muted" style="font-size:13px">Siegquote</span></div><div class="bar-stack"><span class="bar-win" style="width:${percent(s.wins)}%"></span><span class="bar-draw" style="width:${percent(s.ties)}%"></span><span class="bar-loss" style="width:${percent(s.losses)}%"></span></div><div class="legend"><span><i style="background:var(--green)"></i> Siege <b>${esc(disp(s.wins))}</b></span><span><i style="background:var(--yellow)"></i> Remis <b>${esc(disp(s.ties))}</b></span><span><i style="background:var(--red)"></i> Niederlagen <b>${esc(disp(s.losses))}</b></span></div>`;
  const matches=data.matches||[];$('#form-view').innerHTML=matches.length?`<div class="muted" style="font-size:13px">Letzte ${Math.min(10,matches.length)} Ligaspiele</div><div class="form-row">${matches.slice(0,10).map(m=>`<span title="${esc(m.opponent)} (${esc(m.goals)}:${esc(m.against)})" class="form-cell ${esc(m.result)}">${esc(m.result)}</span>`).join('')}</div><div class="note">W = Sieg · D = Unentschieden · L = Niederlage</div>`:'<p class="empty">EA hat keine letzten Ligaspiele geliefert.</p>';
  $('#matches-view').innerHTML=matches.length?matches.map(renderMatch).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
- renderPlayers();
+ renderPlayers();renderTopPlayers();updateFavoriteClub();
+}
+function renderTopPlayers(){
+ const container=$('#leaders-grid');container.replaceChildren();
+ const key=$('#leader-category').value;
+ const members=Array.isArray(clubData?.members)?clubData.members:[];
+ const eligible=members.filter(p=>p?.name && p[key]!==null && p[key]!==undefined && p[key]!=='' && Number.isFinite(Number(p[key])) && (key!=='ratingAve'||num(p.gamesPlayed)>=5));
+ eligible.sort((a,b)=>num(b[key])-num(a[key])||String(a.name).localeCompare(String(b.name),'de'));
+ const data=eligible.slice(0,5);
+ if(!data.length){container.innerHTML='<div class="panel inner empty" style="grid-column:1/-1">EA hat für diese Kategorie keine verwertbaren Spielerwerte geliefert.</div>';return;}
+ const unit={goals:'TORE',assists:'ASSISTS',gamesPlayed:'SPIELE',ratingAve:'BEWERTUNG'}[key];
+ data.forEach((p,index)=>{const button=document.createElement('button');button.type='button';button.className='leader-card'+(index===0?' is-first':'');
+ button.innerHTML=`<div class="leader-top"><span class="leader-rank">${String(index+1).padStart(2,'0')}</span>${index===0?'<span class="leader-crown">✦ TOP PLAYER</span>':'<span class="leader-position">'+esc(posText[p.favoritePosition]||p.favoritePosition||'CLUB')+'</span>'}</div><div class="leader-avatar">${esc(monogram(p.name))}</div><div class="leader-name">${esc(p.name)}</div><div class="leader-meta">${esc(posText[p.favoritePosition]||p.favoritePosition||'Spieler')}</div><div class="leader-score">${esc(key==='ratingAve'?dec(p[key]):disp(p[key]))}<small>${unit}</small></div>`;
+ button.addEventListener('click',()=>openPlayer(p));container.appendChild(button)})
 }
 function renderMatchSquad(players, teamName, isOwn, motmSide, motmIndex){
  const list=Array.isArray(players)?players:[];
@@ -410,12 +480,53 @@ $('#save-player-button').addEventListener('click',()=>{if(!clubData||!openedPlay
  }catch{status('Das Speichern ist in diesem Browser nicht möglich.','error')}});
 $('#my-player-button').addEventListener('click',()=>{const saved=readMyPlayer();if(saved?.clubId&&saved?.name){setSearchMode('club');loadClub(saved.clubId,saved.name)}});
 updateMyPlayerButton();
+$('#favorite-club-button').addEventListener('click',toggleFavoriteClub);
+$('#favorite-quick-open').addEventListener('click',()=>{const f=readFavoriteClub();if(f){setSearchMode('club');loadClub(f.id)}});
+$('#menu-favorite').addEventListener('click',()=>{toggleMenu(false);const f=readFavoriteClub();if(f){setSearchMode('club');loadClub(f.id)}});
+updateFavoriteClub();
+$('#leader-category').addEventListener('change',renderTopPlayers);
 $('#sort-select').addEventListener('change',e=>{sortKey=e.target.value;renderPlayers()});
 $('#player-filter').addEventListener('input',renderPlayers);
 document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{sortKey=th.dataset.sort;$('#sort-select').value=['name','goals','assists','gamesPlayed','ratingAve'].includes(sortKey)?sortKey:'goals';renderPlayers()}));
 $('#refresh-button').addEventListener('click',()=>{if(clubData)loadClub(clubData.id)});
 $('#copy-button').addEventListener('click',async()=>{if(!clubData)return;const url=new URL(location.href);url.searchParams.set('club',clubData.id);try{await navigator.clipboard.writeText(url.toString());$('#copy-button').textContent='✓ Kopiert';setTimeout(()=>$('#copy-button').textContent='🔗 Link kopieren',1700)}catch{window.prompt('Link kopieren:',url.toString())}});
-const closeModal=()=>$('#overlay').classList.add('hidden');$('#close-modal').addEventListener('click',closeModal);$('#overlay').addEventListener('click',e=>{if(e.target===$('#overlay'))closeModal()});window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+const closeModal=()=>{$('#overlay').classList.add('hidden')};$('#close-modal').addEventListener('click',closeModal);$('#overlay').addEventListener('click',e=>{if(e.target===$('#overlay'))closeModal()});window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#card-overlay').classList.add('hidden')}});
+// Spielerkarte: Canvas wird aus tatsächlich geladenen EA-Saisondaten erzeugt.
+function cardRound(ctx,x,y,w,h,r,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+function drawCard(){
+ if(!openedPlayer||!clubData)return;
+ const p=openedPlayer,canvas=$('#player-card-canvas'),ctx=canvas.getContext('2d');
+ if(!ctx)return;
+ const W=canvas.width,H=canvas.height;
+ ctx.fillStyle='#090f16';ctx.fillRect(0,0,W,H);
+ const light=ctx.createRadialGradient(650,200,15,650,200,700);light.addColorStop(0,'#345c39');light.addColorStop(.48,'#163126');light.addColorStop(1,'#090f16');ctx.fillStyle=light;ctx.fillRect(0,0,W,H);
+ ctx.save();ctx.translate(680,300);ctx.rotate(-.3);for(let i=0;i<7;i++){ctx.strokeStyle=`rgba(197,255,112,${.035+i*.018})`;ctx.lineWidth=2;ctx.strokeRect(-360-i*30,-350-i*30,690+i*60,810+i*60)}ctx.restore();
+ ctx.strokeStyle='#aaf665';ctx.lineWidth=3;ctx.strokeRect(30,30,W-60,H-60);
+ ctx.fillStyle='#caff6b';ctx.font='900 38px system-ui,Arial';ctx.fillText('FC27',75,110);ctx.fillStyle='#edf5ee';ctx.fillText(' STATS',192,110);
+ ctx.textAlign='right';ctx.fillStyle='#b4c7b3';ctx.font='700 22px system-ui,Arial';ctx.fillText('PLAYER CARD  /  2026–27',W-75,105);ctx.textAlign='left';
+ cardRound(ctx,75,162,750,8,4,'#caff6b');
+ ctx.fillStyle='#caff6b';ctx.font='800 21px system-ui,Arial';ctx.fillText('EA FC 27 CLUBS · SAISONSTATISTIK',75,232);
+ const name=String(p.name||'UNBEKANNT');let fs=84;ctx.font=`900 ${fs}px system-ui,Arial`;while(ctx.measureText(name).width>730&&fs>34){fs-=3;ctx.font=`900 ${fs}px system-ui,Arial`}
+ ctx.fillStyle='#f7fff4';ctx.fillText(name,75,358);
+ ctx.fillStyle='#a7bfa5';ctx.font='700 30px system-ui,Arial';let club=String(clubData.name||'Club');if(club.length>35)club=club.slice(0,32)+'…';ctx.fillText(club,75,405);
+ ctx.fillStyle='#d6edb3';ctx.font='800 23px system-ui,Arial';ctx.fillText((posText[p.favoritePosition]||p.favoritePosition||'SPIELER').toUpperCase(),75,461);
+ cardRound(ctx,75,510,750,1,0,'#59745a');
+ const metrics=[['SPIELE',p.gamesPlayed],['TORE',p.goals],['ASSISTS',p.assists],['BEWERTUNG',p.ratingAve===undefined?null:p.ratingAve]];
+ metrics.forEach(([label,val],i)=>{const x=75+(i%2)*380,y=555+Math.floor(i/2)*186;cardRound(ctx,x,y,355,165,18,'#172a24');ctx.fillStyle='#a6c3a1';ctx.font='700 22px system-ui,Arial';ctx.fillText(label,x+26,y+41);ctx.fillStyle=i===1?'#caff6b':'#f4fff0';ctx.font='900 70px system-ui,Arial';const value=val===null||val===undefined||val===''?'–':label==='BEWERTUNG'?dec(val):disp(val);ctx.fillText(String(value),x+26,y+125)});
+ ctx.fillStyle='#caff6b';ctx.font='900 28px system-ui,Arial';ctx.fillText('PLAY YOUR STORY.',75,1014);
+ ctx.fillStyle='#91a394';ctx.font='600 18px system-ui,Arial';ctx.fillText('Fanprojekt · Inoffizielle EA-Clubs-Statistiken',75,1050);
+ ctx.textAlign='right';ctx.fillStyle='#b6cdb5';ctx.fillText('FC27 STATS',W-75,1050);ctx.textAlign='left';
+}
+function openPlayerCard(){if(!openedPlayer||!clubData)return;$('#card-overlay').classList.remove('hidden');drawCard();$('#card-close').focus()}
+function getCardBlob(){return new Promise(resolve=>$('#player-card-canvas').toBlob(resolve,'image/png'))}
+function cardFilename(){return 'FC27-STATS-'+String(openedPlayer?.name||'Spieler').replace(/[^\w-]/g,'-').slice(0,36)+'.png'}
+$('#share-player-button').addEventListener('click',openPlayerCard);
+$('#card-close').addEventListener('click',()=>$('#card-overlay').classList.add('hidden'));
+$('#card-overlay').addEventListener('click',e=>{if(e.target===$('#card-overlay'))$('#card-overlay').classList.add('hidden')});
+$('#card-download').addEventListener('click',async()=>{const blob=await getCardBlob();if(!blob)return notify('Die Bilddatei konnte nicht erzeugt werden.',true);const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=cardFilename();document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);notify('Spielerkarte als PNG gespeichert.')});
+$('#card-share').addEventListener('click',async()=>{const blob=await getCardBlob();if(!blob)return notify('Die Karte konnte nicht erzeugt werden.',true);const f=new File([blob],cardFilename(),{type:'image/png'});
+ try{if(navigator.canShare?.({files:[f]})&&navigator.share){await navigator.share({title:'Meine FC27 STATS Spielerkarte',files:[f]});return;}if(navigator.clipboard?.write&&window.ClipboardItem){await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);notify('Spielerkarte kopiert. Jetzt kannst du sie einfügen.');return;}notify('Auf diesem Gerät: Bitte „PNG herunterladen“ auswählen.');}catch(e){if(e.name!=='AbortError')notify('Teilen nicht möglich – nutze PNG herunterladen.',true)}
+});
 const startParams=new URLSearchParams(location.search);const startClub=startParams.get('club');if(startParams.get('view')==='events')setSearchMode('events');else if(startClub && /^\d{1,20}$/.test(startClub)) loadClub(startClub);
 
 /* Passwort nur im Arbeitsspeicher dieses Browser-Tabs, niemals im Quellcode oder localStorage. */
