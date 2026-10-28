@@ -77,7 +77,6 @@
     .menu-caption{font-size:11px;color:#99a4aa;border-top:1px solid #303942;margin:7px 7px 3px;padding:10px 5px 4px;line-height:1.45}
     .topbar{gap:16px}.topbar .brand{margin-right:auto}
     @media(max-width:640px){.topbar{gap:11px}.topbar .brand{font-size:20px;letter-spacing:-.7px}.topbar .mark{width:30px;height:30px;font-size:19px}.topright .tag{display:none}.topright{gap:6px}.menu-trigger{padding:10px 11px}.menu-text{display:none}.menu-caret{display:none}.menu-panel{min-width:210px}}
-    @media(max-width:380px){.topbar .brand{font-size:18px}.topright #my-player-button{font-size:11px;padding:7px 8px}}
     /* Events: eigenständiger dritter Reiter */
     .events-section{margin-top:4px}.events-hero{padding:27px 29px;margin-bottom:22px;background:radial-gradient(circle at 93% 0%,#3d522a 0%,transparent 45%),linear-gradient(125deg,#1c271a,#151a1f);border:1px solid #3b4c32;border-radius:21px;display:flex;align-items:center;justify-content:space-between;gap:20px}
     .events-hero h2{font-family:'Space Grotesk',system-ui,Arial,sans-serif;margin:4px 0 8px;font-size:clamp(25px,4vw,37px);letter-spacing:-1.2px}.events-hero p{margin:0;color:#aebaa8;font-size:14px;max-width:600px}.events-hero-mark{font-size:52px;line-height:1;flex-shrink:0}
@@ -87,7 +86,7 @@
     @media(max-width:760px){.events-grid{grid-template-columns:1fr}.events-hero{padding:22px}.events-hero-mark{font-size:35px}}
     @media(max-width:460px){.search-tab{padding:10px 12px;font-size:12px}.events-hero-mark{display:none}.event-card{min-height:auto}}
     @media(max-width:760px){.topbar{height:72px}.topright a{display:none}.hero{padding:53px 0 42px}.hero h1{letter-spacing:-2.2px}.club-stats{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}.feat-wrap{grid-template-columns:1fr}.results{grid-template-columns:1fr}.club-heading{flex-direction:column;align-items:flex-start}.club-right{width:100%;justify-content:flex-start}.player-filters{flex-direction:column;align-items:stretch}.section-head{align-items:flex-start}.section-head:not(.compact){flex-direction:column}.match{grid-template-columns:30px 1fr auto;gap:9px}.match-date{display:none}}
-    @media(max-width:600px){.topright:has(#my-player-button:not(.hidden)) .tag{display:none}.player-search-fields{grid-template-columns:1fr}.search-box{flex-wrap:wrap}.search-box .button{width:100%}.search-box input{min-height:44px}}
+    @media(max-width:600px){.player-search-fields{grid-template-columns:1fr}.search-box{flex-wrap:wrap}.search-box .button{width:100%}.search-box input{min-height:44px}}
     @media(max-width:460px){.wrap{width:min(100% - 26px,1160px)}.brand{font-size:21px}.topright .tag{font-size:9px;letter-spacing:.4px;padding:6px 8px}.hero h1{font-size:40px}.search-box{padding:5px}.search-box input{font-size:13px}.search-icon{width:35px}.button{padding:12px 15px;font-size:13px}.club-stats{gap:8px}.metric{padding:17px 14px}.metric .value{font-size:30px}.inner{padding:19px}.player-grid{gap:6px}.mini-metric{padding:11px}.mini-metric strong{font-size:22px}}
 
     /* ADMIN PANEL – neutral, klein und für Mobilgeräte nutzbar */
@@ -153,6 +152,29 @@
     @media(max-width:750px){.favorites-row{grid-template-columns:1fr;max-width:615px}}
     @media(max-width:380px){.favorites-row .favorite-quick{padding-left:11px}.favorites-row .favorite-quick strong{font-size:13px}.favorites-row .favorite-quick-open{padding:9px 10px;font-size:10px}}
 
+
+    /* Formkurve – Ergebnisse der letzten zehn Ligaspiele, chronologisch. */
+    .form-overview{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:17px}
+    .form-overview strong{font-family:'Space Grotesk',system-ui,Arial,sans-serif;color:var(--accent);font-weight:800;font-size:31px;line-height:1.05;letter-spacing:-1px}
+    .form-overview small{display:block;color:#a8b7b9;font-size:11px;margin-top:3px}
+    .form-overview .form-record{color:#d9e8d6;font-size:13px;font-weight:800;background:#24312a;border:1px solid #3b5344;border-radius:10px;padding:9px 12px}
+    .form-chart{background:linear-gradient(180deg,#11221f,#10191c);border:1px solid #2d4c40;border-radius:15px;padding:13px 12px 5px;overflow:hidden;position:relative}
+    .form-chart::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 60% 4%,#93eb6730,transparent 52%)}
+    .form-chart svg{position:relative;display:block;width:100%;height:auto;overflow:visible}
+    .form-chart .form-grid{stroke:#4d665d;stroke-width:1;stroke-dasharray:4 7;opacity:.4}
+    .form-chart .form-axis{font:600 13px 'DM Sans',system-ui,sans-serif;fill:#a8bdb1}
+    .form-chart .form-line{fill:none;stroke:#cafe79;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 2px 6px #b4ff6a50);stroke-dasharray:100;stroke-dashoffset:100;animation:form-draw 1.1s .12s cubic-bezier(.16,1,.3,1) forwards}
+    .form-chart .form-dot{stroke:#101c1a;stroke-width:4}
+    .form-chart .form-dot.W{fill:#85ef9c}.form-chart .form-dot.D{fill:#f3d67d}.form-chart .form-dot.L{fill:#ff818d}
+    .form-result-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px;align-items:center}
+    .form-result-row .form-pill{flex:1 1 25px;min-width:25px;max-width:39px;height:31px;display:grid;place-items:center;border-radius:8px;font-size:12px;font-weight:900;border:1px solid transparent}
+    .form-pill.W{background:#214a34;color:#98efb5;border-color:#3d7854}.form-pill.D{background:#554827;color:#f7d98d;border-color:#826b3b}.form-pill.L{background:#503035;color:#ffa1ab;border-color:#805057}
+    .form-hint{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:12px;color:#9dadac;font-size:11px}
+    .form-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:11px;font-size:11px;color:#afc0b6}
+    .form-legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+    @keyframes form-draw{to{stroke-dashoffset:0}}
+    @media(max-width:450px){.form-overview strong{font-size:27px}.form-chart{padding:11px 6px 4px}.form-chart .form-axis{font-size:16px}.form-hint{font-size:10px}}
+    @media(prefers-reduced-motion:reduce){.form-chart .form-line{animation:none;stroke-dashoffset:0}}
   </style>
 </head>
 <body>
@@ -167,7 +189,7 @@
     </div>
   </nav>
   <a class="brand" href="/" aria-label="FC27 STATS – zur Startseite"><span class="mark">27</span> FC27 <span>STATS</span></a>
-  <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><button type="button" class="button secondary sm hidden" id="my-player-button" title="Gespeichertes Spielerprofil aufrufen">★ Mein Spieler</button><span class="tag"><span class="dot"></span> LIVE · FC 27 CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
+  <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><span class="tag"><span class="dot"></span> LIVE · FC 27 CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
 </header>
 <main class="wrap">
   <section class="hero" id="hero">
@@ -253,7 +275,7 @@
   </section>
 </main>
 <footer class="footer wrap">FC27 STATS · Unabhängiges Fanprojekt, keine Verbindung zu Electronic Arts. EA-Daten können verzögert oder vorübergehend nicht verfügbar sein.</footer>
-<div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div class="modal-actions"><button id="save-player-button" type="button" class="button secondary sm">☆ Als „Mein Spieler“ merken</button><button id="favorite-player-button" type="button" class="button secondary sm favorite-btn" aria-pressed="false">☆ Als Lieblingsspieler speichern</button><button id="share-player-button" type="button" class="button sm">↗ Spielerkarte erstellen</button></div></div></div>
+<div id="overlay" class="overlay hidden" role="presentation"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><div class="label">// SPIELERPROFIL</div><h2 id="modal-title"></h2><div id="modal-desc" class="muted"></div></div><button id="close-modal" class="x" aria-label="Schließen">×</button></div><div id="modal-content"></div><div class="modal-actions"><button id="favorite-player-button" type="button" class="button secondary sm favorite-btn" aria-pressed="false">☆ Als Lieblingsspieler speichern</button><button id="share-player-button" type="button" class="button sm">↗ Spielerkarte erstellen</button></div></div></div>
 <div id="card-overlay" class="card-overlay hidden" role="presentation">
   <div class="card-dialog" role="dialog" aria-modal="true" aria-labelledby="card-title">
     <div class="modal-head"><div><div class="label">// FC27 STATS · PLAYER CARD</div><h2 id="card-title">Deine Spielerkarte</h2><p class="muted" style="margin:0;font-size:13px">Saisonstatistiken als Bild speichern oder teilen.</p></div><button type="button" id="card-close" class="x" aria-label="Spielerkarte schließen">×</button></div>
@@ -352,7 +374,6 @@ function toggleFavoriteClub(){if(!clubData)return;try{
  }catch{notify('Browser-Speicherung ist nicht verfügbar.',true)}}
 function notify(message,error=false){const el=$('#toast');el.textContent=message;el.className='toast show'+(error?' toast-error':'');clearTimeout(notify.timeout);notify.timeout=setTimeout(()=>el.classList.remove('show'),3200)}
 function readMyPlayer(){try{return JSON.parse(localStorage.getItem(MY_PLAYER_KEY)||'null')}catch{return null}}
-function updateMyPlayerButton(){const saved=readMyPlayer();$('#my-player-button').classList.toggle('hidden',!saved?.clubId||!saved?.name)}
 const esc = v => String(v ?? '').replace(/[&<>"']/g,ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const num = v => {let n=Number(v);return Number.isFinite(n)?n:0};
 const disp = v => v===null || v===undefined || v==='' ? '–' : new Intl.NumberFormat('de-AT').format(Number(v)) === 'NaN' ? String(v) : new Intl.NumberFormat('de-AT').format(Number(v));
@@ -466,13 +487,45 @@ async function loadClub(id,playerName=null){if(busy)return;setBusy(true);status(
    if(playerName){const player=(clubData.members||[]).find(p=>String(p.name).toLowerCase()===playerName.toLowerCase());if(player)openPlayer(player);else status('Der Spieler ist in diesem Club aktuell nicht mehr sichtbar.','error')}
  }catch(error){status(error.message,'error')}finally{setBusy(false)}}
 function metric(label,value,description='',accent=false){return `<div class="panel metric"><div class="name">${esc(label)}</div><div class="value${accent?' accent':''}">${esc(disp(value))}</div><div class="extra">${esc(description)}</div></div>`;}
+
+// Graph of actual league-match results (oldest -> newest). W=3, D=1, L=0 points.
+function renderFormCurve(matches){
+ const recent=(Array.isArray(matches)?matches:[]).slice(0,10).filter(m=>['W','D','L'].includes(m?.result));
+ if(!recent.length)return '<p class="empty">EA hat keine letzten Ligaspiele geliefert.</p>';
+ // The EA "latest matches" feed is newest first; reverse for a left-to-right timeline.
+ const chronological=[...recent].reverse();
+ const points=chronological.map(m=>m.result==='W'?3:m.result==='D'?1:0);
+ const wins=recent.filter(m=>m.result==='W').length;
+ const draws=recent.filter(m=>m.result==='D').length;
+ const losses=recent.length-wins-draws;
+ const rate=Math.round(wins/recent.length*100);
+ const xAt=i=>chronological.length===1?310:52+i*520/(chronological.length-1);
+ const yAt=p=>p===3?28:p===1?106:146;
+ const xy=points.map((p,i)=>({x:xAt(i),y:yAt(p)}));
+ const line=xy.map(({x,y},i)=>`${i?'L':'M'}${x.toFixed(1)},${y}`).join(' ');
+ const area=`${line} L${xy.at(-1).x.toFixed(1)},153 L${xy[0].x.toFixed(1)},153 Z`;
+ const label={W:'Sieg',D:'Unentschieden',L:'Niederlage'};
+ const desc=chronological.map(m=>label[m.result]).join(', ');
+ const dots=chronological.map((m,i)=>`<circle class="form-dot ${m.result}" cx="${xy[i].x.toFixed(1)}" cy="${xy[i].y}" r="7"><title>${esc(`${label[m.result]} gegen ${m.opponent||'unbekannt'} (${m.goals??'–'}:${m.against??'–'}) – ${fmtDate(m.timestamp)}`)}</title></circle>`).join('');
+ const pills=chronological.map(m=>`<span class="form-pill ${m.result}" title="${esc(`${label[m.result]} gegen ${m.opponent||'unbekannt'} – ${m.goals??'–'}:${m.against??'–'}`)}">${m.result==='W'?'S':m.result==='D'?'U':'N'}</span>`).join('');
+ return `<div class="form-overview"><div><strong>${rate}%</strong><small>Siegquote · letzte ${recent.length} ${recent.length===1?'Ligaspiel':'Ligaspiele'}</small></div><span class="form-record">${wins} S · ${draws} U · ${losses} N</span></div>
+  <div class="form-chart"><svg viewBox="0 0 620 184" role="img" aria-label="Formkurve der letzten ${recent.length} Ligaspiele von alt nach neu: ${esc(desc)}">
+  <defs><linearGradient id="form-area-gradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bafa70" stop-opacity=".27"/><stop offset="1" stop-color="#bafa70" stop-opacity="0"/></linearGradient></defs>
+  <path class="form-grid" d="M44 28 H584 M44 106 H584 M44 146 H584"/>
+  <text class="form-axis" x="5" y="32">3 P</text><text class="form-axis" x="5" y="110">1 P</text><text class="form-axis" x="5" y="150">0 P</text>
+  <path d="${area}" fill="url(#form-area-gradient)"/><path class="form-line" pathLength="100" d="${line}"/>${dots}</svg></div>
+  <div class="form-result-row" aria-label="Spielergebnisse chronologisch">${pills}</div>
+  <div class="form-hint"><span>← Ältestes Spiel</span><span>Neuestes Spiel →</span></div>
+  <div class="form-legend"><span><i style="background:#85ef9c"></i>Sieg (3 Punkte)</span><span><i style="background:#f3d67d"></i>Remis (1 Punkt)</span><span><i style="background:#ff818d"></i>Niederlage (0 Punkte)</span></div>`;
+}
+
 function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').classList.remove('hidden');$('#club-title').textContent=data.name||'Unbekannter Club';$('#club-monogram').textContent=monogram(data.name);const s=data.stats||{};
  $('#club-subline').textContent=[data.stadium||null,'Club-ID '+data.id].filter(Boolean).join(' · ');
  $('#club-updated').textContent='Abgerufen: '+new Date(data.updated*1000).toLocaleString('de-AT');
  $('#summary-metrics').innerHTML=[metric('Spiele',s.gamesPlayed,'Ligaspiele'),metric('Siege',s.wins,'Gewonnene Partien',true),metric('Unentschieden',s.ties,'Remis'),metric('Niederlagen',s.losses,'Verlorene Partien'),metric('Tore',s.goals,'Erzielte Tore',true),metric('Gegentore',s.goalsAgainst,'Kassierte Tore'),metric('Skill Rating',s.skillRating,'EA Skill-Bewertung',true),metric('Tordifferenz', num(s.goals)-num(s.goalsAgainst),'Tore minus Gegentore')].join('');
  const total=num(s.wins)+num(s.losses)+num(s.ties);const percent = n=>total?100*num(n)/total:0;
  $('#performance').innerHTML=`<div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 38px 'Space Grotesk';color:var(--accent)">${total?Math.round(percent(s.wins))+'%':'–'}</span><span class="muted" style="font-size:13px">Siegquote</span></div><div class="bar-stack"><span class="bar-win" style="width:${percent(s.wins)}%"></span><span class="bar-draw" style="width:${percent(s.ties)}%"></span><span class="bar-loss" style="width:${percent(s.losses)}%"></span></div><div class="legend"><span><i style="background:var(--green)"></i> Siege <b>${esc(disp(s.wins))}</b></span><span><i style="background:var(--yellow)"></i> Remis <b>${esc(disp(s.ties))}</b></span><span><i style="background:var(--red)"></i> Niederlagen <b>${esc(disp(s.losses))}</b></span></div>`;
- const matches=data.matches||[];$('#form-view').innerHTML=matches.length?`<div class="muted" style="font-size:13px">Letzte ${Math.min(10,matches.length)} Ligaspiele</div><div class="form-row">${matches.slice(0,10).map(m=>`<span title="${esc(m.opponent)} (${esc(m.goals)}:${esc(m.against)})" class="form-cell ${esc(m.result)}">${esc(m.result)}</span>`).join('')}</div><div class="note">W = Sieg · D = Unentschieden · L = Niederlage</div>`:'<p class="empty">EA hat keine letzten Ligaspiele geliefert.</p>';
+ const matches=data.matches||[];$('#form-view').innerHTML=renderFormCurve(matches);
  $('#matches-view').innerHTML=matches.length?matches.map(renderMatch).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
  renderPlayers();renderTopPlayers();updateFavoriteClub();
 }
@@ -514,7 +567,7 @@ function renderPlayers(){const all=clubData?.members||[];const text=$('#player-f
  if(!filtered.length){const row=document.createElement('tr');row.innerHTML='<td colspan="7" class="empty" style="text-align:center;padding:25px">Keine Spieler gefunden.</td>';tbody.appendChild(row)}
 }
 function openPlayer(p){openedPlayer=p;const name=p.name||'Unbekannter Spieler';
- const saved=readMyPlayer();$('#save-player-button').textContent=saved?.clubId===clubData.id&&saved?.name===name?'✓ Als „Mein Spieler“ gespeichert':'☆ Als „Mein Spieler“ merken';const career=(clubData.career||[]).find(x=>String(x.name).toLowerCase()===String(name).toLowerCase())||{};
+ const career=(clubData.career||[]).find(x=>String(x.name).toLowerCase()===String(name).toLowerCase())||{};
  $('#modal-title').textContent=name;$('#modal-desc').textContent=[p.proName||null,posText[p.favoritePosition]||p.favoritePosition||null,p.proOverall?'OVR '+p.proOverall:null].filter(Boolean).join(' · ');
  const m=(label,v)=>`<div class="mini-metric"><small>${esc(label)}</small><strong>${esc(disp(v))}</strong></div>`;
  $('#modal-content').innerHTML=`<div class="section-sub">Aktuelle Saison</div><div class="player-grid">${m('Spiele',p.gamesPlayed)}${m('Tore',p.goals)}${m('Assists',p.assists)}${m('Bewertung',p.ratingAve===undefined?'–':dec(p.ratingAve))}${m('Man of the Match',p.manOfTheMatch)}${m('Passquote %',p.passSuccessRate)}</div><div class="section-sub">Karriere in diesem Club</div><div class="player-grid">${m('Spiele',career.gamesPlayed)}${m('Tore',career.goals)}${m('Assists',career.assists)}${m('Bewertung',career.ratingAve===undefined?'–':dec(career.ratingAve))}${m('Man of the Match',career.manOfTheMatch)}${m('Position',posText[career.favoritePosition]||career.favoritePosition||'–')}</div><p class="note">Die Werte werden von EA geliefert und können von der Anzeige im Spiel abweichen.</p>`;
@@ -526,12 +579,6 @@ $('#player-search-form').addEventListener('submit',e=>{e.preventDefault();search
 $('#tab-club').addEventListener('click',()=>setSearchMode('club'));
 $('#tab-player').addEventListener('click',()=>setSearchMode('player'));
 $('#favorite-player-button').addEventListener('click',toggleFavoritePlayer);
-$('#save-player-button').addEventListener('click',()=>{if(!clubData||!openedPlayer)return;try{
-  localStorage.setItem(MY_PLAYER_KEY,JSON.stringify({clubId:clubData.id,name:openedPlayer.name}));
-  $('#save-player-button').textContent='✓ Als „Mein Spieler“ gespeichert';updateMyPlayerButton();
- }catch{status('Das Speichern ist in diesem Browser nicht möglich.','error')}});
-$('#my-player-button').addEventListener('click',()=>{const saved=readMyPlayer();if(saved?.clubId&&saved?.name){setSearchMode('club');loadClub(saved.clubId,saved.name)}});
-updateMyPlayerButton();
 $('#favorite-club-button').addEventListener('click',toggleFavoriteClub);
 $('#favorite-quick-open').addEventListener('click',()=>{const f=readFavoriteClub();setSearchMode('club');if(f){loadClub(f.id)}else{$('#club-input').focus()}});
 $('#favorite-player-quick-open').addEventListener('click',()=>{const f=readFavoritePlayer();if(f){setSearchMode('club');loadClub(f.clubId,f.name)}else{setSearchMode('player');$('#player-input').focus()}});
