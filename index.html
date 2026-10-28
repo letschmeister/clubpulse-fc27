@@ -175,6 +175,26 @@
     @keyframes form-draw{to{stroke-dashoffset:0}}
     @media(max-width:450px){.form-overview strong{font-size:27px}.form-chart{padding:11px 6px 4px}.form-chart .form-axis{font-size:16px}.form-hint{font-size:10px}}
     @media(prefers-reduced-motion:reduce){.form-chart .form-line{animation:none;stroke-dashoffset:0}}
+
+    /* Jeweils ein Club-Rekordhalter pro Kategorie, statt Top 5 einer Kategorie. */
+    .leaders-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+    .category-leader{display:flex;flex-direction:column;align-items:stretch;min-height:272px;background:linear-gradient(153deg,#26372b 0%,#171e24 76%);border:1px solid #405444;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .category-leader .leader-top{min-height:32px}
+    .leader-category-icon{display:grid;place-items:center;background:#334b38;border:1px solid #587150;border-radius:10px;width:36px;height:36px;font-size:19px}
+    .category-leader .leader-crown{letter-spacing:.7px;color:#cbf6ac}
+    .leader-category-title{font-size:15px;font-weight:900;color:#eff7ed;margin-top:13px;line-height:1.3}
+    .category-leader .leader-avatar,.category-leader .leader-avatar:first-child{height:56px;width:56px;margin:14px 0 12px;border-radius:16px;font-size:22px}
+    .category-leader .leader-name{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+    .category-leader .leader-score{font-size:34px;margin-top:auto;padding-top:14px}
+    .category-leader .leader-score small{margin-top:4px}
+    .category-leader .leader-tie{font-size:10px;color:#a6c2ad;margin-top:10px}
+    .category-leader.leader-no-data{opacity:.8;cursor:default}
+    .leader-empty-value{font:800 35px 'Space Grotesk',sans-serif;color:#c2d0c1;margin-top:auto}
+    .leader-empty-text{font-size:12px;color:#a5b4af;margin-top:8px}
+    .category-leader.leader-no-data:hover{transform:none;box-shadow:none;border-color:#405444}
+    @media(max-width:980px){.leaders-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:640px){.leaders-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.category-leader{min-height:248px;padding:14px}.category-leader .leader-crown{font-size:8px}.category-leader .leader-score{font-size:30px}.category-leader .leader-category-title{font-size:13px}.category-leader .leader-name{font-size:13px}.category-leader:nth-child(5){grid-column:auto}}
+    @media(max-width:360px){.leaders-grid{gap:8px}.category-leader{padding:11px}.category-leader .leader-crown{font-size:7px}}
   </style>
 </head>
 <body>
@@ -243,10 +263,9 @@
       <p class="note">Spielerstatistiken: aktuelle Saison. Karrierewerte beziehen sich auf den gewählten Club, soweit EA sie liefert.</p>
     </section>
     <section class="section top-players-section" id="top-players-section">
-      <div class="section-head"><div><div class="label">// TEAM LEADERBOARD</div><h2>Top-Spieler <span class="heading-flair">✦</span></h2><p>Die Top 5 deines Clubs in der aktuellen Saison – direkt aus den EA-Spielerstatistiken.</p></div>
-      <div class="leader-select"><label for="leader-category" class="sr-only">Rangliste auswählen</label><select id="leader-category" class="filter"><option value="goals">⚽ Tore</option><option value="assists">🎯 Assists</option><option value="gamesPlayed">🎮 Spiele</option><option value="ratingAve">⭐ Bewertung</option></select></div></div>
+      <div class="section-head"><div><div class="label">// CLUB-BESTWERTE</div><h2>Top-Spieler <span class="heading-flair">✦</span></h2><p>Der beste Spieler in jeder Kategorie – direkt nebeneinander, basierend auf den aktuellen EA-Saisonstatistiken.</p></div></div>
       <div id="leaders-grid" class="leaders-grid" aria-live="polite"></div>
-      <p class="note">Die Bewertungsliste berücksichtigt nur Spieler mit mindestens 5 Einsätzen. Bei fehlenden EA-Werten wird keine Rangliste erfunden.</p>
+      <p class="note">Beste Bewertung: nur Spieler mit mindestens 5 Einsätzen. Bei Gleichstand wird ein Spieler angezeigt und der Gleichstand gekennzeichnet. Fehlende Daten werden nicht geschätzt.</p>
     </section>
     <section class="section">
       <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>Tippe auf ein Ergebnis, um die beteiligten Spieler beider Teams und – falls verfügbar – den Man of the Match zu sehen. EA liefert maximal zehn Ligaspiele.</p></div></div>
@@ -531,16 +550,30 @@ function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').cl
 }
 function renderTopPlayers(){
  const container=$('#leaders-grid');container.replaceChildren();
- const key=$('#leader-category').value;
  const members=Array.isArray(clubData?.members)?clubData.members:[];
- const eligible=members.filter(p=>p?.name && p[key]!==null && p[key]!==undefined && p[key]!=='' && Number.isFinite(Number(p[key])) && (key!=='ratingAve'||num(p.gamesPlayed)>=5));
- eligible.sort((a,b)=>num(b[key])-num(a[key])||String(a.name).localeCompare(String(b.name),'de'));
- const data=eligible.slice(0,5);
- if(!data.length){container.innerHTML='<div class="panel inner empty" style="grid-column:1/-1">EA hat für diese Kategorie keine verwertbaren Spielerwerte geliefert.</div>';return;}
- const unit={goals:'TORE',assists:'ASSISTS',gamesPlayed:'SPIELE',ratingAve:'BEWERTUNG'}[key];
- data.forEach((p,index)=>{const button=document.createElement('button');button.type='button';button.className='leader-card'+(index===0?' is-first':'');
- button.innerHTML=`<div class="leader-top"><span class="leader-rank">${String(index+1).padStart(2,'0')}</span>${index===0?'<span class="leader-crown">✦ TOP PLAYER</span>':'<span class="leader-position">'+esc(posText[p.favoritePosition]||p.favoritePosition||'CLUB')+'</span>'}</div><div class="leader-avatar">${esc(monogram(p.name))}</div><div class="leader-name">${esc(p.name)}</div><div class="leader-meta">${esc(posText[p.favoritePosition]||p.favoritePosition||'Spieler')}</div><div class="leader-score">${esc(key==='ratingAve'?dec(p[key]):disp(p[key]))}<small>${unit}</small></div>`;
- button.addEventListener('click',()=>openPlayer(p));container.appendChild(button)})
+ // Jede Karte zeichnet genau einen Kategorie-Sieger, nicht fünf Spieler derselben Disziplin.
+ const categories=[
+  {key:'goals',label:'Torschützenkönig',unit:'TORE',icon:'⚽'},
+  {key:'ratingAve',label:'Beste Bewertung',unit:'RATING',icon:'⭐'},
+  {key:'assists',label:'Meiste Vorlagen',unit:'ASSISTS',icon:'🎯'},
+  {key:'gamesPlayed',label:'Meiste Einsätze',unit:'SPIELE',icon:'🎮'}
+ ];
+ for(const category of categories){
+  const {key,label,unit,icon}=category;
+  const eligible=members.filter(p=>p?.name && p[key]!==null && p[key]!==undefined && p[key]!=='' && Number.isFinite(Number(p[key])) && (key!=='ratingAve'||num(p.gamesPlayed)>=5));
+  eligible.sort((a,b)=>num(b[key])-num(a[key])||String(a.name).localeCompare(String(b.name),'de'));
+  const winner=eligible[0];
+  const ties=winner?eligible.filter(p=>num(p[key])===num(winner[key])).length-1:0;
+  const card=document.createElement(winner?'button':'div');
+  if(winner){card.type='button';card.addEventListener('click',()=>openPlayer(winner));card.setAttribute('aria-label',`${label}: ${winner.name}, ${key==='ratingAve'?dec(winner[key]):disp(winner[key])} ${unit}. Spielerprofil öffnen`)}
+  card.className='leader-card category-leader'+(winner?'':' leader-no-data');
+  if(winner){
+   card.innerHTML=`<div class="leader-top"><span class="leader-category-icon" aria-hidden="true">${icon}</span><span class="leader-crown">✦ CLUB-BESTWERT</span></div><div class="leader-category-title">${label}</div><div class="leader-avatar">${esc(monogram(winner.name))}</div><div class="leader-name" title="${esc(winner.name)}">${esc(winner.name)}</div><div class="leader-meta">${esc(posText[winner.favoritePosition]||winner.favoritePosition||'Spieler')}</div><div class="leader-score">${esc(key==='ratingAve'?dec(winner[key]):disp(winner[key]))}<small>${unit}</small></div>${ties?`<div class="leader-tie">Gleichauf mit ${ties} ${ties===1?'weiterem Spieler':'weiteren Spielern'}</div>`:''}`;
+  }else{
+   card.innerHTML=`<div class="leader-top"><span class="leader-category-icon" aria-hidden="true">${icon}</span></div><div class="leader-category-title">${label}</div><div class="leader-empty-value">–</div><div class="leader-empty-text">Keine verfügbaren EA-Daten${key==='ratingAve'?' (mind. 5 Spiele)':''}</div>`;
+  }
+  container.appendChild(card);
+ }
 }
 function renderMatchSquad(players, teamName, isOwn, motmSide, motmIndex){
  const list=Array.isArray(players)?players:[];
@@ -585,7 +618,6 @@ $('#favorite-player-quick-open').addEventListener('click',()=>{const f=readFavor
 $('#menu-favorite').addEventListener('click',()=>{toggleMenu(false);const f=readFavoriteClub();if(f){setSearchMode('club');loadClub(f.id)}});
 updateFavoriteClub();
 updateFavoritePlayer();
-$('#leader-category').addEventListener('change',renderTopPlayers);
 $('#sort-select').addEventListener('change',e=>{sortKey=e.target.value;renderPlayers()});
 $('#player-filter').addEventListener('input',renderPlayers);
 document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{sortKey=th.dataset.sort;$('#sort-select').value=['name','goals','assists','gamesPlayed','ratingAve'].includes(sortKey)?sortKey:'goals';renderPlayers()}));
