@@ -183,7 +183,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), Handler)
     print(f"\n  CLUBPULSE FC27 läuft auf http://127.0.0.1:{port}\n  Zum Beenden: Strg+C\n")
     try:
         server.serve_forever()
