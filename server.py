@@ -88,7 +88,7 @@ class EAError(Exception):
 def api_get(endpoint, **params):
     """Nur vordefinierte EA-Endpunkte; Cache verhindert unnötige Anfragen."""
     allowed = {
-        "allTimeLeaderboard/search", "clubs/info", "clubs/overallStats",
+        "allTimeLeaderboard/search", "currentSeasonLeaderboard/search", "clubs/info", "clubs/overallStats",
         "members/stats", "members/career/stats", "clubs/matches"
     }
     if endpoint not in allowed:
@@ -165,6 +165,32 @@ def match_players_for_club(game, club_id):
     return result
 
 
+def current_division_for_club(club_id, club_name):
+    """Sucht die AKTUELLE Division anhand der exakten Club-ID.
+
+    Sie ist nur in EA-Leaderboard-Suchergebnissen enthalten, nicht in
+    clubs/info oder clubs/overallStats. Niemals bestDivision als Ersatz nehmen.
+    """
+    if not isinstance(club_name, str) or len(club_name.strip()) < 2:
+        return None
+    for endpoint in ("currentSeasonLeaderboard/search", "allTimeLeaderboard/search"):
+        try:
+            rows = api_get(endpoint, clubName=club_name.strip(), maxResultCount=50)
+        except EAError:
+            continue  # Die eigentlichen Club-Daten müssen trotzdem angezeigt werden.
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict) or str(row.get("clubId", "")) != str(club_id):
+                continue
+            value = str(row.get("currentDivision") or "").strip()
+            if value.isdecimal() and 1 <= int(value) <= 10:
+                return int(value)
+            # Eine Club-ID war eindeutig, aber EA hat keine aktuelle Division.
+            return None
+    return None
+
+
 def do_club(club_id):
     club_id = club_id.strip()
     if not club_id.isdecimal() or not 1 <= len(club_id) <= 20:
@@ -206,9 +232,12 @@ def do_club(club_id):
             "goals": gf, "against": ga, "result": result,
             "lineup": {"ours": ours, "opponents": theirs},
         })
-    remember_roster(club_id, info.get("name") or "Unbekannter Club", members)
+    club_name = info.get("name") or "Unbekannter Club"
+    division = current_division_for_club(club_id, club_name)
+    remember_roster(club_id, club_name, members)
     return {
         "id": club_id,
+        "currentDivision": division,
         "name": info.get("name") or "Unbekannter Club",
         "stadium": (info.get("customKit") or {}).get("stadName") or "",
         "stats": stats,
