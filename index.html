@@ -195,6 +195,34 @@
     @media(max-width:980px){.leaders-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:640px){.leaders-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.category-leader{min-height:248px;padding:14px}.category-leader .leader-crown{font-size:8px}.category-leader .leader-score{font-size:30px}.category-leader .leader-category-title{font-size:13px}.category-leader .leader-name{font-size:13px}.category-leader:nth-child(5){grid-column:auto}}
     @media(max-width:360px){.leaders-grid{gap:8px}.category-leader{padding:11px}.category-leader .leader-crown{font-size:7px}}
+
+    /* Mobil-Menü: liegt sicher vor Hero, Suchfeldern und sämtlichen Karten. */
+    .topbar{position:relative;z-index:1000;overflow:visible}
+    .site-menu{z-index:1002}
+    .menu-panel{z-index:1003}
+    .menu-backdrop{display:none}
+    @media(max-width:640px){
+      .topbar{z-index:1000}
+      .site-menu{position:relative}
+      .menu-panel{
+        position:absolute;
+        top:calc(100% + 12px);
+        left:0;
+        width:min(300px,calc(100vw - 28px));
+        min-width:0;
+        max-height:calc(100dvh - 112px);
+        overflow-y:auto;
+        overscroll-behavior:contain;
+        padding:10px;
+        border:1px solid #52644e;
+        border-radius:17px;
+        background:#16201f;
+        box-shadow:0 26px 80px #000e,0 0 0 1px #8cba5c22;
+      }
+      .menu-item{min-height:48px}
+      .menu-backdrop:not(.hidden){display:block;position:fixed;inset:0;z-index:900;background:rgba(2,8,9,.58);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+      body.menu-open{overflow:hidden}
+    }
   </style>
 </head>
 <body>
@@ -211,6 +239,7 @@
   <a class="brand" href="/" aria-label="FC27 STATS – zur Startseite"><span class="mark">27</span> FC27 <span>STATS</span></a>
   <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><span class="tag"><span class="dot"></span> LIVE · FC 27 CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
 </header>
+<div id="menu-backdrop" class="menu-backdrop hidden" aria-hidden="true"></div>
 <main class="wrap">
   <section class="hero" id="hero">
     <div class="eyebrow"><span class="eyebrow-pulse"></span> // FC27 STATS · DEIN MATCHCENTER</div>
@@ -419,7 +448,10 @@ function setSearchMode(mode){
 }
 function toggleMenu(force){
  const panel=$('#menu-panel');const open=force===undefined?panel.classList.contains('hidden'):force;
- panel.classList.toggle('hidden',!open);$('#menu-trigger').setAttribute('aria-expanded',String(open));
+ panel.classList.toggle('hidden',!open);
+ $('#menu-backdrop').classList.toggle('hidden',!open);
+ document.body.classList.toggle('menu-open',open);
+ $('#menu-trigger').setAttribute('aria-expanded',String(open));
  $('#menu-trigger').setAttribute('aria-label',open?'Menü schließen':'Menü öffnen');
 }
 function navigateTo(mode){
@@ -430,6 +462,7 @@ function navigateTo(mode){
  window.scrollTo({top:0,behavior:'smooth'});
 }
 $('#menu-trigger').addEventListener('click',()=>toggleMenu());
+$('#menu-backdrop').addEventListener('click',()=>toggleMenu(false));
 $('#menu-home').addEventListener('click',()=>navigateTo('club'));
 $('#menu-events').addEventListener('click',()=>navigateTo('events'));
 document.addEventListener('click',e=>{if(!e.target.closest('.site-menu'))toggleMenu(false)});
