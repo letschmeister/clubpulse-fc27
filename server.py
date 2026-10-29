@@ -20,6 +20,7 @@ import os
 import socket
 import re
 import hmac
+import hashlib
 import secrets
 import base64
 from datetime import date
@@ -424,6 +425,11 @@ EDITOR_CLUB_IDS = {v.strip() for v in os.environ.get("EDITOR_CLUB_IDS", "132788"
                    if v.strip().isdecimal() and 1 <= len(v.strip()) <= 20}
 EDITOR_SESSIONS = {}
 EDITOR_SESSION_LOCK = Lock()
+# Unterzeichnete Team-Sitzungen: gueltig trotz Neustart des kostenlosen Render-Servers.
+# Die Signatur wird ausschliesslich serverseitig aus Render-Geheimnissen abgeleitet.
+# Revocation gilt im aktuellen Serverprozess; im Browser wird bei Logout der Token entfernt.
+EDITOR_REVOKED = {}
+EDITOR_SESSION_MAX_SECONDS = 12 * 60 * 60
 EDITOR_FAILURES = defaultdict(deque)
 EDITOR_FAILURE_LOCK = Lock()
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
@@ -514,6 +520,21 @@ def editor_configured():
             and bool(re.fullmatch(r"[\w.-]+/[\w.-]+", GITHUB_REPO)))
 
 
+def _editor_signing_key():
+    # Beides ist nur auf Render verfuegbar; niemand erhaelt diese Werte per HTTP.
+    return hmac.new(EDITOR_PASSWORD.encode("utf-8"),
+                    ("fc27-team-session-v2:" + GITHUB_TOKEN).encode("utf-8"),
+                    hashlib.sha256).digest()
+
+
+def _editor_encode(raw):
+    return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+
+
+def _editor_decode(text):
+    return base64.urlsafe_b64decode(text + "=" * (-len(text) % 4))
+
+
 def create_editor_session(password, ip):
     if not editor_configured():
         raise AdminError(503, "Team-Zugang noch nicht eingerichtet. EDITOR_PASSWORD und EDITOR_CLUB_IDS in Render pruefen.")
@@ -531,28 +552,48 @@ def create_editor_session(password, ip):
         raise AdminError(401, "Falsches Team-Passwort.")
     with EDITOR_FAILURE_LOCK:
         EDITOR_FAILURES.pop(ip, None)
-    token = secrets.token_urlsafe(32)
-    with EDITOR_SESSION_LOCK:
-        for key, expiry in list(EDITOR_SESSIONS.items()):
-            if expiry <= now:
-                EDITOR_SESSIONS.pop(key, None)
-        if len(EDITOR_SESSIONS) >= 100:
-            EDITOR_SESSIONS.pop(min(EDITOR_SESSIONS, key=EDITOR_SESSIONS.get), None)
-        EDITOR_SESSIONS[token] = now + ADMIN_SESSION_IDLE_SECONDS
-    return token
+    # Ablauf ist serverseitig signiert. Keinerlei Passwoerter im Browser speichern.
+    expire = int(time()) + EDITOR_SESSION_MAX_SECONDS
+    payload = f"{expire}.{secrets.token_urlsafe(18)}"
+    body = _editor_encode(payload.encode("ascii"))
+    signature = _editor_encode(hmac.new(_editor_signing_key(), body.encode("ascii"), hashlib.sha256).digest())
+    return f"e2.{body}.{signature}"
 
 
 def editor_session_auth(token):
     if not editor_configured():
         raise AdminError(503, "Team-Zugang nicht eingerichtet.")
-    if not isinstance(token, str) or len(token) != 43:
+    if not isinstance(token, str) or len(token) > 300 or not token.startswith("e2."):
         raise AdminError(401, "Team-Sitzung abgelaufen. Bitte neu anmelden.")
-    now = monotonic()
+    try:
+        prefix, body, signature = token.split(".")
+        expected = _editor_encode(hmac.new(_editor_signing_key(), body.encode("ascii"), hashlib.sha256).digest())
+        if not hmac.compare_digest(signature, expected):
+            raise ValueError("invalid signature")
+        value = _editor_decode(body).decode("ascii")
+        expiration, nonce = value.split(".", 1)
+        expiry = int(expiration)
+        if not nonce or expiry <= int(time()) or expiry > int(time()) + EDITOR_SESSION_MAX_SECONDS:
+            raise ValueError("expired")
+    except (ValueError, TypeError, UnicodeError):
+        raise AdminError(401, "Team-Sitzung abgelaufen. Bitte neu anmelden.") from None
     with EDITOR_SESSION_LOCK:
-        if EDITOR_SESSIONS.get(token, 0) <= now:
-            EDITOR_SESSIONS.pop(token, None)
-            raise AdminError(401, "Team-Sitzung abgelaufen. Bitte neu anmelden.")
-        EDITOR_SESSIONS[token] = now + ADMIN_SESSION_IDLE_SECONDS
+        if EDITOR_REVOKED.get(token, 0) > int(time()):
+            raise AdminError(401, "Team-Sitzung wurde abgemeldet.")
+        # Periodisches Aufraeumen beim Zugriff, kein Hintergrundprozess erforderlich.
+        for old, until in list(EDITOR_REVOKED.items()):
+            if until <= int(time()):
+                EDITOR_REVOKED.pop(old, None)
+
+
+def revoke_editor_session(token):
+    # Ein bewusst abgemeldeter Schluessel wird innerhalb dieser Serverlaufzeit gesperrt.
+    try:
+        expiration = int(_editor_decode(token.split(".")[1]).decode("ascii").split(".")[0])
+    except (ValueError, IndexError, UnicodeError):
+        return
+    with EDITOR_SESSION_LOCK:
+        EDITOR_REVOKED[token] = expiration
 
 
 def editor_club_auth(body):
@@ -947,8 +988,7 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(200, {"ok": True, "role": "admin" if is_admin else "editor"})
                 if p.path == "/api/editor/logout":
                     if not is_admin:
-                        with EDITOR_SESSION_LOCK:
-                            EDITOR_SESSIONS.pop(editor_token, None)
+                        revoke_editor_session(editor_token)
                     return self.send_json(200, {"ok": True})
                 if not is_admin:
                     editor_club_auth(payload)

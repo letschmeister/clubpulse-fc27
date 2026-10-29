@@ -446,7 +446,7 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 <div class="today-planner" id="today-planner" aria-labelledby="today-planner-heading">
   <div class="today-planner-head">
     <div><div class="label">// MATCHDAY-PLANER</div><h3 id="today-planner-heading">Wer spielt heute?</h3>
-    <p>Wähle die Mitspieler und ihre geplanten Positionen. Wir vergleichen mögliche Formationen und berücksichtigen erfasste Ergebnisse mit derselben Spieleranzahl.</p></div>
+    <p>Wähle die Mitspieler und ihre geplanten Positionen. Die Übersicht zeigt nur Formationen, zu denen Ergebnisse mit derselben Spieleranzahl gespeichert wurden.</p></div>
     <div class="today-count" aria-live="polite"><strong id="today-player-count">0 / 11</strong><small>Echte Spieler</small></div>
   </div>
   <datalist id="today-player-options"></datalist>
@@ -460,7 +460,7 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
   <div id="today-player-grid" class="today-player-grid" aria-label="Heutige Mitspieler und Positionen"></div>
   <p class="today-planner-note">Deine Auswahl wird zunächst nur auf diesem Gerät gespeichert. Mit Team-Zugang kannst du sie für alle Clubbesucher veröffentlichen. Gespeicherte Teampläne sind keine offiziellen EA-Aufstellungen. Die übrigen Plätze bis elf werden mit KI-Spielern besetzt.</p>
   <p id="today-planner-status" class="today-planner-status hidden" role="status"></p>
-  <div id="today-planner-results" class="today-planner-results" aria-live="polite"><div class="today-no-roster">Füge zuerst deine Mitspieler hinzu, um passende Formationen zu sehen.</div></div>
+  <div id="today-planner-results" class="today-planner-results" aria-live="polite"><div class="today-no-roster">Wähle eure Mitspieler und Positionen. Formationen erscheinen nur bei erfassten Spielen mit derselben Spielerzahl.</div></div>
 </div>
       <div id="formation-stats" class="formation-grid" aria-live="polite"><div class="panel formation-empty">Aufstellungen werden geladen …</div></div>
       <p class="note">Formationen werden manuell im Admin-Bereich eingetragen, da EA keine Formationsdaten liefert. Nur erfasste Spiele zählen. Bei wenigen Spielen ist die Quote wenig aussagekräftig.</p>
@@ -517,7 +517,7 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 <div id="team-overlay" class="admin-overlay hidden" role="presentation">
   <div class="admin-dialog team-dialog" role="dialog" aria-modal="true" aria-labelledby="team-title">
     <div class="admin-top"><div><div class="label">// FC27 STATS · TEAM-ZUGANG</div><h2 id="team-title">Team-Aufstellungen bearbeiten</h2><p>Formation, Ergebnisse, Mitspieler und Positionen – ohne volle Admin-Rechte.</p></div><button id="team-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
-    <div id="team-login-panel"><form id="team-login-form"><label class="admin-field">Team-Passwort<input type="password" id="team-password" autocomplete="current-password" required placeholder="Passwort deines Clubs"></label><button class="button" type="submit">Als Team-Bearbeiter anmelden ↗</button></form><p class="admin-hint">Das Passwort wird nicht gespeichert. Deine Anmeldung gilt innerhalb dieses Tabs. Team-Mitglieder haben keinen Zugriff auf Events, Divisionen oder die Admin-Verwaltung.</p></div>
+    <div id="team-login-panel"><form id="team-login-form"><label class="admin-field">Team-Passwort<input type="password" id="team-password" autocomplete="current-password" required placeholder="Passwort deines Clubs"></label><button class="button" type="submit">Als Team-Bearbeiter anmelden ↗</button></form><p class="admin-hint">Das Passwort wird nicht gespeichert. Die Anmeldung bleibt beim Bearbeiten und Neuladen innerhalb dieses Tabs erhalten (maximal 12 Stunden). Team-Mitglieder haben keinen Zugriff auf Events, Divisionen oder die Admin-Verwaltung.</p></div>
     <div id="team-logged-panel" class="hidden"><p>✓ Team-Zugang aktiv. Du kannst nun den heutigen Teamplan speichern und unter einem Match auf „Spiel direkt bearbeiten“ klicken.</p><div class="admin-actions"><button type="button" class="button secondary sm" id="team-logout">Abmelden</button></div></div>
     <p class="admin-msg hidden" id="team-message" role="status" aria-live="polite"></p>
   </div>
@@ -970,26 +970,37 @@ function renderTodayRecommendations(){
  const people=todayRoster.filter(p=>p.name.trim());
  $('#today-player-count').textContent=people.length+' / 11';
  const panel=$('#today-planner-results');
- if(!people.length){panel.innerHTML='<div class="today-no-roster">Füge deine Mitspieler hinzu, um Vorschläge für die heutige Mannschaft zu erhalten.</div>';return}
+ if(!people.length){panel.innerHTML='<div class="today-no-roster">Wähle zunächst eure heutigen Mitspieler und Positionen aus.</div>';return}
  const posKnown=people.filter(p=>p.position).length;
- if(posKnown<people.length){panel.innerHTML=`<div class="today-no-roster">${posKnown} von ${people.length} Positionen gewählt. Bitte lege für jeden Spieler eine Position fest, damit die Formationen sinnvoll verglichen werden können.</div>`;return}
+ if(posKnown<people.length){panel.innerHTML=`<div class="today-no-roster">${posKnown} von ${people.length} Positionen gewählt. Bitte lege für jeden Spieler eine Position fest.</div>`;return}
  if(new Set(people.map(p=>p.name.trim().toLowerCase())).size!==people.length){panel.innerHTML='<div class="today-no-roster">Ein Spieler ist doppelt eingetragen. Bitte überprüfe die Namen.</div>';return}
- const suggestions=Object.entries(TODAY_TEMPLATES).map(([formation,slots])=>{
-  const fit=todayFit(slots,people),h=todayHistoryForCount(formation,people.length);
-  // Recommendation rank combines tactical fit with observed history only from >=3 matching matches.
-  // The score is NOT a predicted win probability.
-  const confidence=h.n>=3?Math.min(1,h.n/8):0;
-  const ranking=fit.fit*(1-.30*confidence)+(h.n?(100*h.w/h.n):0)*(.30*confidence);
-  return {formation,fit,h,ranking};
- }).sort((a,b)=>b.ranking-a.ranking||b.fit.fit-a.fit.fit||b.h.n-a.h.n||a.formation.localeCompare(b.formation));
- const eligible=suggestions.filter(s=>s.h.n>=3).length;
- panel.innerHTML=`<h4>Passende Formationen für ${people.length} ${people.length===1?'Spieler':'Spieler'} + ${11-people.length} KI</h4>
-  <p class="today-sub">Diese Vorschläge vergleichen die ausgewählten Positionen mit den Formation-Plätzen. ${eligible?'Wo mindestens 3 Spiele mit genau dieser Anzahl an Mitspielern erfasst sind, fließt auch die historische Quote in die Reihenfolge ein.':'Noch keine belastbaren Ergebnisse für diese Spieleranzahl gespeichert – die Vorschläge beruhen daher auf der Positionspassung, nicht auf einer Erfolgsprognose.'}</p>
-  <div class="today-suggestion-grid">${suggestions.slice(0,3).map((s,i)=>{
-   const h=s.h;
-   const summary=h.n?`<strong>${Math.round(100*h.w/h.n)} %</strong> Siegquote · ${h.n} ${h.n===1?'Spiel':'Spiele'}<div>${h.w} S · ${h.d} U · ${h.l} N${h.n<3?' · geringe Stichprobe':''}</div>`:'Noch keine erfassten Spiele mit dieser Formation und genau '+people.length+' Mitspielern.';
-   return `<article class="today-suggestion"><div class="today-suggestion-top">${i===0?'★ Vorschlag 1':'Vorschlag '+(i+1)}</div><div class="today-suggestion-name">${esc(s.formation)}</div><div class="today-suggestion-fit">${s.fit.exact} von ${people.length} Positionen exakt passend · ${s.fit.reasonable} gut oder exakt passend</div><div class="today-suggestion-history">${summary}</div></article>`;
-  }).join('')}</div><p class="today-player-example">Hinweis: Die Sortierung ist eine taktische Orientierung, keine berechnete Gewinnwahrscheinlichkeit. Gespeicherte Ergebnisse beziehen sich auf vergangene Spiele, nicht automatisch auf diese Spieler.</p>`;
+ // Nur solche Formationen zeigen, fuer die tatsaechlich Match-Ergebnisse fuer
+ // die gleiche Anzahl menschlicher Spieler manuell hinterlegt wurden.
+ const recordedFormations=new Set(Object.values(clubData?.formationHistory||{})
+  .filter(r=>r && typeof r.formation==='string' && r.formation.trim())
+  .map(r=>r.formation.trim()));
+ const actual=[...recordedFormations].map(formation=>{
+   const h=todayHistoryForCount(formation,people.length);
+   if(h.n===0)return null;
+   const slots=TODAY_TEMPLATES[formation];
+   return {formation,h,fit:slots?todayFit(slots,people):null};
+ }).filter(Boolean).sort((a,b)=>
+   b.h.w/b.h.n-a.h.w/a.h.n || b.h.n-a.h.n ||
+   (b.fit?.fit||0)-(a.fit?.fit||0) || a.formation.localeCompare(b.formation));
+ if(!actual.length){
+   panel.innerHTML=`<div class="today-no-roster">Für <strong>${people.length} menschliche ${people.length===1?'Person':'Personen'}</strong> gibt es noch keine gespeicherten Match-Ergebnisse mit Formation. Sobald ihr entsprechende Spiele erfasst, erscheinen hier die Formationen mit echten Siegquoten.</div>`;
+   return;
+ }
+ const highestQuality=actual.some(s=>s.h.n>=3);
+ panel.innerHTML=`<h4>Erfasste Formationen · ${people.length} ${people.length===1?'Spieler':'Spieler'} + ${11-people.length} KI</h4>
+ <p class="today-sub">Nur Formationen mit gespeicherten Ergebnissen für genau ${people.length} menschliche ${people.length===1?'Person':'Personen'} werden angezeigt. Die Auswahl der heutigen Spieler ändert keine historische Siegquote.</p>
+ <div class="today-suggestion-grid">${actual.map((s,i)=>{
+  const h=s.h;
+  const pct=Math.round(100*h.w/h.n);
+  const emphasized=(highestQuality?h.n>=3:i===0);
+  const fitText=s.fit?`${s.fit.exact} von ${people.length} Positionen exakt passend · ${s.fit.reasonable} gut oder exakt passend`:'Für diese Formation ist keine automatische Positionsbewertung verfügbar.';
+  return `<article class="today-suggestion"><div class="today-suggestion-top">${emphasized&&i===0?'★ Beste dokumentierte Quote':'Erfasste Aufstellung'}</div><div class="today-suggestion-name">${esc(s.formation)}</div><div class="today-suggestion-fit">${esc(fitText)}</div><div class="today-suggestion-history"><strong>${pct} %</strong> Siegquote · ${h.n} ${h.n===1?'Spiel':'Spiele'}<div>${h.w} S · ${h.d} U · ${h.l} N${h.n<3?' · kleine Stichprobe':''}</div></div></article>`;
+ }).join('')}</div><p class="today-player-example">Die historischen Werte basieren nur auf erfassten Spielen mit derselben Anzahl menschlicher Spieler. Keine Prognose für die heutige Aufstellung.</p>`;
 }
 $('#today-add-player').addEventListener('click',()=>{
  if(!clubData)return;
@@ -1581,7 +1592,7 @@ $('#matches-view').addEventListener('click',e=>{
  if(!matchById(id))return;
  if(adminSessionToken||editorSessionToken){
    button.disabled=true;
-   const verify=adminSessionToken?adminRequest('/api/admin/session',{}):editorRequest('/api/editor/session',{});
+   const verify=editorSessionToken?editorRequest('/api/editor/session',{}):adminRequest('/api/admin/session',{});
    verify.then(()=>openInlineMatchEditor(id)).catch(()=>{
      pendingInlineMatchId=id;teamOpen();
    }).finally(()=>{button.disabled=false});
@@ -1619,22 +1630,38 @@ function showTeamAuthenticated(on){
 async function editorRequest(path,body={},password=''){
  const headers={'Content-Type':'application/json'};
  if(path==='/api/editor/login')headers['X-Editor-Password']=password;
- else if(adminSessionToken)headers['X-Admin-Session']=adminSessionToken;
  else if(editorSessionToken)headers['X-Editor-Session']=editorSessionToken;
+ else if(adminSessionToken)headers['X-Admin-Session']=adminSessionToken;
  const res=await fetch(path,{method:'POST',headers,body:JSON.stringify(body),cache:'no-store'});
  const data=await res.json().catch(()=>({error:'Serverantwort ungueltig.'}));
- if(res.status===401&&path!=='/api/editor/login'&&!adminSessionToken)saveEditorSession('');
+ if(res.status===401&&path!=='/api/editor/login'&&editorSessionToken){
+   saveEditorSession('');
+   // Ist gleichzeitig ein gueltiger Admin angemeldet, dessen Sitzung nutzen.
+   if(adminSessionToken){
+     const fallback=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Session':adminSessionToken},body:JSON.stringify(body),cache:'no-store'});
+     const fallbackData=await fallback.json().catch(()=>({error:'Serverantwort ungueltig.'}));
+     if(fallback.ok)return fallbackData;
+     if(fallback.status===401)saveAdminSession('');
+     throw Error(fallbackData.error||'Sitzung abgelaufen. Bitte erneut anmelden.');
+   }
+ }
  if(!res.ok)throw Error(data.error||'Team-Anfrage fehlgeschlagen.');
  return data;
 }
 function writeMatchRequest(body){
- return adminSessionToken?adminRequest('/api/admin/formation',body):editorRequest('/api/editor/formation',body);
+ if(editorSessionToken)return editorRequest('/api/editor/formation',body);
+ if(adminSessionToken)return adminRequest('/api/admin/formation',body);
+ return editorRequest('/api/editor/formation',body);
 }
 async function teamOpen(){
  $('#team-overlay').classList.remove('hidden');showTeamAuthenticated(false);teamMessage('');
  if(editorSessionToken||adminSessionToken){
    try{await editorRequest('/api/editor/session',{});showTeamAuthenticated(true);return}
-   catch(err){if(!adminSessionToken)saveEditorSession('')}
+   catch(err){
+     if(adminSessionToken){
+       try{await adminRequest('/api/admin/session',{});showTeamAuthenticated(true);return}catch{}
+     }
+   }
  }
  $('#team-password').focus();
 }
