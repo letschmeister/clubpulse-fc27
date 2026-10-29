@@ -1,4 +1,4 @@
-"""CLUBPULSE FC 27 — Webserver und Proxy fuer EA-Clubs-Statistiken.
+"""FC27 STATS — Webserver und Proxy fuer EA-Clubs-Statistiken.
 
 Start lokal: python server.py
 Cloud (Render): python server.py, HOST=0.0.0.0, PORT von Render
@@ -133,7 +133,7 @@ def do_search(name):
         clubs.append({
             "id": str(c.get("clubId", "")),
             "name": str(info.get("name") or c.get("clubName") or "Unbekannter Club"),
-            "division": c.get("currentDivision"),
+            "division": division_override_for_club(str(c.get("clubId", ""))) or c.get("currentDivision"),
             "games": c.get("gamesPlayed"),
             "wins": c.get("wins"),
             "goals": c.get("goals"),
@@ -186,8 +186,31 @@ def current_division_for_club(club_id, club_name):
             value = str(row.get("currentDivision") or "").strip()
             if value.isdecimal() and 1 <= int(value) <= 10:
                 return int(value)
-            # Eine Club-ID war eindeutig, aber EA hat keine aktuelle Division.
+            # Bei einem fehlenden/ungültigen Wert die andere Rangliste probieren.
+            break
+    return None
+
+
+def division_override_for_club(club_id):
+    """Manuell bestätigte Division aus events.json (GitHub-synchronisiert).
+
+    Kein Zurückfallen auf bestDivision und keine globale +/-1-Korrektur.
+    Die Quelle wird im Frontend sichtbar gekennzeichnet.
+    """
+    with EVENTS_LOCK:
+        data = EVENTS_RUNTIME
+    if data is None:
+        try:
+            with (HERE / "events.json").open(encoding="utf-8") as f:
+                data = json.load(f)
+        except (FileNotFoundError, ValueError, OSError):
             return None
+    overrides = data.get("divisionOverrides") if isinstance(data, dict) else None
+    if not isinstance(overrides, dict):
+        return None
+    value = overrides.get(str(club_id))
+    if type(value) is int and 1 <= value <= 10:
+        return value
     return None
 
 
@@ -233,11 +256,15 @@ def do_club(club_id):
             "lineup": {"ours": ours, "opponents": theirs},
         })
     club_name = info.get("name") or "Unbekannter Club"
-    division = current_division_for_club(club_id, club_name)
+    ea_division = current_division_for_club(club_id, club_name)
+    manual_division = division_override_for_club(club_id)
+    division = manual_division if manual_division is not None else ea_division
     remember_roster(club_id, club_name, members)
     return {
         "id": club_id,
         "currentDivision": division,
+        "divisionSource": "manual" if manual_division is not None else "ea",
+        "eaDivision": ea_division,
         "name": info.get("name") or "Unbekannter Club",
         "stadium": (info.get("customKit") or {}).get("stadName") or "",
         "stats": stats,
@@ -513,6 +540,38 @@ def admin_change(body):
         return data
 
 
+def admin_set_division(body):
+    """Speichert eine manuelle Division auf GitHub in events.json.
+
+    Kann nur nach erfolgreicher Passwortprüfung aufgerufen werden.
+    `division=null` löscht die Korrektur (EA-Zahl wird wieder angezeigt).
+    """
+    global EVENTS_RUNTIME
+    club_id = str(body.get("clubId", ""))
+    value = body.get("division")
+    if not (club_id.isdecimal() and 1 <= len(club_id) <= 20):
+        raise ValueError("Ungültige Club-ID.")
+    if value is not None and (type(value) is not int or not 1 <= value <= 10):
+        raise ValueError("Die Division muss zwischen 1 und 10 liegen.")
+    with ADMIN_WRITE_LOCK:
+        data, sha = github_file_and_sha()
+        overrides = data.get("divisionOverrides", {})
+        if not isinstance(overrides, dict) or len(overrides) > 300:
+            raise ValueError("Ungültiges Format der Divisionskorrekturen.")
+        overrides = dict(overrides)
+        if value is None:
+            overrides.pop(club_id, None)
+        else:
+            if club_id not in overrides and len(overrides) >= 300:
+                raise ValueError("Zu viele Divisionskorrekturen.")
+            overrides[club_id] = value
+        data["divisionOverrides"] = overrides
+        github_write_events(data, sha)
+        with EVENTS_LOCK:
+            EVENTS_RUNTIME = data
+        return {"clubId": club_id, "division": value}
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(HERE), **kwargs)
@@ -529,7 +588,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         p=urlsplit(self.path)
-        if p.path not in ("/api/admin/login", "/api/admin/events"):
+        if p.path not in ("/api/admin/login", "/api/admin/events", "/api/admin/division"):
             return self.send_json(404,{"error":"Endpunkt nicht gefunden."})
         try:
             length=int(self.headers.get("Content-Length", "0"))
@@ -549,6 +608,9 @@ class Handler(SimpleHTTPRequestHandler):
             admin_auth(password,self.client_address[0])
             if p.path=="/api/admin/login":
                 return self.send_json(200,{"ok":True})
+            if p.path == "/api/admin/division":
+                result = admin_set_division(payload)
+                return self.send_json(200, {"ok": True, "result": result})
             result=admin_change(payload)
             return self.send_json(200,{"ok":True,"events":result})
         except AdminError as error:
@@ -602,7 +664,7 @@ if __name__ == "__main__":
     # Render benoetigt 0.0.0.0; lokal nur 127.0.0.1, ausser HOST ist gesetzt.
     host = os.environ.get("HOST", "0.0.0.0" if os.environ.get("RENDER") else "127.0.0.1")
     server = ThreadingHTTPServer((host, port), Handler)
-    print(f"\n  CLUBPULSE FC27 startet auf {host}:{port}\n  Lokal: http://127.0.0.1:{port}\n  Zum Beenden: Strg+C\n", flush=True)
+    print(f"\n  FC27 STATS startet auf {host}:{port}\n  Lokal: http://127.0.0.1:{port}\n  Zum Beenden: Strg+C\n", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

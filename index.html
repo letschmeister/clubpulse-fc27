@@ -235,6 +235,23 @@
       /* Auf kleinen Displays wird das Halo innerhalb der Hero-Breite gehalten. */
       .hero::before{max-width:100%}
     }
+  
+/* Division: EA-Wert, mit klarer Quellenangabe. Keine implizite +/-1-Umrechnung. */
+.division-current{display:inline-flex;align-items:center;gap:8px;margin-top:7px;
+  padding:6px 11px;border:1px solid #547039;border-radius:100px;background:#23321f;
+  color:var(--accent);font-weight:800;font-size:12px;max-width:100%;}
+.division-current.unknown{color:#b9bdc3;background:#252a31;border-color:#424952;}
+.division-dot{height:7px;width:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.division-source{display:block;margin-top:5px;color:#9ca5ae;font-size:11px;line-height:1.4;max-width:460px}
+.admin-division-box{margin:18px 0;padding:17px;border:1px solid #394438;border-radius:13px;background:#171e19}
+.admin-division-box h3{font:700 17px 'Space Grotesk',sans-serif;margin:0 0 5px}
+.admin-division-box p{font-size:12px;color:var(--muted);margin:0 0 12px}
+.admin-division-box .admin-actions{margin-top:10px}
+/* Highlight exactly the active sort column (including header) */
+th.active-sort{color:var(--accent);background:#243020;border-bottom:2px solid var(--accent)}
+td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.05)}
+@media (max-width:600px){.division-current{font-size:11px}.division-source{font-size:10px}}
+
   </style>
 </head>
 <body>
@@ -287,7 +304,7 @@
   <div id="dashboard" class="hidden">
     <section class="section">
       <div class="label">// CLUB-ÜBERSICHT</div>
-      <div class="panel club-heading"><div class="club-left"><div class="crest" id="club-monogram">FC</div><div><small id="club-subline">EA SPORTS FC 27</small><h2 id="club-title"></h2><div><small id="club-updated"></small></div></div></div>
+      <div class="panel club-heading"><div class="club-left"><div class="crest" id="club-monogram">FC</div><div><small id="club-subline">EA SPORTS FC 27</small><h2 id="club-title"></h2><div id="division-current" class="division-current unknown" role="status" aria-live="polite"><span class="division-dot"></span>Aktuelle Liga: Nicht verfügbar</div><small id="division-source" class="division-source"></small><div><small id="club-updated"></small></div></div></div>
         <div class="club-right"><button type="button" class="button favorite-btn sm" id="favorite-club-button" aria-pressed="false">☆ Als Lieblingsclub speichern</button><button type="button" class="button secondary sm" id="copy-button">🔗 Link kopieren</button><button type="button" class="button sm" id="refresh-button">↻ Aktualisieren</button></div>
       </div>
       <div class="club-stats" id="summary-metrics"></div>
@@ -298,7 +315,7 @@
     </section>
     <section class="section">
       <div class="section-head"><div><div class="label">// SPIELER</div><h2>Dein Kader</h2><p>Auf eine Zeile klicken, um mehr über den Spieler zu erfahren.</p></div>
-        <div class="player-filters"><input class="filter" type="search" id="player-filter" placeholder="Spieler suchen …" aria-label="Spieler filtern"><select id="sort-select" class="filter" aria-label="Spieler sortieren"><option value="goals">Meiste Tore</option><option value="assists">Meiste Assists</option><option value="gamesPlayed">Meiste Spiele</option><option value="ratingAve">Beste Bewertung</option><option value="name">Name A–Z</option></select></div>
+        <div class="player-filters"><input class="filter" type="search" id="player-filter" placeholder="Spieler suchen …" aria-label="Spieler filtern"><select id="sort-select" class="filter" aria-label="Spieler sortieren"><option value="goals">Meiste Tore</option><option value="assists">Meiste Assists</option><option value="gamesPlayed">Meiste Spiele</option><option value="ratingAve">Beste Bewertung</option><option value="proOverall">Höchstes OVR</option><option value="favoritePosition">Position A–Z</option><option value="name">Name A–Z</option></select></div>
       </div>
       <div class="panel scroll"><table><thead><tr><th data-sort="name">Spieler</th><th data-sort="favoritePosition">Position</th><th data-sort="gamesPlayed">Spiele</th><th data-sort="goals">Tore</th><th data-sort="assists">Assists</th><th data-sort="ratingAve">Bewertung</th><th data-sort="proOverall">OVR</th></tr></thead><tbody id="players-body"></tbody></table></div>
       <p class="note">Spielerstatistiken: aktuelle Saison. Karrierewerte beziehen sich auf den gewählten Club, soweit EA sie liefert.</p>
@@ -376,6 +393,27 @@
         </div>
         <div class="admin-actions"><button class="button" id="admin-save" type="submit">Event speichern ↗</button><button class="button secondary" id="admin-cancel-edit" type="button">Abbrechen</button><button class="button secondary hidden" id="admin-delete" type="button">Event löschen</button></div>
       </form>
+
+      <section class="admin-division-box" id="admin-division-box">
+        <h3>Aktuelle Division korrigieren</h3>
+        <p id="admin-division-club">Öffne zuerst den gewünschten Club auf der Website.</p>
+        <form id="admin-division-form" class="hidden">
+          <label class="admin-field">Division laut Spiel
+            <select id="admin-division-select" required>
+              <option value="">Division auswählen</option>
+              <option value="1">Division 1</option><option value="2">Division 2</option><option value="3">Division 3</option>
+              <option value="4">Division 4</option><option value="5">Division 5</option><option value="6">Division 6</option>
+              <option value="7">Division 7</option><option value="8">Division 8</option><option value="9">Division 9</option>
+              <option value="10">Division 10</option>
+            </select>
+          </label>
+          <div class="admin-actions">
+            <button class="button sm" id="admin-division-save" type="submit">Division speichern</button>
+            <button class="button secondary sm" id="admin-division-reset" type="button">EA-Wert verwenden</button>
+          </div>
+        </form>
+        <p class="admin-hint">Nur für Admins. Korrigierte Divisionen werden in events.json auf GitHub gespeichert und für alle Besucher als manuell bestätigt gekennzeichnet.</p>
+      </section>
       <p class="admin-hint">Speichern erstellt automatisch einen Commit in <code>events.json</code> auf GitHub. Render kann dadurch ein neues Deployment starten. Die Termine sind sofort auf dem aktuellen Server sichtbar.</p>
     </div>
   </div>
@@ -584,6 +622,17 @@ function renderFormCurve(matches){
 }
 
 function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').classList.remove('hidden');$('#club-title').textContent=data.name||'Unbekannter Club';$('#club-monogram').textContent=monogram(data.name);const s=data.stats||{};
+  const divValue=data.currentDivision;
+  const division=Number(divValue);
+  const hasDivision=divValue!==null&&divValue!==undefined&&divValue!==''&&Number.isInteger(division)&&division>=1&&division<=10;
+  const divisionEl=$('#division-current');divisionEl.classList.toggle('unknown',!hasDivision);
+  divisionEl.replaceChildren();const dot=document.createElement('span');dot.className='division-dot';
+  divisionEl.append(dot,document.createTextNode(hasDivision?'Aktuelle Liga: Division '+division:'Aktuelle Liga: Nicht verfügbar'));
+  const manual=data.divisionSource==='manual';
+  const apiDivision=data.eaDivision==null?'kein Wert':'Division '+data.eaDivision;
+  $('#division-source').textContent=manual
+    ?'Vom Admin bestätigt · EA meldet '+apiDivision
+    :(hasDivision?'EA-Rangliste · Angabe kann nach einem Aufstieg verzögert sein':'EA hat keine aktuelle Division geliefert');
  $('#club-subline').textContent=[data.stadium||null,'Club-ID '+data.id].filter(Boolean).join(' · ');
  $('#club-updated').textContent='Abgerufen: '+new Date(data.updated*1000).toLocaleString('de-AT');
  $('#summary-metrics').innerHTML=[metric('Spiele',s.gamesPlayed,'Ligaspiele'),metric('Siege',s.wins,'Gewonnene Partien',true),metric('Unentschieden',s.ties,'Remis'),metric('Niederlagen',s.losses,'Verlorene Partien'),metric('Tore',s.goals,'Erzielte Tore',true),metric('Gegentore',s.goalsAgainst,'Kassierte Tore'),metric('Skill Rating',s.skillRating,'EA Skill-Bewertung',true),metric('Tordifferenz', num(s.goals)-num(s.goalsAgainst),'Tore minus Gegentore')].join('');
@@ -640,8 +689,19 @@ function renderMatch(m){
  const result=['W','D','L'].includes(m.result)?m.result:'D';
  return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Spieler anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">Von EA für dieses Spiel erfasste Spieler (${count} insgesamt). Keine individuellen Match-Statistiken.</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true,winner?.side,winner?.i)}${renderMatchSquad(them,m.opponent||'Gegner',false,winner?.side,winner?.i)}</div>${winner?`<p class="match-motm">★ <strong>Man of the Match:</strong> ${esc(winner.p.name||'Unbekannter Spieler')} (${esc(winner.side==='ours'?(clubData?.name||'Dein Club'):(m.opponent||'Gegner'))})</p>`:''}<p class="note">Quelle: EA clubs/matches → players. Die Anzahl zählt nur von EA erfasste Profile; KI-Spieler oder fehlende Datensätze werden möglicherweise nicht angezeigt. MOTM nur bei eindeutiger EA-Kennzeichnung.</p></div></details>`;
 }
-function renderPlayers(){const all=clubData?.members||[];const text=$('#player-filter').value.trim().toLowerCase();const filtered=all.filter(p=>[p.name,p.proName].some(v=>String(v||'').toLowerCase().includes(text)));filtered.sort((a,b)=>sortKey==='name'?String(a.name).localeCompare(String(b.name),'de'):sortKey==='favoritePosition'?String(a.favoritePosition).localeCompare(String(b.favoritePosition)):num(b[sortKey])-num(a[sortKey]));
- $('#players-body').replaceChildren();const tbody=$('#players-body');for(const p of filtered){const row=document.createElement('tr');row.tabIndex=0;row.setAttribute('aria-label','Spieler '+(p.name||''));row.innerHTML=`<td><div class="player-name"><span class="avatar">${esc(monogram(p.name))}</span><span>${esc(p.name||'Unbekannt')}<br><small class="muted" style="font-size:11px;font-weight:400">${esc(p.proName||'')}</small></span></div></td><td><span class="pos">${esc(posText[p.favoritePosition]||p.favoritePosition||'–')}</span></td><td>${esc(disp(p.gamesPlayed))}</td><td class="good">${esc(disp(p.goals))}</td><td>${esc(disp(p.assists))}</td><td>${esc(dec(p.ratingAve))}</td><td>${esc(disp(p.proOverall))}</td>`;row.addEventListener('click',()=>openPlayer(p));row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlayer(p)}});tbody.appendChild(row)}
+function renderPlayers(){
+  document.querySelectorAll('th[data-sort]').forEach(th=>{
+    const active=th.dataset.sort===sortKey;
+    th.classList.toggle('active-sort',active);
+    th.setAttribute('aria-sort',active?(sortKey==='name'||sortKey==='favoritePosition'?'ascending':'descending'):'none');
+  });
+  $('#sort-select').value=sortKey;
+  const all=clubData?.members||[];const text=$('#player-filter').value.trim().toLowerCase();const filtered=all.filter(p=>[p.name,p.proName].some(v=>String(v||'').toLowerCase().includes(text)));filtered.sort((a,b)=>sortKey==='name'?String(a.name).localeCompare(String(b.name),'de'):sortKey==='favoritePosition'?String(a.favoritePosition).localeCompare(String(b.favoritePosition)):num(b[sortKey])-num(a[sortKey]));
+ $('#players-body').replaceChildren();const tbody=$('#players-body');for(const p of filtered){const row=document.createElement('tr');row.tabIndex=0;row.setAttribute('aria-label','Spieler '+(p.name||''));row.innerHTML=`<td><div class="player-name"><span class="avatar">${esc(monogram(p.name))}</span><span>${esc(p.name||'Unbekannt')}<br><small class="muted" style="font-size:11px;font-weight:400">${esc(p.proName||'')}</small></span></div></td><td><span class="pos">${esc(posText[p.favoritePosition]||p.favoritePosition||'–')}</span></td><td>${esc(disp(p.gamesPlayed))}</td><td>${esc(disp(p.goals))}</td><td>${esc(disp(p.assists))}</td><td>${esc(dec(p.ratingAve))}</td><td>${esc(disp(p.proOverall))}</td>`;
+  const colKeys=['name','favoritePosition','gamesPlayed','goals','assists','ratingAve','proOverall'];
+  const selectedIndex=colKeys.indexOf(sortKey);
+  if(selectedIndex>=0)row.cells[selectedIndex].classList.add('sorted-stat');
+  row.addEventListener('click',()=>openPlayer(p));row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPlayer(p)}});tbody.appendChild(row)}
  if(!filtered.length){const row=document.createElement('tr');row.innerHTML='<td colspan="7" class="empty" style="text-align:center;padding:25px">Keine Spieler gefunden.</td>';tbody.appendChild(row)}
 }
 function openPlayer(p){openedPlayer=p;const name=p.name||'Unbekannter Spieler';
@@ -665,7 +725,7 @@ updateFavoriteClub();
 updateFavoritePlayer();
 $('#sort-select').addEventListener('change',e=>{sortKey=e.target.value;renderPlayers()});
 $('#player-filter').addEventListener('input',renderPlayers);
-document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{sortKey=th.dataset.sort;$('#sort-select').value=['name','goals','assists','gamesPlayed','ratingAve'].includes(sortKey)?sortKey:'goals';renderPlayers()}));
+document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{sortKey=th.dataset.sort;$('#sort-select').value=sortKey;renderPlayers()}));
 $('#refresh-button').addEventListener('click',()=>{if(clubData)loadClub(clubData.id)});
 $('#copy-button').addEventListener('click',async()=>{if(!clubData)return;const url=new URL(location.href);url.searchParams.set('club',clubData.id);try{await navigator.clipboard.writeText(url.toString());$('#copy-button').textContent='✓ Kopiert';setTimeout(()=>$('#copy-button').textContent='🔗 Link kopieren',1700)}catch{window.prompt('Link kopieren:',url.toString())}});
 const closeModal=()=>{$('#overlay').classList.add('hidden')};$('#close-modal').addEventListener('click',closeModal);$('#overlay').addEventListener('click',e=>{if(e.target===$('#overlay'))closeModal()});window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();$('#card-overlay').classList.add('hidden')}});
@@ -710,7 +770,17 @@ const startParams=new URLSearchParams(location.search);const startClub=startPara
 /* Passwort nur im Arbeitsspeicher dieses Browser-Tabs, niemals im Quellcode oder localStorage. */
 let adminPassword='', adminItems=[], adminBusy=false;
 function adminMessage(message,bad=false){const box=$('#admin-status');box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('bad',bad)}
+function syncAdminDivisionForm(){
+  const chosen=!!clubData?.id;
+  $('#admin-division-form').classList.toggle('hidden',!chosen);
+  const ea=clubData?.eaDivision;
+  $('#admin-division-club').textContent=chosen
+    ?`${clubData.name} · Club-ID ${clubData.id} · EA: ${ea==null?'Nicht verfügbar':'Division '+ea}`
+    :'Öffne zuerst einen Club, dann diesen Admin-Bereich.';
+  $('#admin-division-select').value=chosen&&clubData.divisionSource==='manual'?String(clubData.currentDivision):'';
+}
 function adminOpen(){
+  syncAdminDivisionForm();
   $('#admin-overlay').classList.remove('hidden');
   $('#admin-login-view').classList.toggle('hidden',!!adminPassword);
   $('#admin-editor-view').classList.toggle('hidden',!adminPassword);
@@ -788,6 +858,27 @@ $('#admin-login-form').addEventListener('submit',async e=>{
  }catch(err){adminPassword='';alert(err.message)}
 });
 $('#admin-logout').addEventListener('click',()=>{adminPassword='';adminItems=[];adminClose();});
+async function adminDivisionChange(reset=false){
+  if(!clubData?.id||!adminPassword||adminBusy)return;
+  const value=reset?null:Number($('#admin-division-select').value);
+  if(!reset&&(!Number.isInteger(value)||value<1||value>10)){
+    adminMessage('Bitte eine gültige Division auswählen.',true);return;
+  }
+  if(reset&&!confirm('Manuelle Korrektur entfernen und wieder den EA-Wert anzeigen?'))return;
+  adminBusy=true;$('#admin-division-save').disabled=true;$('#admin-division-reset').disabled=true;
+  adminMessage('Division wird gespeichert …');
+  try{
+    await adminRequest('/api/admin/division',{clubId:String(clubData.id),division:value});
+    clubData.currentDivision=value===null?clubData.eaDivision:value;
+    clubData.divisionSource=value===null?'ea':'manual';
+    renderClub(clubData);syncAdminDivisionForm();
+    adminMessage('✓ Division gespeichert. Sie wird für alle Besucher angezeigt.');
+  }catch(e){adminMessage(e.message,true)}finally{
+    adminBusy=false;$('#admin-division-save').disabled=false;$('#admin-division-reset').disabled=false;
+  }
+}
+$('#admin-division-form').addEventListener('submit',e=>{e.preventDefault();adminDivisionChange(false)});
+$('#admin-division-reset').addEventListener('click',()=>adminDivisionChange(true));
 $('#admin-new').addEventListener('click',()=>adminEdit());
 $('#admin-cancel-edit').addEventListener('click',()=>$('#admin-event-form').classList.add('hidden'));
 $('#admin-delete').addEventListener('click',()=>adminMutate('delete'));
