@@ -57,5 +57,8 @@
       "sourceLabel": "EA FC 27 Launch-Update",
       "dateStatus": "confirmed"
     }
-  ]
+  ],
+  "divisionOverrides": {
+    "132788": 4
+  }
 }
