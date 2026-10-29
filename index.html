@@ -317,6 +317,23 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 .manual-match-tag{display:inline-block;border:1px solid #728765;color:#d5f8bd;border-radius:6px;padding:2px 6px;font-size:10px;font-weight:800;vertical-align:middle}
 .manual-position{display:inline-flex;align-items:center;justify-content:center;padding:3px 7px;background:#354b40;border-radius:6px;color:#d6f0d5;font-size:10px;font-weight:800;margin-left:8px}
 @media(max-width:650px){.formation-edit-list{grid-template-columns:1fr}.match-editor{padding:13px}.match-editor-grid{grid-template-columns:1fr 1fr}.match-editor-field:first-child{grid-column:1/-1}.match-player-row{grid-template-columns:minmax(0,1fr) 42px}.match-player-row input{grid-column:1/-1}.match-player-row select{grid-column:1}.match-player-row button{grid-column:2;height:43px}}
+
+/* Inline-Spielverwaltung: nur bei Admin-Authentifizierung editierbar. */
+.match-inline-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:17px 0 6px}
+.match-inline-edit{border:1px solid #658150;background:#253628;color:#d7ffb3;border-radius:10px;padding:10px 15px;font-weight:800;font-size:13px;cursor:pointer;transition:background .18s,border-color .18s}
+.match-inline-edit:hover,.match-inline-edit:focus-visible{background:#304b33;border-color:#b9f975}
+.match-inline-edit:focus-visible{outline:2px solid #c7f767;outline-offset:2px}
+.match-inline-editor{margin-top:13px;padding:17px;border:1px solid #668d59;border-radius:15px;background:linear-gradient(135deg,#1d3024,#151e1e)}
+.match-inline-editor .match-inline-title{font:700 19px 'Space Grotesk',sans-serif;margin:0 0 7px;color:#e4ffd7}
+.match-inline-editor .match-inline-caption{font-size:12px;color:#b1c5b6;margin:0 0 15px;line-height:1.5}
+.match-inline-editor .match-editor-grid{grid-template-columns:1.1fr 1fr 1fr}
+.match-inline-editor .match-player-row{max-width:740px}
+.match-inline-status{font-size:13px;padding:11px 13px;border:1px solid #557451;border-radius:9px;background:#203527;color:#e4fcd7;margin-top:14px}
+.match-inline-status.error{border-color:#965854;background:#482827;color:#ffd4d4}
+.match-inline-footer{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.match-inline-editor :is(input,select){font-size:16px}
+@media(max-width:650px){.match-inline-editor{padding:13px}.match-inline-editor .match-editor-grid{grid-template-columns:1fr 1fr}.match-inline-editor .match-editor-field:first-child{grid-column:1/-1}.match-inline-footer .button{flex:1 1 125px;padding:11px 12px}}
+
 </style>
 </head>
 <body>
@@ -766,7 +783,7 @@ function renderFormationStats(history){
  const groups=Object.values(byFormation).map(g=>({...g,winrate:100*g.w/g.total}));
  // Erst ab drei erfassten Spielen eine Formation als besten Kandidaten auszeichnen.
  groups.sort((a,b)=>(b.total>=3)-(a.total>=3)||b.winrate-a.winrate||b.total-a.total||a.name.localeCompare(b.name));
- if(!groups.length){box.innerHTML='<div class="panel formation-empty">Noch keine Aufstellungen erfasst. Öffne die letzten Spiele deines Clubs und trage im Admin-Menü unter <strong>Aufstellungen</strong> die gespielte Formation ein.</div>';return;}
+ if(!groups.length){box.innerHTML='<div class="panel formation-empty">Noch keine Aufstellungen erfasst. Öffne ein Ligaspiel und nutze <strong>Spiel direkt bearbeiten</strong>, um die Formation einzutragen.</div>';return;}
  const enough=groups.some(g=>g.total>=3);
  box.innerHTML=groups.map((g,i)=>{
    const eligible=enough?g.total>=3:true;
@@ -823,7 +840,7 @@ function renderMatch(m){
  const source=manual?'<span class="manual-match-tag">ADMIN-KORREKTUR</span> ':'';
  const formTag=m.formation?`<span class="manual-match-tag">${esc(m.formation)}</span> `:'';
  const result=['W','D','L'].includes(m.result)?m.result:'D';
- return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Spieler anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))} ${source}${formTag}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">${m.manualPlayers?'Vom Admin erfasste Spieler des eigenen Clubs; gegnerischer Kader laut EA.':'Von EA für dieses Spiel erfasste Spieler.'} (${count} Profile insgesamt)</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true,winner?.side,winner?.i)}${renderMatchSquad(them,m.opponent||'Gegner',false,winner?.side,winner?.i)}</div>${winner?`<p class="match-motm">★ <strong>Man of the Match:</strong> ${esc(winner.p.name||'Unbekannter Spieler')} (${esc(winner.side==='ours'?(clubData?.name||'Dein Club'):(m.opponent||'Gegner'))})</p>`:''}<p class="note">${manual?'Eigener Kader bzw. Ergebnis teilweise manuell korrigiert. EA-Ergebnis und -Kader können davon abweichen.':'Quelle: EA clubs/matches → players.'} KI-Spieler und fehlende Profile sind eventuell nicht enthalten. MOTM nur bei eindeutiger EA-Kennzeichnung.</p></div></details>`;
+ return `<details class="match-entry" data-match-id="${esc(String(m.id))}"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Spieler anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))} ${source}${formTag}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">${m.manualPlayers?'Vom Admin erfasste Spieler des eigenen Clubs; gegnerischer Kader laut EA.':'Von EA für dieses Spiel erfasste Spieler.'} (${count} Profile insgesamt)</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true,winner?.side,winner?.i)}${renderMatchSquad(them,m.opponent||'Gegner',false,winner?.side,winner?.i)}</div>${winner?`<p class="match-motm">★ <strong>Man of the Match:</strong> ${esc(winner.p.name||'Unbekannter Spieler')} (${esc(winner.side==='ours'?(clubData?.name||'Dein Club'):(m.opponent||'Gegner'))})</p>`:''}<p class="note">${manual?'Eigener Kader bzw. Ergebnis teilweise manuell korrigiert. EA-Ergebnis und -Kader können davon abweichen.':'Quelle: EA clubs/matches → players.'} KI-Spieler und fehlende Profile sind eventuell nicht enthalten. MOTM nur bei eindeutiger EA-Kennzeichnung.</p><div class="match-inline-actions"><button type="button" class="match-inline-edit" data-match-id="${esc(String(m.id))}">✎ Spiel direkt bearbeiten</button></div><div class="match-inline-editor-slot"></div></div></details>`;
 }
 function renderPlayers(){
   document.querySelectorAll('th[data-sort]').forEach(th=>{
@@ -912,6 +929,7 @@ function saveAdminSession(token){
   adminSessionToken=token;
   try{if(token)sessionStorage.setItem(ADMIN_SESSION_KEY,token);else sessionStorage.removeItem(ADMIN_SESSION_KEY)}catch{}
 }
+let pendingInlineMatchId='';
 let adminItems=[], adminBusy=false;
 let adminTab='division', adminSelectedClub=null, adminOverrides={};
 function adminMessage(message,bad=false){const box=$('#admin-status');box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('bad',bad)}
@@ -991,7 +1009,9 @@ async function adminOpen(){
     try{
       await adminRequest('/api/admin/session',{});
       if($('#admin-overlay').classList.contains('hidden')||adminSessionToken!==candidate)return;
-      $('#admin-editor-view').classList.remove('hidden');adminRefresh();return;
+      $('#admin-editor-view').classList.remove('hidden');adminRefresh();
+      if(pendingInlineMatchId){openPendingInlineMatch()}
+      return;
     }catch(err){
       if(adminSessionToken!==candidate)return;
       saveAdminSession('');
@@ -1001,6 +1021,7 @@ async function adminOpen(){
   $('#admin-login-view').classList.remove('hidden');$('#admin-password').focus();
 }
 function adminClose(){
+  pendingInlineMatchId='';
   // Schliessen des Fensters ist kein Logout. Die Sitzung bleibt im geoeffneten Tab.
   $('#admin-overlay').classList.add('hidden');$('#admin-event-form').classList.add('hidden');
 }
@@ -1023,7 +1044,7 @@ function adminLogout(){
    // Unabhaengig vom Serverergebnis sofort lokal abmelden.
    fetch('/api/admin/logout',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Session':token},body:'{}',cache:'no-store'}).catch(()=>{});
  }
- saveAdminSession('');adminItems=[];adminClose();
+ saveAdminSession('');adminItems=[];document.querySelectorAll('.match-inline-editor-slot').forEach(slot=>slot.replaceChildren());adminClose();
 }
 function adminRefresh(){
  // Die öffentliche Liste reicht für die Anzeige – nur die Änderungen sind geschützt.
@@ -1091,6 +1112,7 @@ $('#admin-login-form').addEventListener('submit',async e=>{
    saveAdminSession(response.session);
    $('#admin-login-view').classList.add('hidden');
    $('#admin-editor-view').classList.remove('hidden');adminMessage('');adminRefresh();
+   if(pendingInlineMatchId){openPendingInlineMatch()}
  }catch(err){alert(err.message)}
 });
 $('#admin-logout').addEventListener('click',adminLogout);
@@ -1214,6 +1236,135 @@ async function adminSaveMatch(reset=false){
   adminMessage(reset?'✓ Manuelle Daten entfernt. Der EA-Kader wird wieder verwendet.':'✓ Gespeichert. Die Ergebnisse der Formationsstatistik und die Matchdetails wurden aktualisiert.');
  }catch(err){adminMessage(err.message,true)}finally{adminBusy=false;$('#admin-match-save').disabled=false;$('#admin-match-reset').disabled=false}
 }
+// Inline editing in expanded match cards reuses the protected admin endpoint.
+// The button is visible to all; editing requires a verified admin session.
+function matchById(matchId){
+ return (clubData?.matches||[]).find(m=>String(m.id)===String(matchId));
+}
+function openPendingInlineMatch(){
+ const id=pendingInlineMatchId;
+ pendingInlineMatchId='';
+ adminClose();
+ if(id)openInlineMatchEditor(id);
+}
+function inlinePlayerRow(container,player={}){
+ if(container.children.length>=16)return inlineMatchStatus(container.closest('form'),'Maximal 16 Spieler pro Spiel.',true);
+ const row=document.createElement('div');row.className='match-player-row';
+ const input=document.createElement('input');input.type='text';input.maxLength=70;input.placeholder='Spielername / PSN-ID';input.setAttribute('aria-label','Spielername');input.value=player.name||'';
+ const select=document.createElement('select');select.setAttribute('aria-label','Spielerposition');
+ const blank=document.createElement('option');blank.value='';blank.textContent='Position –';select.append(blank);
+ for(const position of MATCH_POSITIONS){const opt=document.createElement('option');opt.value=position;opt.textContent=position;select.append(opt)}
+ select.value=MATCH_POSITIONS.includes(player.position)?player.position:'';
+ const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Spieler entfernen');remove.addEventListener('click',()=>row.remove());
+ row.append(input,select,remove);container.append(row);
+}
+function inlineMatchStatus(form,message,bad=false){
+ const box=form?.querySelector('.match-inline-status');
+ if(!box)return;
+ box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('error',bad);
+}
+function openInlineMatchEditor(id){
+ const match=matchById(id);
+ if(!match)return;
+ const details=[...$('#matches-view').querySelectorAll('.match-entry')].find(el=>el.dataset.matchId===String(id));
+ if(!details)return;
+ details.open=true;
+ const slot=details.querySelector('.match-inline-editor-slot');
+ if(slot.querySelector('form')){slot.replaceChildren();return}
+ // Keep only one open edit form. Other match details may remain expanded for reading.
+ $('#matches-view').querySelectorAll('.match-inline-editor-slot').forEach(s=>s.replaceChildren());
+ const saved=(clubData.formationHistory||{})[String(id)]||{};
+ const form=document.createElement('form');form.className='match-inline-editor';
+ form.setAttribute('aria-label','Spiel direkt bearbeiten');
+ form.innerHTML=`<h3 class="match-inline-title">⚙ ${esc(match.opponent||'Match')} bearbeiten</h3>
+  <p class="match-inline-caption">Formation, Endstand und den eigenen Kader mit Positionen bearbeiten. Änderungen werden mit deinem Admin-Zugang dauerhaft gespeichert.</p>
+  <div class="match-editor-grid">
+    <label class="match-editor-field">Formation<select name="formation"><option value="">Nicht bekannt</option>${FORMATION_CHOICES.map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('')}</select></label>
+    <label class="match-editor-field">Eigene Tore<input name="goals" type="number" min="0" max="30" step="1" required></label>
+    <label class="match-editor-field">Gegentore<input name="against" type="number" min="0" max="30" step="1" required></label>
+  </div>
+  <div class="match-editor-subtitle">Mitspieler · ${esc(clubData.name||'Dein Club')}</div>
+  <div class="match-inline-players match-editor-roster"></div>
+  <button class="button secondary sm match-inline-add" type="button">+ Spieler hinzufügen</button>
+  <p class="match-editor-help">Nur Spieler und Positionen des eigenen Clubs bearbeiten. Die Daten der Gegner bleiben von EA. Ein Admin-Ergebnis wird als Korrektur gekennzeichnet.</p>
+  <div class="match-inline-footer"><button class="button match-inline-save" type="submit">✓ Änderungen speichern</button><button class="button secondary match-inline-reset" type="button">EA-Daten wiederherstellen</button><button class="button secondary match-inline-cancel" type="button">Schließen</button></div>
+  <p class="match-inline-status hidden" role="status" aria-live="polite"></p>`;
+ form.elements.formation.value=saved.formation||'';
+ form.elements.goals.value=Number.isInteger(saved.goals)?saved.goals:match.goals;
+ form.elements.against.value=Number.isInteger(saved.against)?saved.against:match.against;
+ const roster=saved.playersSource==='manual'&&Array.isArray(saved.players)?saved.players:(match.lineup?.ours||[]);
+ slot.append(form);
+ for(const player of roster)inlinePlayerRow(form.querySelector('.match-inline-players'),player);
+ form.querySelector('.match-inline-add').addEventListener('click',()=>inlinePlayerRow(form.querySelector('.match-inline-players')));
+ form.querySelector('.match-inline-cancel').addEventListener('click',()=>slot.replaceChildren());
+ form.querySelector('.match-inline-reset').addEventListener('click',()=>saveInlineMatch(id,form,true));
+ form.addEventListener('submit',e=>{e.preventDefault();saveInlineMatch(id,form,false)});
+ form.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+}
+async function saveInlineMatch(id,form,reset){
+ if(adminBusy||!clubData?.id)return;
+ if(reset&&!confirm('Alle manuellen Angaben für dieses Spiel entfernen und EA-Daten wiederherstellen?'))return;
+ const rows=[...form.querySelectorAll('.match-inline-players .match-player-row')];
+ const players=rows.map(r=>({name:r.querySelector('input').value.trim(),position:r.querySelector('select').value}));
+ if(!reset&&(players.some(p=>!p.name)||(new Set(players.map(p=>p.name.toLocaleLowerCase('de')))).size!==players.length)){
+   inlineMatchStatus(form,'Bitte alle Spielernamen ausfüllen und doppelte Namen entfernen.',true);return;
+ }
+ const goals=Number(form.elements.goals.value),against=Number(form.elements.against.value);
+ if(!reset&&(!form.elements.goals.value||!form.elements.against.value||!Number.isInteger(goals)||!Number.isInteger(against)||goals<0||against<0||goals>30||against>30)){
+   inlineMatchStatus(form,'Bitte einen gültigen Endstand von 0 bis 30 eingeben.',true);return;
+ }
+ const saveButton=form.querySelector('.match-inline-save'),resetButton=form.querySelector('.match-inline-reset');
+ adminBusy=true;saveButton.disabled=true;resetButton.disabled=true;
+ inlineMatchStatus(form,'Speichere auf GitHub …');
+ try{
+   const data=await adminRequest('/api/admin/formation',{clubId:String(clubData.id),matchId:String(id),formation:reset?null:form.elements.formation.value||null,goals,against,players,reset});
+   clubData.formationHistory=data.formationHistory||{};
+   const current=matchById(id);
+   if(current){
+      if(reset){
+        // Refresh original EA values and lineups; do not continue to display manual players.
+        try{clubData=await api('/api/club?id='+encodeURIComponent(clubData.id))}catch{
+          current.goals=current.eaGoals;current.against=current.eaAgainst;
+          current.result=current.goals>current.against?'W':current.goals<current.against?'L':'D';
+          current.manualScore=false;current.manualPlayers=false;current.formation=null;
+          current.lineup.ours=[]; // Unknown after reset: do not mislabel saved players as EA players.
+        }
+      }else applySavedMatch(current,clubData.formationHistory[String(id)]);
+   }
+   renderClub(clubData);
+   // Reopen same match card, now showing updated results and positions.
+   const updated=[...$('#matches-view').querySelectorAll('.match-entry')].find(x=>x.dataset.matchId===String(id));
+   if(updated){
+     updated.open=true;
+     const message=document.createElement('p');message.className='match-inline-status';
+     message.textContent=reset?'✓ Manuelle Angaben entfernt. EA-Daten wiederhergestellt.':'✓ Gespeichert: Formation, Ergebnis und eigene Spielerpositionen wurden aktualisiert.';
+     updated.querySelector('.match-inline-editor-slot').append(message);
+   }
+   adminDrawFormations(false);
+ }catch(err){
+   inlineMatchStatus(form,err.message,true);
+   if(!adminSessionToken){
+     pendingInlineMatchId=String(id);
+     adminOpen();
+   }
+ }finally{adminBusy=false;saveButton.disabled=false;resetButton.disabled=false}
+}
+$('#matches-view').addEventListener('click',e=>{
+ const button=e.target.closest('.match-inline-edit');
+ if(!button)return;
+ const id=button.dataset.matchId;
+ if(!matchById(id))return;
+ if(adminSessionToken){
+   // Validate retained session so inline editing never assumes stale credentials.
+   button.disabled=true;
+   adminRequest('/api/admin/session',{}).then(()=>openInlineMatchEditor(id)).catch(()=>{
+     pendingInlineMatchId=id;adminOpen();
+   }).finally(()=>{button.disabled=false});
+ }else{
+   pendingInlineMatchId=id;adminOpen();
+ }
+});
+
 $('#admin-player-add').addEventListener('click',()=>adminPlayerRow());
 $('#admin-match-editor').addEventListener('submit',e=>{e.preventDefault();adminSaveMatch(false)});
 $('#admin-match-reset').addEventListener('click',()=>adminSaveMatch(true));
