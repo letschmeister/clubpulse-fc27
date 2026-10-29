@@ -61,40 +61,7 @@
   "divisionOverrides": {
     "132788": 4
   },
-  "formationHistory": {
-    "132788": {
-      "147438673020402": {
-        "timestamp": 1793225558,
-        "opponent": "AhPuesdePana",
-        "eaGoals": 0,
-        "eaAgainst": 5,
-        "formation": "4-2-3-1",
-        "goals": 0,
-        "against": 5,
-        "result": "L",
-        "scoreSource": "manual",
-        "players": [
-          {
-            "name": "Bierbaron08",
-            "position": "ZOM"
-          },
-          {
-            "name": "Burnhead",
-            "position": "ST"
-          },
-          {
-            "name": "Mudwalker_1971",
-            "position": "ZDM"
-          },
-          {
-            "name": "realoviedo24",
-            "position": "IV"
-          }
-        ],
-        "playersSource": "manual"
-      }
-    }
-  },
+  "formationHistory": {},
   "matchdayPlans": {
     "132788": {
       "players": [
