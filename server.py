@@ -310,6 +310,7 @@ def do_club(club_id):
         "career": career,
         "matches": matches,
         "formationHistory": history,
+        "matchdayPlan": get_team_plan(club_id),
         "updated": int(time()),
     }
 
@@ -417,6 +418,14 @@ def do_player_search(gamertag, saved_club_ids=""):
 # ADMIN: Zugangsdaten stehen ausschließlich in Render-Umgebungsvariablen.
 # Niemals Passwörter oder GitHub-Tokens in diese Datei / GitHub eintragen.
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+# Eigenstaendige Rolle: darf NUR Match-Aufstellungen und den heutigen Teamplan bearbeiten.
+EDITOR_PASSWORD = os.environ.get("EDITOR_PASSWORD", "")
+EDITOR_CLUB_IDS = {v.strip() for v in os.environ.get("EDITOR_CLUB_IDS", "132788").split(",")
+                   if v.strip().isdecimal() and 1 <= len(v.strip()) <= 20}
+EDITOR_SESSIONS = {}
+EDITOR_SESSION_LOCK = Lock()
+EDITOR_FAILURES = defaultdict(deque)
+EDITOR_FAILURE_LOCK = Lock()
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 GITHUB_REPO = os.environ.get("GITHUB_REPO", "letschmeister/clubpulse-fc27").strip()
 GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main").strip() or "main"
@@ -497,6 +506,100 @@ def admin_session_auth(session_token):
 def revoke_admin_session(session_token):
     with ADMIN_SESSION_LOCK:
         ADMIN_SESSIONS.pop(session_token, None)
+
+
+def editor_configured():
+    return (len(EDITOR_PASSWORD) >= 12 and EDITOR_PASSWORD != ADMIN_PASSWORD
+            and bool(EDITOR_CLUB_IDS) and bool(GITHUB_TOKEN)
+            and bool(re.fullmatch(r"[\w.-]+/[\w.-]+", GITHUB_REPO)))
+
+
+def create_editor_session(password, ip):
+    if not editor_configured():
+        raise AdminError(503, "Team-Zugang noch nicht eingerichtet. EDITOR_PASSWORD und EDITOR_CLUB_IDS in Render pruefen.")
+    now = monotonic()
+    with EDITOR_FAILURE_LOCK:
+        attempts = EDITOR_FAILURES[ip]
+        while attempts and now - attempts[0] > 300:
+            attempts.popleft()
+        if len(attempts) >= 10:
+            raise AdminError(429, "Zu viele Anmeldeversuche. Bitte spaeter erneut versuchen.")
+    if not isinstance(password, str) or len(password) > 1024 or not hmac.compare_digest(
+            password.encode("utf-8"), EDITOR_PASSWORD.encode("utf-8")):
+        with EDITOR_FAILURE_LOCK:
+            EDITOR_FAILURES[ip].append(now)
+        raise AdminError(401, "Falsches Team-Passwort.")
+    with EDITOR_FAILURE_LOCK:
+        EDITOR_FAILURES.pop(ip, None)
+    token = secrets.token_urlsafe(32)
+    with EDITOR_SESSION_LOCK:
+        for key, expiry in list(EDITOR_SESSIONS.items()):
+            if expiry <= now:
+                EDITOR_SESSIONS.pop(key, None)
+        if len(EDITOR_SESSIONS) >= 100:
+            EDITOR_SESSIONS.pop(min(EDITOR_SESSIONS, key=EDITOR_SESSIONS.get), None)
+        EDITOR_SESSIONS[token] = now + ADMIN_SESSION_IDLE_SECONDS
+    return token
+
+
+def editor_session_auth(token):
+    if not editor_configured():
+        raise AdminError(503, "Team-Zugang nicht eingerichtet.")
+    if not isinstance(token, str) or len(token) != 43:
+        raise AdminError(401, "Team-Sitzung abgelaufen. Bitte neu anmelden.")
+    now = monotonic()
+    with EDITOR_SESSION_LOCK:
+        if EDITOR_SESSIONS.get(token, 0) <= now:
+            EDITOR_SESSIONS.pop(token, None)
+            raise AdminError(401, "Team-Sitzung abgelaufen. Bitte neu anmelden.")
+        EDITOR_SESSIONS[token] = now + ADMIN_SESSION_IDLE_SECONDS
+
+
+def editor_club_auth(body):
+    club_id = str(body.get("clubId", ""))
+    if club_id not in EDITOR_CLUB_IDS:
+        raise AdminError(403, "Team-Zugang ist fuer diesen Club nicht freigegeben.")
+
+
+def get_team_plan(club_id):
+    with EVENTS_LOCK:
+        data = EVENTS_RUNTIME
+    if data is None:
+        try:
+            with (HERE / "events.json").open(encoding="utf-8") as file:
+                data = json.load(file)
+        except (OSError, ValueError):
+            return None
+    plans = data.get("matchdayPlans", {}) if isinstance(data, dict) else {}
+    plan = plans.get(str(club_id)) if isinstance(plans, dict) else None
+    return plan if isinstance(plan, dict) else None
+
+
+def editor_set_team_plan(body):
+    global EVENTS_RUNTIME
+    club_id = str(body.get("clubId", ""))
+    if not (club_id.isdecimal() and 1 <= len(club_id) <= 20):
+        raise ValueError("Ungueltige Club-ID.")
+    raw = body.get("players", [])
+    if not isinstance(raw, list) or len(raw) > 11:
+        raise ValueError("Maximal elf menschliche Spieler.")
+    players = validate_manual_roster(raw)
+    for p in players:
+        if not p["position"]:
+            raise ValueError("Bitte fuer jeden Spieler eine Position festlegen.")
+    with ADMIN_WRITE_LOCK:
+        data, sha = github_file_and_sha()
+        plans = data.get("matchdayPlans", {})
+        if not isinstance(plans, dict) or len(plans) > 300:
+            raise ValueError("Ungueltiges Planformat.")
+        plans = dict(plans)
+        plan = {"players": players, "updatedAt": int(time())}
+        plans[club_id] = plan
+        data["matchdayPlans"] = plans
+        github_write_events(data, sha)
+        with EVENTS_LOCK:
+            EVENTS_RUNTIME = data
+        return plan
 
 
 def checked_date(raw, optional=True):
@@ -809,7 +912,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         p=urlsplit(self.path)
-        if p.path not in ("/api/admin/login", "/api/admin/session", "/api/admin/logout", "/api/admin/events", "/api/admin/division", "/api/admin/formation"):
+        if p.path not in ("/api/admin/login", "/api/admin/session", "/api/admin/logout", "/api/admin/events", "/api/admin/division", "/api/admin/formation", "/api/editor/login", "/api/editor/session", "/api/editor/logout", "/api/editor/formation", "/api/editor/plan"):
             return self.send_json(404,{"error":"Endpunkt nicht gefunden."})
         try:
             length=int(self.headers.get("Content-Length", "0"))
@@ -829,6 +932,32 @@ class Handler(SimpleHTTPRequestHandler):
                     raise AdminError(401,"Ungültiges Passwort.")
                 session=create_admin_session(password,self.client_address[0])
                 return self.send_json(200,{"ok":True,"session":session})
+            if p.path.startswith("/api/editor/"):
+                if p.path == "/api/editor/login":
+                    token = create_editor_session(self.headers.get("X-Editor-Password", ""), self.client_address[0])
+                    return self.send_json(200, {"ok": True, "session": token, "role": "editor"})
+                admin_token = self.headers.get("X-Admin-Session", "")
+                editor_token = self.headers.get("X-Editor-Session", "")
+                is_admin = bool(admin_token)
+                if is_admin:
+                    admin_session_auth(admin_token)
+                else:
+                    editor_session_auth(editor_token)
+                if p.path == "/api/editor/session":
+                    return self.send_json(200, {"ok": True, "role": "admin" if is_admin else "editor"})
+                if p.path == "/api/editor/logout":
+                    if not is_admin:
+                        with EDITOR_SESSION_LOCK:
+                            EDITOR_SESSIONS.pop(editor_token, None)
+                    return self.send_json(200, {"ok": True})
+                if not is_admin:
+                    editor_club_auth(payload)
+                if p.path == "/api/editor/formation":
+                    result = admin_set_formation(payload)
+                    return self.send_json(200, {"ok": True, "formationHistory": result})
+                if p.path == "/api/editor/plan":
+                    result = editor_set_team_plan(payload)
+                    return self.send_json(200, {"ok": True, "plan": result})
             token=self.headers.get("X-Admin-Session", "")
             if token:
                 admin_session_auth(token)

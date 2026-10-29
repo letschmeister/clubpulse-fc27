@@ -334,6 +334,51 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 .match-inline-editor :is(input,select){font-size:16px}
 @media(max-width:650px){.match-inline-editor{padding:13px}.match-inline-editor .match-editor-grid{grid-template-columns:1fr 1fr}.match-inline-editor .match-editor-field:first-child{grid-column:1/-1}.match-inline-footer .button{flex:1 1 125px;padding:11px 12px}}
 
+
+/* Aufstellungsplaner – lokale Auswahl, echte Matchhistorie nur falls erfasst. */
+.today-planner{margin:2px 0 24px;background:linear-gradient(140deg,#1b2d27,#111b21 58%,#152220);border:1px solid #4a674d;border-radius:20px;padding:22px;box-shadow:0 13px 28px rgba(0,0,0,.12)}
+.today-planner-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap;margin-bottom:16px}
+.today-planner-head h3{font:800 23px 'Space Grotesk',sans-serif;color:#f2ffee;margin:0 0 6px}
+.today-planner-head p{font-size:13px;line-height:1.6;color:#b3c5b6;max-width:700px;margin:0}
+.today-count{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 16px;border-radius:12px;background:#263b2d;border:1px solid #4f7650;color:#cfff81;min-width:96px}
+.today-count strong{font:800 24px 'Space Grotesk',sans-serif}.today-count small{font-size:11px;color:#b9cbbb}
+.today-planner-controls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}
+.today-planner-controls button{padding:10px 13px;border-radius:10px;border:1px solid #66805c;background:#27382d;color:#e5ffd8;font-weight:750;font-size:13px;cursor:pointer}
+.today-planner-controls button.secondary-plan{color:#c5d3c8;border-color:#42594b;background:#1a2829}
+.today-planner-controls button:hover{border-color:#caff71}
+.today-player-grid{display:grid;gap:9px;max-width:760px}
+.today-player-row{display:grid;grid-template-columns:30px minmax(110px,1fr) minmax(130px,160px) 42px;gap:8px;align-items:center}
+.today-player-number{color:#91b7a0;font-size:12px;font-weight:800;text-align:center}
+.today-player-row input,.today-player-row select{min-width:0;width:100%;background:#0e1b20;color:#f1fff1;border:1px solid #435e51;border-radius:10px;padding:11px;font-size:16px}
+.today-player-row input:focus-visible,.today-player-row select:focus-visible{outline:2px solid #bffc6c;outline-offset:1px}
+.today-player-row button{height:43px;background:#332727;color:#ffdbdb;border:1px solid #735552;border-radius:9px;font-size:19px;cursor:pointer}
+.today-planner-note{font-size:12px;color:#b3c5b7;margin-top:13px;line-height:1.6}
+.today-planner-status{font-size:12px;color:#d2ffc2;margin:12px 0 0}
+.today-planner-results{margin-top:20px;border-top:1px solid #3b5147;padding-top:18px}
+.today-planner-results h4{font:750 20px 'Space Grotesk',sans-serif;margin:0 0 6px;color:#f0ffe8}
+.today-planner-results .today-sub{font-size:12px;color:#b8cbbf;margin:0 0 15px;line-height:1.6}
+.today-suggestion-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.today-suggestion{border:1px solid #46634e;background:#112120;border-radius:14px;padding:15px;min-width:0}
+.today-suggestion:first-child{border-color:#bafd73;background:linear-gradient(145deg,#203b2b,#12231f)}
+.today-suggestion-top{font-size:10px;font-weight:800;letter-spacing:.07em;color:#b5cfab;text-transform:uppercase}
+.today-suggestion-name{font:800 26px 'Space Grotesk',sans-serif;color:#edffdc;margin:7px 0 4px}
+.today-suggestion-fit{font-size:12px;color:#cbe6c3;line-height:1.5}
+.today-suggestion-history{font-size:12px;color:#b6c9bd;line-height:1.6;border-top:1px solid #385245;margin-top:13px;padding-top:10px}
+.today-suggestion-history strong{font-size:18px;color:#d6ff94}
+.today-no-roster{background:#111f22;color:#bcd0c4;border:1px dashed #526851;border-radius:12px;padding:16px;line-height:1.6;font-size:13px}
+.today-player-example{color:#a5b8ad;font-size:12px;margin-top:12px}
+@media(max-width:850px){.today-suggestion-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.today-planner{padding:15px}.today-player-row{grid-template-columns:20px minmax(0,1fr) 104px 36px;gap:5px}.today-player-row input,.today-player-row select{padding:10px 7px}.today-player-row button{height:42px}.today-planner-head h3{font-size:21px}.today-suggestion-grid{grid-template-columns:1fr}.today-count{padding:7px 11px}.today-planner-controls button{flex:1 1 auto}}
+@media(prefers-reduced-motion:reduce){.today-planner *{animation:none!important;transition:none!important}}
+
+
+/* Team editor: separate credentials, no admin permissions. */
+.team-dialog{max-width:570px}
+.team-dialog .admin-top p{color:#a9bcb4;font-size:13px}
+#team-logged-panel p{color:#d0efc1;line-height:1.6}
+#today-team-save{background:linear-gradient(125deg,#bdff6c,#d9ff9b);color:#18231b;border-color:#d9ff9b}
+#today-team-save:hover{filter:brightness(1.06)}
+@media(max-width:620px){.topright #team-open{padding:8px 9px;font-size:11px}.topright #team-open span{font-size:11px}.today-planner-controls #today-team-save{flex-basis:100%}}
 </style>
 </head>
 <body>
@@ -348,7 +393,7 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
     </div>
   </nav>
   <a class="brand" href="/" aria-label="FC27 STATS – zur Startseite"><span class="mark">27</span> FC27 <span>STATS</span></a>
-  <div class="topright"><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><span class="tag"><span class="dot"></span> LIVE · FC 27 CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
+  <div class="topright"><button type="button" class="admin-entry" id="team-open" aria-label="Team-Zugang öffnen" title="Team-Aufstellungen bearbeiten">⚽ <span>Team-Zugang</span></button><button type="button" class="admin-entry" id="admin-open" aria-label="Event-Verwaltung öffnen" title="Event-Verwaltung">⚙ <span>Admin</span></button><span class="tag"><span class="dot"></span> LIVE · FC 27 CLUBS</span><a href="https://www.ea.com/games/ea-sports-fc/clubs" target="_blank" rel="noopener noreferrer">EA Clubs ↗</a></div>
 </header>
 <div id="menu-backdrop" class="menu-backdrop hidden" aria-hidden="true"></div>
 <main class="wrap">
@@ -397,6 +442,26 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
     </section>
     <section class="section" id="formation-section">
       <div class="section-head"><div><div class="label">// TAKTIK-ANALYSE</div><h2>Erfolgreichste Aufstellungen <span class="heading-flair">✦</span></h2><p>Welche Formation bringt die höchste Siegquote? Aus deinen vom Admin erfassten Spielen berechnet.</p></div></div>
+
+<div class="today-planner" id="today-planner" aria-labelledby="today-planner-heading">
+  <div class="today-planner-head">
+    <div><div class="label">// MATCHDAY-PLANER</div><h3 id="today-planner-heading">Wer spielt heute?</h3>
+    <p>Wähle die Mitspieler und ihre geplanten Positionen. Wir vergleichen mögliche Formationen und berücksichtigen erfasste Ergebnisse mit derselben Spieleranzahl.</p></div>
+    <div class="today-count" aria-live="polite"><strong id="today-player-count">0 / 11</strong><small>Echte Spieler</small></div>
+  </div>
+  <datalist id="today-player-options"></datalist>
+  <div class="today-planner-controls">
+    <button type="button" id="today-add-player">+ Spieler hinzufügen</button>
+    <button type="button" id="today-use-last" class="secondary-plan">↶ Letztes Match übernehmen</button>
+    <button type="button" id="today-clear" class="secondary-plan">Auswahl leeren</button>
+    <button type="button" id="today-team-load" class="secondary-plan">↓ Teamplan laden</button>
+    <button type="button" id="today-team-save">↑ Für Team speichern 🔒</button>
+  </div>
+  <div id="today-player-grid" class="today-player-grid" aria-label="Heutige Mitspieler und Positionen"></div>
+  <p class="today-planner-note">Deine Auswahl wird zunächst nur auf diesem Gerät gespeichert. Mit Team-Zugang kannst du sie für alle Clubbesucher veröffentlichen. Gespeicherte Teampläne sind keine offiziellen EA-Aufstellungen. Die übrigen Plätze bis elf werden mit KI-Spielern besetzt.</p>
+  <p id="today-planner-status" class="today-planner-status hidden" role="status"></p>
+  <div id="today-planner-results" class="today-planner-results" aria-live="polite"><div class="today-no-roster">Füge zuerst deine Mitspieler hinzu, um passende Formationen zu sehen.</div></div>
+</div>
       <div id="formation-stats" class="formation-grid" aria-live="polite"><div class="panel formation-empty">Aufstellungen werden geladen …</div></div>
       <p class="note">Formationen werden manuell im Admin-Bereich eingetragen, da EA keine Formationsdaten liefert. Nur erfasste Spiele zählen. Bei wenigen Spielen ist die Quote wenig aussagekräftig.</p>
     </section>
@@ -449,6 +514,14 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
   </div>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="team-overlay" class="admin-overlay hidden" role="presentation">
+  <div class="admin-dialog team-dialog" role="dialog" aria-modal="true" aria-labelledby="team-title">
+    <div class="admin-top"><div><div class="label">// FC27 STATS · TEAM-ZUGANG</div><h2 id="team-title">Team-Aufstellungen bearbeiten</h2><p>Formation, Ergebnisse, Mitspieler und Positionen – ohne volle Admin-Rechte.</p></div><button id="team-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
+    <div id="team-login-panel"><form id="team-login-form"><label class="admin-field">Team-Passwort<input type="password" id="team-password" autocomplete="current-password" required placeholder="Passwort deines Clubs"></label><button class="button" type="submit">Als Team-Bearbeiter anmelden ↗</button></form><p class="admin-hint">Das Passwort wird nicht gespeichert. Deine Anmeldung gilt innerhalb dieses Tabs. Team-Mitglieder haben keinen Zugriff auf Events, Divisionen oder die Admin-Verwaltung.</p></div>
+    <div id="team-logged-panel" class="hidden"><p>✓ Team-Zugang aktiv. Du kannst nun den heutigen Teamplan speichern und unter einem Match auf „Spiel direkt bearbeiten“ klicken.</p><div class="admin-actions"><button type="button" class="button secondary sm" id="team-logout">Abmelden</button></div></div>
+    <p class="admin-msg hidden" id="team-message" role="status" aria-live="polite"></p>
+  </div>
+</div>
 <div id="admin-overlay" class="admin-overlay hidden" role="presentation">
   <div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title">
     <div class="admin-top"><div><div class="label">// FC27 STATS · VERWALTUNG</div><h2 id="admin-title">Admin-Verwaltung</h2><p>Divisionen, Aufstellungen und Events verwalten.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
@@ -769,6 +842,7 @@ function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').cl
  $('#performance').innerHTML=`<div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 38px 'Space Grotesk';color:var(--accent)">${total?Math.round(percent(s.wins))+'%':'–'}</span><span class="muted" style="font-size:13px">Siegquote</span></div><div class="bar-stack"><span class="bar-win" style="width:${percent(s.wins)}%"></span><span class="bar-draw" style="width:${percent(s.ties)}%"></span><span class="bar-loss" style="width:${percent(s.losses)}%"></span></div><div class="legend"><span><i style="background:var(--green)"></i> Siege <b>${esc(disp(s.wins))}</b></span><span><i style="background:var(--yellow)"></i> Remis <b>${esc(disp(s.ties))}</b></span><span><i style="background:var(--red)"></i> Niederlagen <b>${esc(disp(s.losses))}</b></span></div>`;
  const matches=data.matches||[];$('#form-view').innerHTML=renderFormCurve(matches);
  renderFormationStats(data.formationHistory||{});
+ renderTodayPlanner();
  $('#matches-view').innerHTML=matches.length?matches.map(renderMatch).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
  renderPlayers();renderTopPlayers();updateFavoriteClub();
 }
@@ -792,6 +866,150 @@ function renderFormationStats(history){
    return `<article class="formation-card ${best?'best':''}"><div class="formation-label">${best?'🏆 Beste Quote (ab 3 Spielen)':'Aufstellung · '+g.total+' '+(g.total===1?'Spiel':'Spiele')}</div><div class="formation-title">${esc(g.name)}</div><div class="formation-percent">${pct}%</div><div class="formation-track" role="img" aria-label="Siegquote ${pct} Prozent"><span style="width:${pct}%"></span></div><div class="formation-wdl">${g.w} Siege · ${g.d} Remis · ${g.l} Niederlagen</div><div class="formation-note">${g.total<3?'Kleine Stichprobe – erst ab drei Spielen für die Bestmarkierung berücksichtigt.':'Berechnet aus '+g.total+' manuell zugeordneten Ligaspielen.'}</div></article>`;
  }).join('');
 }
+
+/* Formation planner: position-fit recommendations, NOT predicted win percentages. */
+const TODAY_POSITIONS=['TW','LV','IV','RV','LAV','RAV','ZDM','ZM','ZOM','LM','RM','LF','RF','LS','RS','ST'];
+const TODAY_TEMPLATES={
+ '4-2-3-1':['TW','LV','IV','IV','RV','ZDM','ZDM','LM','ZOM','RM','ST'],
+ '4-3-3':['TW','LV','IV','IV','RV','ZM','ZDM','ZM','LF','ST','RF'],
+ '4-4-2':['TW','LV','IV','IV','RV','LM','ZM','ZM','RM','LS','RS'],
+ '4-1-2-1-2':['TW','LV','IV','IV','RV','ZDM','ZM','ZM','ZOM','LS','RS'],
+ '4-1-4-1':['TW','LV','IV','IV','RV','ZDM','LM','ZM','ZM','RM','ST'],
+ '4-3-2-1':['TW','LV','IV','IV','RV','ZM','ZDM','ZM','LF','RF','ST'],
+ '4-2-2-2':['TW','LV','IV','IV','RV','ZDM','ZDM','ZOM','ZOM','LS','RS'],
+ '4-2-4':['TW','LV','IV','IV','RV','ZM','ZM','LF','RF','LS','RS'],
+ '4-5-1':['TW','LV','IV','IV','RV','LM','ZM','ZDM','ZM','RM','ST'],
+ '3-5-2':['TW','IV','IV','IV','LAV','RAV','ZDM','ZM','ZM','LS','RS'],
+ '3-4-3':['TW','IV','IV','IV','LM','ZM','ZM','RM','LF','ST','RF'],
+ '3-4-2-1':['TW','IV','IV','IV','LM','ZM','ZM','RM','LF','RF','ST'],
+ '3-4-1-2':['TW','IV','IV','IV','LM','ZM','ZM','RM','ZOM','LS','RS'],
+ '3-1-4-2':['TW','IV','IV','IV','ZDM','LM','ZM','ZM','RM','LS','RS'],
+ '5-2-3':['TW','LAV','IV','IV','IV','RAV','ZM','ZM','LF','ST','RF'],
+ '5-4-1':['TW','LAV','IV','IV','IV','RAV','LM','ZM','ZM','RM','ST']
+};
+const TODAY_KEY_PREFIX='fc27stats.today-lineup.v1.';
+let todayRoster=[];
+let todayPlannerClub='';
+function readTodayPlayers(id){
+ try{
+  const data=JSON.parse(localStorage.getItem(TODAY_KEY_PREFIX+id)||'[]');
+  return Array.isArray(data)?data.filter(p=>p&&typeof p.name==='string'&&typeof p.position==='string').slice(0,11).map(p=>({name:p.name.slice(0,70),position:TODAY_POSITIONS.includes(p.position)?p.position:''})):[];
+ }catch{return []}
+}
+function saveTodayPlayers(){
+ if(!clubData)return;
+ try{localStorage.setItem(TODAY_KEY_PREFIX+clubData.id,JSON.stringify(todayRoster.filter(p=>p.name.trim()).slice(0,11)))}catch{}
+}
+function showTodayStatus(message){const el=$('#today-planner-status');el.textContent=message;el.classList.toggle('hidden',!message)}
+function todayRoleCompatibility(wanted,slot){
+ if(!wanted)return 0;
+ if(wanted===slot)return 100;
+ if(wanted==='TW'||slot==='TW')return 0;
+ const families=[['LV','LAV','LM','LF'],['RV','RAV','RM','RF'],['ZDM','ZM','ZOM'],['ST','LS','RS','LF','RF'],['IV','LV','RV','LAV','RAV']];
+ let highest=5;
+ for(const family of families){if(family.includes(wanted)&&family.includes(slot))highest=Math.max(highest,65)}
+ if((wanted==='LS'||wanted==='RS')&&slot==='ST'||(slot==='LS'||slot==='RS')&&wanted==='ST')highest=Math.max(highest,85);
+ return highest;
+}
+// Exact maximum-weight assignment: a human can occupy only one formation slot.
+function todayFit(roles,players){
+ let states=new Map([[0,{score:0,exact:0,reasonable:0}]]);
+ for(const p of players){
+  const next=new Map();
+  for(const [mask,prior] of states){
+   for(let i=0;i<roles.length;i++){
+    if(mask&(1<<i))continue;
+    const score=todayRoleCompatibility(p.position,roles[i]);
+    const candidate={score:prior.score+score,exact:prior.exact+(score===100?1:0),reasonable:prior.reasonable+(score>=65?1:0)};
+    const key=mask|(1<<i),current=next.get(key);
+    if(!current||candidate.score>current.score||(candidate.score===current.score&&candidate.exact>current.exact))next.set(key,candidate);
+   }
+  }
+  states=next;
+ }
+ let best={score:0,exact:0,reasonable:0};
+ for(const state of states.values()){if(state.score>best.score||(state.score===best.score&&state.exact>best.exact))best=state}
+ return {...best,fit:players.length?Math.round(best.score/(players.length*100)*100):0};
+}
+function renderTodayPlanner(){
+ if(!clubData)return;
+ const clubId=String(clubData.id);
+ if(todayPlannerClub!==clubId){todayPlannerClub=clubId;todayRoster=readTodayPlayers(clubId)}
+ const options=$('#today-player-options');options.replaceChildren();
+ const names=new Set();
+ for(const member of clubData.members||[]){const name=String(member.name||'').trim();if(!name||names.has(name.toLowerCase()))continue;names.add(name.toLowerCase());const o=document.createElement('option');o.value=name;options.append(o)}
+ drawTodayRows();
+}
+function drawTodayRows(){
+ const grid=$('#today-player-grid');grid.replaceChildren();
+ todayRoster.forEach((player,index)=>{
+  const row=document.createElement('div');row.className='today-player-row';
+  const number=document.createElement('span');number.className='today-player-number';number.textContent=String(index+1).padStart(2,'0');
+  const name=document.createElement('input');name.type='text';name.maxLength=70;name.placeholder='Spielername / PSN-ID';name.setAttribute('list','today-player-options');name.setAttribute('aria-label','Spieler '+(index+1));name.value=player.name;
+  name.addEventListener('input',()=>{player.name=name.value;saveTodayPlayers();renderTodayRecommendations()});
+  const pos=document.createElement('select');pos.setAttribute('aria-label','Position von '+(player.name||'Spieler '+(index+1)));
+  const blank=document.createElement('option');blank.value='';blank.textContent='Position';pos.append(blank);
+  for(const value of TODAY_POSITIONS){const o=document.createElement('option');o.value=value;o.textContent=value;pos.append(o)}
+  pos.value=player.position;
+  pos.addEventListener('change',()=>{player.position=pos.value;saveTodayPlayers();renderTodayRecommendations()});
+  const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Spieler '+(index+1)+' entfernen');
+  remove.addEventListener('click',()=>{todayRoster.splice(index,1);saveTodayPlayers();drawTodayRows()});
+  row.append(number,name,pos,remove);grid.append(row);
+ });
+ renderTodayRecommendations();
+}
+function todayHistoryForCount(formation,count){
+ const histories=Object.values(clubData?.formationHistory||{});
+ // Only manually confirmed lineups have a defensible human-player count.
+ const found=histories.filter(r=>r&&r.formation===formation&&['W','D','L'].includes(r.result)
+  &&r.playersSource==='manual'&&Array.isArray(r.players)
+  &&r.players.filter(p=>p&&String(p.name||'').trim()).length===count);
+ return {n:found.length,w:found.filter(r=>r.result==='W').length,d:found.filter(r=>r.result==='D').length,l:found.filter(r=>r.result==='L').length};
+}
+function renderTodayRecommendations(){
+ const people=todayRoster.filter(p=>p.name.trim());
+ $('#today-player-count').textContent=people.length+' / 11';
+ const panel=$('#today-planner-results');
+ if(!people.length){panel.innerHTML='<div class="today-no-roster">Füge deine Mitspieler hinzu, um Vorschläge für die heutige Mannschaft zu erhalten.</div>';return}
+ const posKnown=people.filter(p=>p.position).length;
+ if(posKnown<people.length){panel.innerHTML=`<div class="today-no-roster">${posKnown} von ${people.length} Positionen gewählt. Bitte lege für jeden Spieler eine Position fest, damit die Formationen sinnvoll verglichen werden können.</div>`;return}
+ if(new Set(people.map(p=>p.name.trim().toLowerCase())).size!==people.length){panel.innerHTML='<div class="today-no-roster">Ein Spieler ist doppelt eingetragen. Bitte überprüfe die Namen.</div>';return}
+ const suggestions=Object.entries(TODAY_TEMPLATES).map(([formation,slots])=>{
+  const fit=todayFit(slots,people),h=todayHistoryForCount(formation,people.length);
+  // Recommendation rank combines tactical fit with observed history only from >=3 matching matches.
+  // The score is NOT a predicted win probability.
+  const confidence=h.n>=3?Math.min(1,h.n/8):0;
+  const ranking=fit.fit*(1-.30*confidence)+(h.n?(100*h.w/h.n):0)*(.30*confidence);
+  return {formation,fit,h,ranking};
+ }).sort((a,b)=>b.ranking-a.ranking||b.fit.fit-a.fit.fit||b.h.n-a.h.n||a.formation.localeCompare(b.formation));
+ const eligible=suggestions.filter(s=>s.h.n>=3).length;
+ panel.innerHTML=`<h4>Passende Formationen für ${people.length} ${people.length===1?'Spieler':'Spieler'} + ${11-people.length} KI</h4>
+  <p class="today-sub">Diese Vorschläge vergleichen die ausgewählten Positionen mit den Formation-Plätzen. ${eligible?'Wo mindestens 3 Spiele mit genau dieser Anzahl an Mitspielern erfasst sind, fließt auch die historische Quote in die Reihenfolge ein.':'Noch keine belastbaren Ergebnisse für diese Spieleranzahl gespeichert – die Vorschläge beruhen daher auf der Positionspassung, nicht auf einer Erfolgsprognose.'}</p>
+  <div class="today-suggestion-grid">${suggestions.slice(0,3).map((s,i)=>{
+   const h=s.h;
+   const summary=h.n?`<strong>${Math.round(100*h.w/h.n)} %</strong> Siegquote · ${h.n} ${h.n===1?'Spiel':'Spiele'}<div>${h.w} S · ${h.d} U · ${h.l} N${h.n<3?' · geringe Stichprobe':''}</div>`:'Noch keine erfassten Spiele mit dieser Formation und genau '+people.length+' Mitspielern.';
+   return `<article class="today-suggestion"><div class="today-suggestion-top">${i===0?'★ Vorschlag 1':'Vorschlag '+(i+1)}</div><div class="today-suggestion-name">${esc(s.formation)}</div><div class="today-suggestion-fit">${s.fit.exact} von ${people.length} Positionen exakt passend · ${s.fit.reasonable} gut oder exakt passend</div><div class="today-suggestion-history">${summary}</div></article>`;
+  }).join('')}</div><p class="today-player-example">Hinweis: Die Sortierung ist eine taktische Orientierung, keine berechnete Gewinnwahrscheinlichkeit. Gespeicherte Ergebnisse beziehen sich auf vergangene Spiele, nicht automatisch auf diese Spieler.</p>`;
+}
+$('#today-add-player').addEventListener('click',()=>{
+ if(!clubData)return;
+ if(todayRoster.length>=11)return showTodayStatus('Maximal 11 menschliche Spieler pro Aufstellung.');
+ todayRoster.push({name:'',position:''});showTodayStatus('');drawTodayRows();
+ $('#today-player-grid').lastElementChild?.querySelector('input')?.focus();
+});
+$('#today-clear').addEventListener('click',()=>{todayRoster=[];saveTodayPlayers();drawTodayRows();showTodayStatus('Auswahl für heute geleert.')});
+$('#today-use-last').addEventListener('click',()=>{
+ if(!clubData)return;
+ const last=clubData.matches?.find(m=>Array.isArray(m.lineup?.ours)&&m.lineup.ours.length);
+ if(!last)return showTodayStatus('Im letzten Match sind keine Spielerprofile verfügbar.');
+ const fallback={forward:'ST',midfielder:'ZM',defender:'IV',goalkeeper:'TW'};
+ todayRoster=last.lineup.ours.slice(0,11).map(p=>{
+  const member=(clubData.members||[]).find(m=>String(m.name||'').toLowerCase()===String(p.name||'').toLowerCase());
+  return {name:String(p.name||'').slice(0,70),position:TODAY_POSITIONS.includes(p.position)?p.position:(fallback[member?.favoritePosition]||'')};
+ }).filter(p=>p.name.trim());
+ saveTodayPlayers();drawTodayRows();showTodayStatus('Spieler aus dem letzten Match übernommen. Bitte die heutigen Positionen prüfen.');
+});
+
 function renderTopPlayers(){
  const container=$('#leaders-grid');container.replaceChildren();
  const members=Array.isArray(clubData?.members)?clubData.members:[];
@@ -922,6 +1140,13 @@ const startParams=new URLSearchParams(location.search);const startClub=startPara
 
 /* Nur ein zufaelliger Sitzungsschluessel im sessionStorage, niemals das Admin-Passwort.
    sessionStorage verschwindet beim Schliessen dieses Browser-Tabs. */
+const EDITOR_SESSION_KEY='fc27stats.editor-session.v1';
+let editorSessionToken='';
+try{editorSessionToken=sessionStorage.getItem(EDITOR_SESSION_KEY)||''}catch{}
+function saveEditorSession(token){
+ editorSessionToken=token;
+ try{if(token)sessionStorage.setItem(EDITOR_SESSION_KEY,token);else sessionStorage.removeItem(EDITOR_SESSION_KEY)}catch{}
+}
 const ADMIN_SESSION_KEY = 'fc27stats.admin-session.v1';
 let adminSessionToken = '';
 try{adminSessionToken=sessionStorage.getItem(ADMIN_SESSION_KEY)||''}catch{}
@@ -1277,7 +1502,7 @@ function openInlineMatchEditor(id){
  const form=document.createElement('form');form.className='match-inline-editor';
  form.setAttribute('aria-label','Spiel direkt bearbeiten');
  form.innerHTML=`<h3 class="match-inline-title">⚙ ${esc(match.opponent||'Match')} bearbeiten</h3>
-  <p class="match-inline-caption">Formation, Endstand und den eigenen Kader mit Positionen bearbeiten. Änderungen werden mit deinem Admin-Zugang dauerhaft gespeichert.</p>
+  <p class="match-inline-caption">Formation, Endstand und den eigenen Kader mit Positionen bearbeiten. Änderungen werden mit Admin- oder Team-Zugang dauerhaft gespeichert.</p>
   <div class="match-editor-grid">
     <label class="match-editor-field">Formation<select name="formation"><option value="">Nicht bekannt</option>${FORMATION_CHOICES.map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('')}</select></label>
     <label class="match-editor-field">Eigene Tore<input name="goals" type="number" min="0" max="30" step="1" required></label>
@@ -1317,7 +1542,7 @@ async function saveInlineMatch(id,form,reset){
  adminBusy=true;saveButton.disabled=true;resetButton.disabled=true;
  inlineMatchStatus(form,'Speichere auf GitHub …');
  try{
-   const data=await adminRequest('/api/admin/formation',{clubId:String(clubData.id),matchId:String(id),formation:reset?null:form.elements.formation.value||null,goals,against,players,reset});
+   const data=await writeMatchRequest({clubId:String(clubData.id),matchId:String(id),formation:reset?null:form.elements.formation.value||null,goals,against,players,reset});
    clubData.formationHistory=data.formationHistory||{};
    const current=matchById(id);
    if(current){
@@ -1343,9 +1568,9 @@ async function saveInlineMatch(id,form,reset){
    adminDrawFormations(false);
  }catch(err){
    inlineMatchStatus(form,err.message,true);
-   if(!adminSessionToken){
+   if(!adminSessionToken&&!editorSessionToken){
      pendingInlineMatchId=String(id);
-     adminOpen();
+     teamOpen();
    }
  }finally{adminBusy=false;saveButton.disabled=false;resetButton.disabled=false}
 }
@@ -1354,14 +1579,14 @@ $('#matches-view').addEventListener('click',e=>{
  if(!button)return;
  const id=button.dataset.matchId;
  if(!matchById(id))return;
- if(adminSessionToken){
-   // Validate retained session so inline editing never assumes stale credentials.
+ if(adminSessionToken||editorSessionToken){
    button.disabled=true;
-   adminRequest('/api/admin/session',{}).then(()=>openInlineMatchEditor(id)).catch(()=>{
-     pendingInlineMatchId=id;adminOpen();
+   const verify=adminSessionToken?adminRequest('/api/admin/session',{}):editorRequest('/api/editor/session',{});
+   verify.then(()=>openInlineMatchEditor(id)).catch(()=>{
+     pendingInlineMatchId=id;teamOpen();
    }).finally(()=>{button.disabled=false});
  }else{
-   pendingInlineMatchId=id;adminOpen();
+   pendingInlineMatchId=id;teamOpen();
  }
 });
 
@@ -1380,6 +1605,88 @@ $('#admin-cancel-edit').addEventListener('click',()=>$('#admin-event-form').clas
 $('#admin-delete').addEventListener('click',()=>adminMutate('delete'));
 $('#admin-event-form').addEventListener('submit',e=>{e.preventDefault();adminMutate($('#admin-event-id').value?'update':'create')});
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#admin-overlay').classList.contains('hidden'))adminClose()});
+
+
+
+/* Protected team role: full Admin tokens are NEVER sent through the editor login. */
+function teamMessage(message,bad=false){
+ const el=$('#team-message');el.textContent=message;el.classList.toggle('hidden',!message);el.classList.toggle('bad',bad);
+}
+function showTeamAuthenticated(on){
+ $('#team-login-panel').classList.toggle('hidden',on);
+ $('#team-logged-panel').classList.toggle('hidden',!on);
+}
+async function editorRequest(path,body={},password=''){
+ const headers={'Content-Type':'application/json'};
+ if(path==='/api/editor/login')headers['X-Editor-Password']=password;
+ else if(adminSessionToken)headers['X-Admin-Session']=adminSessionToken;
+ else if(editorSessionToken)headers['X-Editor-Session']=editorSessionToken;
+ const res=await fetch(path,{method:'POST',headers,body:JSON.stringify(body),cache:'no-store'});
+ const data=await res.json().catch(()=>({error:'Serverantwort ungueltig.'}));
+ if(res.status===401&&path!=='/api/editor/login'&&!adminSessionToken)saveEditorSession('');
+ if(!res.ok)throw Error(data.error||'Team-Anfrage fehlgeschlagen.');
+ return data;
+}
+function writeMatchRequest(body){
+ return adminSessionToken?adminRequest('/api/admin/formation',body):editorRequest('/api/editor/formation',body);
+}
+async function teamOpen(){
+ $('#team-overlay').classList.remove('hidden');showTeamAuthenticated(false);teamMessage('');
+ if(editorSessionToken||adminSessionToken){
+   try{await editorRequest('/api/editor/session',{});showTeamAuthenticated(true);return}
+   catch(err){if(!adminSessionToken)saveEditorSession('')}
+ }
+ $('#team-password').focus();
+}
+function teamClose(){
+ $('#team-overlay').classList.add('hidden');
+}
+function teamLogout(){
+ const token=editorSessionToken;
+ if(token){fetch('/api/editor/logout',{method:'POST',headers:{'Content-Type':'application/json','X-Editor-Session':token},body:'{}'}).catch(()=>{});}
+ saveEditorSession('');showTeamAuthenticated(false);teamMessage('Abgemeldet.');
+}
+$('#team-open').addEventListener('click',teamOpen);
+$('#team-close').addEventListener('click',teamClose);
+$('#team-overlay').addEventListener('click',e=>{if(e.target===$('#team-overlay'))teamClose()});
+$('#team-logout').addEventListener('click',teamLogout);
+$('#team-login-form').addEventListener('submit',async e=>{
+ e.preventDefault();const pass=$('#team-password').value;
+ teamMessage('Pruefe Anmeldung …');
+ try{
+   const response=await editorRequest('/api/editor/login',{},pass);
+   saveEditorSession(response.session);$('#team-password').value='';showTeamAuthenticated(true);
+   teamMessage('✓ Team-Zugang freigeschaltet.');
+   if(pendingInlineMatchId){const id=pendingInlineMatchId;pendingInlineMatchId='';teamClose();openInlineMatchEditor(id)}
+   else if(pendingTeamSave){pendingTeamSave=false;teamClose();saveSharedTodayPlan()}
+ }catch(err){teamMessage(err.message,true)}
+});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#team-overlay').classList.contains('hidden'))teamClose()});
+let pendingTeamSave=false;
+function loadSharedTodayPlan(){
+ if(!clubData)return;
+ const plan=clubData.matchdayPlan;
+ if(!plan||!Array.isArray(plan.players))return showTodayStatus('Noch kein gemeinsamer Teamplan gespeichert.');
+ if(todayRoster.some(p=>p.name.trim())&&!confirm('Deine aktuelle Auswahl durch den gespeicherten Teamplan ersetzen?'))return;
+ todayRoster=plan.players.filter(p=>p&&typeof p.name==='string'&&TODAY_POSITIONS.includes(p.position)).slice(0,11)
+   .map(p=>({name:p.name,position:p.position}));
+ saveTodayPlayers();drawTodayRows();showTodayStatus('✓ Gemeinsamer Teamplan geladen ('+todayRoster.length+' Spieler).');
+}
+async function saveSharedTodayPlan(){
+ if(!clubData)return;
+ if(!editorSessionToken&&!adminSessionToken){pendingTeamSave=true;teamOpen();return}
+ const players=todayRoster.filter(p=>p.name.trim()).map(p=>({name:p.name.trim(),position:p.position}));
+ if(players.some(p=>!p.position))return showTodayStatus('Bitte vor dem gemeinsamen Speichern alle Positionen festlegen.');
+ if(new Set(players.map(p=>p.name.toLowerCase())).size!==players.length)return showTodayStatus('Doppelte Spieler bitte korrigieren.');
+ const btn=$('#today-team-save');btn.disabled=true;showTodayStatus('Speichere Teamplan auf GitHub …');
+ try{
+  const response=await editorRequest('/api/editor/plan',{clubId:String(clubData.id),players});
+  clubData.matchdayPlan=response.plan;saveTodayPlayers();showTodayStatus('✓ Teamplan fuer alle Besucher gespeichert.');
+ }catch(err){showTodayStatus(err.message);if(!editorSessionToken&&!adminSessionToken){pendingTeamSave=true;teamOpen()}}
+ finally{btn.disabled=false}
+}
+$('#today-team-save').addEventListener('click',saveSharedTodayPlan);
+$('#today-team-load').addEventListener('click',loadSharedTodayPlan);
 
 </script>
 </body>
