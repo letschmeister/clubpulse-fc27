@@ -471,7 +471,7 @@ def github_file_and_sha():
     endpoint = f"https://api.github.com/repos/{owner}/{repo}/contents/events.json?{urlencode({'ref':GITHUB_BRANCH})}"
     req = Request(endpoint, headers={"Authorization": f"Bearer {GITHUB_TOKEN}",
         "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "CLUBPULSE-admin/1.0"})
+        "User-Agent": "FC27-STATS-admin/1.0"})
     try:
         with urlopen(req, timeout=14) as resp:
             payload=json.load(resp)
@@ -490,13 +490,13 @@ def github_write_events(events, sha):
     owner, repo=GITHUB_REPO.split("/")
     url=f"https://api.github.com/repos/{owner}/{repo}/contents/events.json"
     raw=(json.dumps(events,ensure_ascii=False,indent=2)+"\n").encode("utf-8")
-    body=json.dumps({"message":"Events über CLUBPULSE-Admin aktualisiert",
+    body=json.dumps({"message":"FC27 STATS: Events oder Division aktualisiert",
                      "content":base64.b64encode(raw).decode("ascii"),
                      "sha":sha,"branch":GITHUB_BRANCH}).encode("utf-8")
     req=Request(url, data=body, method="PUT", headers={
         "Authorization":f"Bearer {GITHUB_TOKEN}",
         "Accept":"application/vnd.github+json",
-        "Content-Type":"application/json", "User-Agent":"CLUBPULSE-admin/1.0",
+        "Content-Type":"application/json", "User-Agent":"FC27-STATS-admin/1.0",
         "X-GitHub-Api-Version":"2022-11-28"})
     try:
         with urlopen(req,timeout=16) as resp:

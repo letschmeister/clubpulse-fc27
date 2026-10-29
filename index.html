@@ -252,6 +252,27 @@ th.active-sort{color:var(--accent);background:#243020;border-bottom:2px solid va
 td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.05)}
 @media (max-width:600px){.division-current{font-size:11px}.division-source{font-size:10px}}
 
+  
+/* FC27 STATS · Admin: Events und Divisionen als eigene, gut sichtbare Reiter. */
+.admin-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 18px}
+.admin-tab{padding:13px 12px;text-align:center;border:1px solid #465649;background:#202a29;color:#dce8dd;border-radius:11px;font-weight:800;font-size:14px}
+.admin-tab.active,.admin-tab[aria-selected="true"]{background:#ccfc70;color:#14200e;border-color:#ccfc70}
+.admin-tab:focus-visible{outline:2px solid #ccfc70;outline-offset:3px}
+.admin-division-box{margin:0;padding:19px;border:1px solid #465e44;border-radius:14px;background:linear-gradient(130deg,#1e3028,#16211f)}
+.admin-division-box h3{font-size:21px;margin:0 0 5px}
+.admin-division-box .admin-lead{font-size:13px;color:#aec8b5;line-height:1.55;margin:0 0 18px}
+.admin-division-search{display:flex;gap:8px;align-items:stretch}
+.admin-division-search input{flex:1;min-width:0}
+.admin-club-results{display:grid;gap:7px;max-height:190px;overflow-y:auto;margin:4px 0 14px}
+.admin-club-choice{width:100%;padding:11px 12px;background:#1c2927;border:1px solid #425a4e;border-radius:10px;text-align:left;color:#effaec;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.admin-club-choice:hover,.admin-club-choice:focus-visible{border-color:#ccfc70}
+.admin-club-choice small{color:#bbcabd}
+.admin-division-summary{border:1px solid #486043;border-radius:10px;background:#1a2620;padding:12px 14px;margin:0 0 16px}
+.admin-division-summary strong{color:#d7ff9d;display:block;font-size:15px}
+.admin-division-summary p{margin:4px 0 0;color:#b2bfb7;overflow-wrap:anywhere;font-size:12px}
+.admin-division-box select{font-size:16px}
+@media(max-width:640px){.admin-division-search{flex-direction:column}.admin-division-search .button{width:100%}.admin-tab{font-size:13px;padding:12px 7px}}
+
   </style>
 </head>
 <body>
@@ -364,7 +385,7 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="admin-overlay" class="admin-overlay hidden" role="presentation">
   <div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title">
-    <div class="admin-top"><div><div class="label">// FC27 STATS · VERWALTUNG</div><h2 id="admin-title">Events verwalten</h2><p>Neue Termine hinzufügen, bestehende ändern oder löschen.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
+    <div class="admin-top"><div><div class="label">// FC27 STATS · VERWALTUNG</div><h2 id="admin-title">Admin-Verwaltung</h2><p>Divisionen korrigieren und Events bearbeiten.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
     <div id="admin-login-view">
       <form id="admin-login-form">
         <label class="admin-field">Admin-Passwort<input id="admin-password" type="password" autocomplete="current-password" minlength="1" required placeholder="Dein Admin-Passwort"></label>
@@ -373,8 +394,43 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
       <p class="admin-hint">Das Passwort wird nicht öffentlich gespeichert. Richte es zunächst unter Render → Environment ein. Die Verwaltung funktioniert nur über HTTPS.</p>
     </div>
     <div id="admin-editor-view" class="hidden">
+      <div class="admin-tabs" role="tablist" aria-label="Admin-Bereiche">
+        <button type="button" class="admin-tab active" id="admin-tab-division" role="tab" aria-controls="admin-division-view" aria-selected="true">🏆 Division ändern</button>
+        <button type="button" class="admin-tab" id="admin-tab-events" role="tab" aria-controls="admin-events-view" aria-selected="false">📅 Events verwalten</button>
+      </div>
+      <div class="admin-actions" style="margin:0 0 12px;justify-content:flex-end"><button class="button secondary sm" type="button" id="admin-logout-top">Abmelden</button></div>
+      <div id="admin-status" class="admin-msg hidden" role="status" aria-live="polite"></div>
+      <div id="admin-division-view" role="tabpanel" aria-labelledby="admin-tab-division">
+        <section class="admin-division-box" id="admin-division-box">
+          <h3>Aktuelle Division ändern</h3>
+          <p class="admin-lead">Suche den Club nach Namen oder verwende die Club-ID aus seiner Webadresse. Die gespeicherte Division wird allen Besuchern angezeigt.</p>
+          <form id="admin-club-search-form">
+            <label class="admin-field">Club auswählen
+              <span class="admin-division-search"><input id="admin-club-search" type="search" maxlength="80" placeholder="Clubname oder Club-ID, z. B. Viennas Finest" aria-label="Clubname oder Club-ID"><button type="submit" class="button sm">Club suchen</button></span>
+            </label>
+          </form>
+          <div id="admin-club-results" class="admin-club-results" aria-live="polite"></div>
+          <div class="admin-division-summary" id="admin-division-club" aria-live="polite"><strong>Noch kein Club ausgewählt</strong><p>Suche einen Club oder öffne zuerst seine Vereinsseite.</p></div>
+          <form id="admin-division-form">
+            <label class="admin-field">Division laut EA FC 27
+              <select id="admin-division-select" required>
+                <option value="">Division auswählen</option>
+                <option value="1">Division 1</option><option value="2">Division 2</option><option value="3">Division 3</option>
+                <option value="4">Division 4</option><option value="5">Division 5</option><option value="6">Division 6</option>
+                <option value="7">Division 7</option><option value="8">Division 8</option><option value="9">Division 9</option>
+                <option value="10">Division 10</option>
+              </select>
+            </label>
+            <div class="admin-actions">
+              <button class="button sm" id="admin-division-save" type="submit" disabled>Division speichern</button>
+              <button class="button secondary sm" id="admin-division-reset" type="button" disabled>EA-Wert wiederherstellen</button>
+            </div>
+          </form>
+          <p class="admin-hint">Änderungen werden passwortgeschützt auf GitHub in der bestehenden <code>events.json</code> gespeichert. Der Club wird als „Vom Admin bestätigt“ markiert. Es werden keine anderen Events verändert.</p>
+        </section>
+      </div>
+      <div id="admin-events-view" class="hidden" role="tabpanel" aria-labelledby="admin-tab-events">
       <div class="admin-actions"><button class="button sm" id="admin-new" type="button">＋ Neues Event</button><button class="button secondary sm" id="admin-logout" type="button">Abmelden</button></div>
-      <div id="admin-status" class="admin-msg hidden" role="status"></div>
       <div id="admin-list" class="admin-list" aria-label="Bestehende Events"></div>
       <form id="admin-event-form" class="hidden">
         <div class="label" id="admin-form-heading">// EVENT BEARBEITEN</div>
@@ -394,27 +450,8 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
         <div class="admin-actions"><button class="button" id="admin-save" type="submit">Event speichern ↗</button><button class="button secondary" id="admin-cancel-edit" type="button">Abbrechen</button><button class="button secondary hidden" id="admin-delete" type="button">Event löschen</button></div>
       </form>
 
-      <section class="admin-division-box" id="admin-division-box">
-        <h3>Aktuelle Division korrigieren</h3>
-        <p id="admin-division-club">Öffne zuerst den gewünschten Club auf der Website.</p>
-        <form id="admin-division-form" class="hidden">
-          <label class="admin-field">Division laut Spiel
-            <select id="admin-division-select" required>
-              <option value="">Division auswählen</option>
-              <option value="1">Division 1</option><option value="2">Division 2</option><option value="3">Division 3</option>
-              <option value="4">Division 4</option><option value="5">Division 5</option><option value="6">Division 6</option>
-              <option value="7">Division 7</option><option value="8">Division 8</option><option value="9">Division 9</option>
-              <option value="10">Division 10</option>
-            </select>
-          </label>
-          <div class="admin-actions">
-            <button class="button sm" id="admin-division-save" type="submit">Division speichern</button>
-            <button class="button secondary sm" id="admin-division-reset" type="button">EA-Wert verwenden</button>
-          </div>
-        </form>
-        <p class="admin-hint">Nur für Admins. Korrigierte Divisionen werden in events.json auf GitHub gespeichert und für alle Besucher als manuell bestätigt gekennzeichnet.</p>
-      </section>
-      <p class="admin-hint">Speichern erstellt automatisch einen Commit in <code>events.json</code> auf GitHub. Render kann dadurch ein neues Deployment starten. Die Termine sind sofort auf dem aktuellen Server sichtbar.</p>
+      <p class="admin-hint">Speichern erstellt automatisch einen Commit in <code>events.json</code> auf GitHub. Render kann dadurch ein neues Deployment starten.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -769,18 +806,74 @@ const startParams=new URLSearchParams(location.search);const startClub=startPara
 
 /* Passwort nur im Arbeitsspeicher dieses Browser-Tabs, niemals im Quellcode oder localStorage. */
 let adminPassword='', adminItems=[], adminBusy=false;
+let adminTab='division', adminSelectedClub=null, adminOverrides={};
 function adminMessage(message,bad=false){const box=$('#admin-status');box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('bad',bad)}
+function adminSelectTab(tab){
+  adminTab=tab==='events'?'events':'division';
+  for(const name of ['division','events']){
+    const on=name===adminTab;
+    $('#admin-tab-'+name).classList.toggle('active',on);
+    $('#admin-tab-'+name).setAttribute('aria-selected',String(on));
+    $('#admin-'+name+'-view').classList.toggle('hidden',!on);
+  }
+  adminMessage('');
+}
+function adminPickClub(id,name,eaDivision=null){
+  if(!/^\d{1,20}$/.test(String(id||'')))return;
+  adminSelectedClub={id:String(id),name:String(name||('Club #'+id)).slice(0,100),eaDivision};
+  $('#admin-club-results').replaceChildren();
+  $('#admin-club-search').value=adminSelectedClub.name;
+  syncAdminDivisionForm();
+}
 function syncAdminDivisionForm(){
-  const chosen=!!clubData?.id;
-  $('#admin-division-form').classList.toggle('hidden',!chosen);
-  const ea=clubData?.eaDivision;
-  $('#admin-division-club').textContent=chosen
-    ?`${clubData.name} · Club-ID ${clubData.id} · EA: ${ea==null?'Nicht verfügbar':'Division '+ea}`
-    :'Öffne zuerst einen Club, dann diesen Admin-Bereich.';
-  $('#admin-division-select').value=chosen&&clubData.divisionSource==='manual'?String(clubData.currentDivision):'';
+  const c=adminSelectedClub;
+  const area=$('#admin-division-club');area.replaceChildren();
+  const title=document.createElement('strong'),details=document.createElement('p');
+  if(!c){
+    title.textContent='Noch kein Club ausgewählt';
+    details.textContent='Suche nach dem Clubnamen. Wenn du seine ID kennst, kannst du sie auch direkt eingeben.';
+  }else{
+    title.textContent=c.name;
+    const ea=(clubData&&String(clubData.id)===c.id)?clubData.eaDivision:c.eaDivision;
+    const manual=adminOverrides[c.id];
+    details.textContent='Club-ID: '+c.id+' · EA-Division: '+(ea==null?'nicht verfügbar':ea)+' · Admin-Wert: '+(manual==null?'keiner':'Division '+manual);
+  }
+  area.append(title,details);
+  $('#admin-division-save').disabled=!c||adminBusy;
+  $('#admin-division-reset').disabled=!c||adminBusy;
+  const value=c?adminOverrides[c.id]:null;
+  $('#admin-division-select').value=Number.isInteger(value)?String(value):'';
+}
+async function adminSearchClub(input){
+  const query=input.trim();
+  if(!query)return adminMessage('Bitte Clubnamen oder Club-ID eingeben.',true);
+  const results=$('#admin-club-results');results.replaceChildren();
+  if(/^\d{1,20}$/.test(query)){
+    adminPickClub(query,clubData&&String(clubData.id)===query?clubData.name:'Club #'+query);
+    return;
+  }
+  if(query.length<2)return adminMessage('Mindestens 2 Zeichen eingeben.',true);
+  adminMessage('Vereine werden gesucht …');
+  try{
+    const response=await fetch('/api/search?q='+encodeURIComponent(query),{cache:'no-store'});
+    const data=await response.json();
+    if(!response.ok)throw Error(data.error||'Clubsuche fehlgeschlagen.');
+    const clubs=(data.clubs||[]).filter(c=>/^\d{1,20}$/.test(String(c.id)));
+    if(!clubs.length)throw Error('Keinen passenden Club gefunden. Du kannst auch direkt die Club-ID eingeben.');
+    for(const c of clubs.slice(0,12)){
+      const button=document.createElement('button');button.type='button';button.className='admin-club-choice';
+      const name=document.createElement('strong');name.textContent=c.name;
+      const id=document.createElement('small');id.textContent='ID '+c.id;
+      button.append(name,id);button.addEventListener('click',()=>{adminPickClub(c.id,c.name);adminMessage('Club ausgewählt. Jetzt die richtige Division festlegen.')});results.append(button);
+    }
+    adminMessage('Wähle deinen Club aus den Suchergebnissen.');
+  }catch(err){adminMessage(err.message,true)}
 }
 function adminOpen(){
-  syncAdminDivisionForm();
+  if(clubData?.id){adminPickClub(clubData.id,clubData.name,clubData.eaDivision)}
+  else if(!adminSelectedClub&&startClub&&/^\d{1,20}$/.test(startClub)){adminPickClub(startClub,'Club #'+startClub)}
+  else syncAdminDivisionForm();
+  adminSelectTab('division');
   $('#admin-overlay').classList.remove('hidden');
   $('#admin-login-view').classList.toggle('hidden',!!adminPassword);
   $('#admin-editor-view').classList.toggle('hidden',!adminPassword);
@@ -796,7 +889,7 @@ function adminRefresh(){
  // Die öffentliche Liste reicht für die Anzeige – nur die Änderungen sind geschützt.
  fetch('/api/events',{cache:'no-store'}).then(r=>r.json()).then(data=>{
    if(!Array.isArray(data.items))throw Error('Liste konnte nicht geladen werden.');
-   adminItems=data.items;adminDrawList();
+   adminItems=data.items;adminOverrides=data.divisionOverrides&&typeof data.divisionOverrides==='object'?data.divisionOverrides:{};adminDrawList();syncAdminDivisionForm();
  }).catch(e=>adminMessage(e.message,true));
 }
 function adminDrawList(){
@@ -858,28 +951,36 @@ $('#admin-login-form').addEventListener('submit',async e=>{
  }catch(err){adminPassword='';alert(err.message)}
 });
 $('#admin-logout').addEventListener('click',()=>{adminPassword='';adminItems=[];adminClose();});
+$('#admin-logout-top').addEventListener('click',()=>{adminPassword='';adminItems=[];adminClose();});
 async function adminDivisionChange(reset=false){
-  if(!clubData?.id||!adminPassword||adminBusy)return;
+  const chosen=adminSelectedClub;
+  if(!chosen||!adminPassword||adminBusy)return adminMessage('Bitte zuerst einen Club auswählen.',true);
   const value=reset?null:Number($('#admin-division-select').value);
   if(!reset&&(!Number.isInteger(value)||value<1||value>10)){
     adminMessage('Bitte eine gültige Division auswählen.',true);return;
   }
-  if(reset&&!confirm('Manuelle Korrektur entfernen und wieder den EA-Wert anzeigen?'))return;
+  if(reset&&!confirm('Manuelle Korrektur für '+chosen.name+' entfernen und wieder den EA-Wert anzeigen?'))return;
   adminBusy=true;$('#admin-division-save').disabled=true;$('#admin-division-reset').disabled=true;
-  adminMessage('Division wird gespeichert …');
+  adminMessage('Division wird auf GitHub gespeichert …');
   try{
-    await adminRequest('/api/admin/division',{clubId:String(clubData.id),division:value});
-    clubData.currentDivision=value===null?clubData.eaDivision:value;
-    clubData.divisionSource=value===null?'ea':'manual';
-    renderClub(clubData);syncAdminDivisionForm();
-    adminMessage('✓ Division gespeichert. Sie wird für alle Besucher angezeigt.');
+    await adminRequest('/api/admin/division',{clubId:chosen.id,division:value});
+    if(value===null)delete adminOverrides[chosen.id];else adminOverrides[chosen.id]=value;
+    if(clubData&&String(clubData.id)===chosen.id){
+      clubData.currentDivision=value===null?clubData.eaDivision:value;
+      clubData.divisionSource=value===null?'ea':'manual';
+      renderClub(clubData);
+    }
+    adminMessage(value===null?'✓ Korrektur entfernt. Jetzt wird wieder der EA-Wert verwendet.':'✓ Division '+value+' für '+chosen.name+' gespeichert. Sie gilt für alle Besucher.');
   }catch(e){adminMessage(e.message,true)}finally{
-    adminBusy=false;$('#admin-division-save').disabled=false;$('#admin-division-reset').disabled=false;
+    adminBusy=false;syncAdminDivisionForm();
   }
 }
+$('#admin-tab-division').addEventListener('click',()=>adminSelectTab('division'));
+$('#admin-tab-events').addEventListener('click',()=>adminSelectTab('events'));
+$('#admin-club-search-form').addEventListener('submit',e=>{e.preventDefault();adminSearchClub($('#admin-club-search').value)});
 $('#admin-division-form').addEventListener('submit',e=>{e.preventDefault();adminDivisionChange(false)});
 $('#admin-division-reset').addEventListener('click',()=>adminDivisionChange(true));
-$('#admin-new').addEventListener('click',()=>adminEdit());
+$('#admin-new').addEventListener('click',()=>{adminSelectTab('events');adminEdit()});
 $('#admin-cancel-edit').addEventListener('click',()=>$('#admin-event-form').classList.add('hidden'));
 $('#admin-delete').addEventListener('click',()=>adminMutate('delete'));
 $('#admin-event-form').addEventListener('submit',e=>{e.preventDefault();adminMutate($('#admin-event-id').value?'update':'create')});
