@@ -67,7 +67,7 @@
       "players": [
         {
           "name": "Bierbaron08",
-          "position": "ZOM"
+          "position": "ZM"
         },
         {
           "name": "Burnhead",
@@ -75,14 +75,18 @@
         },
         {
           "name": "Mudwalker_1971",
-          "position": "ZOM"
+          "position": "ZM"
         },
         {
           "name": "realoviedo24",
           "position": "IV"
+        },
+        {
+          "name": "Leon_noel9",
+          "position": "ST"
         }
       ],
-      "updatedAt": 1793290633
+      "updatedAt": 1793309147
     }
   }
 }
