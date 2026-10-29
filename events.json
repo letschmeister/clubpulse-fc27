@@ -94,5 +94,28 @@
         "playersSource": "manual"
       }
     }
+  },
+  "matchdayPlans": {
+    "132788": {
+      "players": [
+        {
+          "name": "Bierbaron08",
+          "position": "ZOM"
+        },
+        {
+          "name": "Burnhead",
+          "position": "ST"
+        },
+        {
+          "name": "Mudwalker_1971",
+          "position": "ZOM"
+        },
+        {
+          "name": "realoviedo24",
+          "position": "IV"
+        }
+      ],
+      "updatedAt": 1793290633
+    }
   }
 }
