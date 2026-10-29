@@ -273,7 +273,51 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 .admin-division-box select{font-size:16px}
 @media(max-width:640px){.admin-division-search{flex-direction:column}.admin-division-search .button{width:100%}.admin-tab{font-size:13px;padding:12px 7px}}
 
-  </style>
+  
+/* Aufstellungs-Erfolg – manuell erfasste Taktiken; nicht von EA geliefert. */
+.admin-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.formation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.formation-card{border:1px solid #36473d;border-radius:17px;background:linear-gradient(138deg,#1a2825,#141c23);padding:19px;transition:transform .22s,border-color .22s;min-width:0}
+.formation-card:hover{transform:translateY(-2px);border-color:#9be567}
+.formation-card.best{border-color:#a4ef78;background:linear-gradient(145deg,#243b2e,#18211e)}
+.formation-title{font-weight:850;font-size:24px;font-family:'Space Grotesk',sans-serif;color:#edf8ee;overflow-wrap:anywhere}
+.formation-label{color:#b4c6b5;font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.07em}
+.formation-percent{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:800;color:#caff71;margin:9px 0 0}
+.formation-wdl{font-size:12px;color:#b9c5bd;margin:8px 0}
+.formation-track{height:7px;overflow:hidden;border-radius:100px;background:#374440;margin-top:12px}
+.formation-track span{display:block;height:100%;background:#caff71;border-radius:100px;transition:width .5s ease}
+.formation-note{color:#9faeab;font-size:12px;margin-top:12px;line-height:1.55}
+.formation-empty{padding:22px;color:#b4c3b7;line-height:1.6}
+.formation-edit-list{display:grid;gap:10px}
+.formation-edit-row{display:grid;grid-template-columns:minmax(0,1fr) 150px auto;align-items:center;gap:12px;border:1px solid #384942;background:#162521;border-radius:12px;padding:12px}
+.formation-edit-row strong{font-size:13px;display:block}.formation-edit-row small{display:block;color:#a2b5a8;font-size:11px;margin-top:4px}
+.formation-edit-row select{width:100%;min-width:0;border:1px solid #4a5a54;background:#101b18;color:#effcec;border-radius:9px;padding:10px;font-size:16px}
+.formation-edit-row button{white-space:nowrap}
+.formation-admin-header{margin:0 0 16px;color:#b3c9b9;font-size:13px;line-height:1.6}
+@media(max-width:860px){.formation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.formation-grid{grid-template-columns:1fr}.formation-edit-row{grid-template-columns:minmax(0,1fr);gap:9px}.admin-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.admin-tab{font-size:11px;padding:12px 4px}}
+@media(prefers-reduced-motion:reduce){.formation-card,.formation-track span{transition:none}}
+
+/* Club match editor: scoring and roster administration. */
+.match-editor{margin-top:16px;padding:18px;border-radius:16px;border:1px solid #52684c;background:linear-gradient(130deg,#172620,#161d21)}
+.match-editor-title{font-weight:800;color:#eaffdb;font-size:17px;margin-bottom:15px}
+.match-editor-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px}
+.match-editor-field{display:flex;flex-direction:column;gap:7px;color:#b5c7b8;font-size:12px;font-weight:750}
+.match-editor-field input,.match-editor-field select,.match-player-row input,.match-player-row select{width:100%;min-width:0;border:1px solid #485c50;background:#0e191a;color:#f3fff2;border-radius:10px;padding:12px;font-size:16px}
+.match-editor-field input:focus,.match-player-row input:focus,.match-player-row select:focus{outline:2px solid #caff71;outline-offset:1px}
+.match-editor-roster{display:grid;gap:9px;margin:12px 0}
+.match-player-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 42px;gap:8px;align-items:center}
+.match-player-row button{height:44px;border-radius:10px;border:1px solid #5a5555;background:#28272a;color:#fbe7e7;cursor:pointer;font-size:20px}
+.match-editor-help{color:#b8c7bd;line-height:1.6;font-size:12px;margin:10px 0 16px}
+.match-editor-subtitle{font-size:13px;font-weight:800;color:#e8f5de;margin:20px 0 7px}
+.formation-match-picker{width:100%;text-align:left;background:#1b2926;border:1px solid #3b5048;color:#e6f9e3;padding:13px 15px;border-radius:11px;display:flex;justify-content:space-between;gap:10px;align-items:center;cursor:pointer}
+.formation-match-picker.active{border-color:#caff71;background:#25402b}
+.formation-match-picker span{color:#bad0bd;font-size:12px}
+.formation-edit-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.manual-match-tag{display:inline-block;border:1px solid #728765;color:#d5f8bd;border-radius:6px;padding:2px 6px;font-size:10px;font-weight:800;vertical-align:middle}
+.manual-position{display:inline-flex;align-items:center;justify-content:center;padding:3px 7px;background:#354b40;border-radius:6px;color:#d6f0d5;font-size:10px;font-weight:800;margin-left:8px}
+@media(max-width:650px){.formation-edit-list{grid-template-columns:1fr}.match-editor{padding:13px}.match-editor-grid{grid-template-columns:1fr 1fr}.match-editor-field:first-child{grid-column:1/-1}.match-player-row{grid-template-columns:minmax(0,1fr) 42px}.match-player-row input{grid-column:1/-1}.match-player-row select{grid-column:1}.match-player-row button{grid-column:2;height:43px}}
+</style>
 </head>
 <body>
 <header class="topbar wrap">
@@ -334,6 +378,11 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
       <div class="panel inner"><div class="section-head compact"><div><div class="label">// CLUB-PERFORMANCE</div><h2>Siege & Bilanz</h2></div></div><div id="performance"></div></div>
       <div class="panel inner"><div class="section-head compact"><div><div class="label">// LETZTE SPIELE</div><h2>Aktuelle Form</h2></div></div><div id="form-view"></div></div>
     </section>
+    <section class="section" id="formation-section">
+      <div class="section-head"><div><div class="label">// TAKTIK-ANALYSE</div><h2>Erfolgreichste Aufstellungen <span class="heading-flair">✦</span></h2><p>Welche Formation bringt die höchste Siegquote? Aus deinen vom Admin erfassten Spielen berechnet.</p></div></div>
+      <div id="formation-stats" class="formation-grid" aria-live="polite"><div class="panel formation-empty">Aufstellungen werden geladen …</div></div>
+      <p class="note">Formationen werden manuell im Admin-Bereich eingetragen, da EA keine Formationsdaten liefert. Nur erfasste Spiele zählen. Bei wenigen Spielen ist die Quote wenig aussagekräftig.</p>
+    </section>
     <section class="section">
       <div class="section-head"><div><div class="label">// SPIELER</div><h2>Dein Kader</h2><p>Auf eine Zeile klicken, um mehr über den Spieler zu erfahren.</p></div>
         <div class="player-filters"><input class="filter" type="search" id="player-filter" placeholder="Spieler suchen …" aria-label="Spieler filtern"><select id="sort-select" class="filter" aria-label="Spieler sortieren"><option value="goals">Meiste Tore</option><option value="assists">Meiste Assists</option><option value="gamesPlayed">Meiste Spiele</option><option value="ratingAve">Beste Bewertung</option><option value="proOverall">Höchstes OVR</option><option value="favoritePosition">Position A–Z</option><option value="name">Name A–Z</option></select></div>
@@ -385,18 +434,19 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div id="admin-overlay" class="admin-overlay hidden" role="presentation">
   <div class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-title">
-    <div class="admin-top"><div><div class="label">// FC27 STATS · VERWALTUNG</div><h2 id="admin-title">Admin-Verwaltung</h2><p>Divisionen korrigieren und Events bearbeiten.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
+    <div class="admin-top"><div><div class="label">// FC27 STATS · VERWALTUNG</div><h2 id="admin-title">Admin-Verwaltung</h2><p>Divisionen, Aufstellungen und Events verwalten.</p></div><button id="admin-close" class="admin-close" type="button" aria-label="Schließen">×</button></div>
     <div id="admin-login-view">
       <form id="admin-login-form">
         <label class="admin-field">Admin-Passwort<input id="admin-password" type="password" autocomplete="current-password" minlength="1" required placeholder="Dein Admin-Passwort"></label>
         <button class="button" type="submit">Anmelden ↗</button>
       </form>
-      <p class="admin-hint">Das Passwort wird nicht öffentlich gespeichert. Richte es zunächst unter Render → Environment ein. Die Verwaltung funktioniert nur über HTTPS.</p>
+      <p class="admin-hint">Nach dem Anmelden bleibst du in diesem Browser-Tab angemeldet, auch nach einem Neuladen. Beim Schließen des Tabs oder über „Abmelden“ endet die Anmeldung. Dein Passwort wird nicht gespeichert.</p>
     </div>
     <div id="admin-editor-view" class="hidden">
       <div class="admin-tabs" role="tablist" aria-label="Admin-Bereiche">
         <button type="button" class="admin-tab active" id="admin-tab-division" role="tab" aria-controls="admin-division-view" aria-selected="true">🏆 Division ändern</button>
-        <button type="button" class="admin-tab" id="admin-tab-events" role="tab" aria-controls="admin-events-view" aria-selected="false">📅 Events verwalten</button>
+        <button type="button" class="admin-tab" id="admin-tab-events" role="tab" aria-controls="admin-events-view" aria-selected="false">📅 Events</button>
+        <button type="button" class="admin-tab" id="admin-tab-formations" role="tab" aria-controls="admin-formations-view" aria-selected="false">⚽ Aufstellungen</button>
       </div>
       <div class="admin-actions" style="margin:0 0 12px;justify-content:flex-end"><button class="button secondary sm" type="button" id="admin-logout-top">Abmelden</button></div>
       <div id="admin-status" class="admin-msg hidden" role="status" aria-live="polite"></div>
@@ -427,6 +477,31 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
             </div>
           </form>
           <p class="admin-hint">Änderungen werden passwortgeschützt auf GitHub in der bestehenden <code>events.json</code> gespeichert. Der Club wird als „Vom Admin bestätigt“ markiert. Es werden keine anderen Events verändert.</p>
+        </section>
+      </div>
+      <div id="admin-formations-view" class="hidden" role="tabpanel" aria-labelledby="admin-tab-formations">
+        <section class="admin-division-box">
+          <h3>Spielverwaltung: Formation, Ergebnis &amp; Kader</h3>
+          <p class="formation-admin-header">Wähle ein Match aus. Formation, Endstand und mitspielende Spieler samt Position kannst du ergänzen oder korrigieren. EA-Daten werden als Vorschlag übernommen. Deine Änderungen werden öffentlich als <strong>manuell eingetragen</strong> gekennzeichnet.</p>
+          <p id="admin-formations-club" class="admin-division-summary">Öffne zuerst einen Club auf der Website.</p>
+          <div id="admin-formations-list" class="formation-edit-list"></div>
+          <form id="admin-match-editor" class="match-editor hidden">
+            <div class="match-editor-title" id="admin-match-editor-title">Match bearbeiten</div>
+            <div class="match-editor-grid">
+              <label class="match-editor-field">Formation<select id="admin-match-formation"><option value="">Nicht erfasst</option></select></label>
+              <label class="match-editor-field">Eigene Tore<input id="admin-match-goals" type="number" min="0" max="30" inputmode="numeric" required></label>
+              <label class="match-editor-field">Gegentore<input id="admin-match-against" type="number" min="0" max="30" inputmode="numeric" required></label>
+            </div>
+            <div class="match-editor-subtitle">Mitgespielte Spieler und Positionen</div>
+            <p class="match-editor-help">Die von EA gefundenen Spielernamen stehen bereits hier. Ergänze ihre Positionen oder ändere die Liste. Nicht bekannte Positionen dürfen leer bleiben. Nur echte Spielernamen eintragen – sie sind anschließend öffentlich sichtbar.</p>
+            <div id="admin-match-players" class="match-editor-roster"></div>
+            <button class="button secondary sm" type="button" id="admin-player-add">＋ Spieler hinzufügen</button>
+            <div class="admin-actions" style="margin-top:20px">
+              <button class="button" type="submit" id="admin-match-save">Änderungen speichern</button>
+              <button class="button secondary" type="button" id="admin-match-reset">Manuelle Änderungen entfernen</button>
+            </div>
+          </form>
+          <p class="admin-hint">Gespeichert wird ausschließlich in <code>events.json</code> auf deinem GitHub-Repository. Offizielle EA-Saisonstatistiken werden dadurch nicht verändert. Die Formations-Siegquote berücksichtigt die gespeicherten Spielergebnisse.</p>
         </section>
       </div>
       <div id="admin-events-view" class="hidden" role="tabpanel" aria-labelledby="admin-tab-events">
@@ -676,8 +751,29 @@ function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').cl
  const total=num(s.wins)+num(s.losses)+num(s.ties);const percent = n=>total?100*num(n)/total:0;
  $('#performance').innerHTML=`<div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 38px 'Space Grotesk';color:var(--accent)">${total?Math.round(percent(s.wins))+'%':'–'}</span><span class="muted" style="font-size:13px">Siegquote</span></div><div class="bar-stack"><span class="bar-win" style="width:${percent(s.wins)}%"></span><span class="bar-draw" style="width:${percent(s.ties)}%"></span><span class="bar-loss" style="width:${percent(s.losses)}%"></span></div><div class="legend"><span><i style="background:var(--green)"></i> Siege <b>${esc(disp(s.wins))}</b></span><span><i style="background:var(--yellow)"></i> Remis <b>${esc(disp(s.ties))}</b></span><span><i style="background:var(--red)"></i> Niederlagen <b>${esc(disp(s.losses))}</b></span></div>`;
  const matches=data.matches||[];$('#form-view').innerHTML=renderFormCurve(matches);
+ renderFormationStats(data.formationHistory||{});
  $('#matches-view').innerHTML=matches.length?matches.map(renderMatch).join(''):'<div class="inner empty">Keine Ligaspiele verfügbar.</div>';
  renderPlayers();renderTopPlayers();updateFavoriteClub();
+}
+function renderFormationStats(history){
+ const box=$('#formation-stats');
+ const rows=Object.values(history||{}).filter(x=>x&&typeof x==='object'&&/^\d-\d(?:-\d){1,3}$/.test(String(x.formation||''))&&['W','D','L'].includes(x.result));
+ const byFormation={};
+ for(const record of rows){
+   const group=byFormation[record.formation]||(byFormation[record.formation]={name:record.formation,w:0,d:0,l:0,total:0});
+   group.total++;if(record.result==='W')group.w++;else if(record.result==='D')group.d++;else group.l++;
+ }
+ const groups=Object.values(byFormation).map(g=>({...g,winrate:100*g.w/g.total}));
+ // Erst ab drei erfassten Spielen eine Formation als besten Kandidaten auszeichnen.
+ groups.sort((a,b)=>(b.total>=3)-(a.total>=3)||b.winrate-a.winrate||b.total-a.total||a.name.localeCompare(b.name));
+ if(!groups.length){box.innerHTML='<div class="panel formation-empty">Noch keine Aufstellungen erfasst. Öffne die letzten Spiele deines Clubs und trage im Admin-Menü unter <strong>Aufstellungen</strong> die gespielte Formation ein.</div>';return;}
+ const enough=groups.some(g=>g.total>=3);
+ box.innerHTML=groups.map((g,i)=>{
+   const eligible=enough?g.total>=3:true;
+   const best=enough&&i===0&&eligible;
+   const pct=Math.round(g.winrate);
+   return `<article class="formation-card ${best?'best':''}"><div class="formation-label">${best?'🏆 Beste Quote (ab 3 Spielen)':'Aufstellung · '+g.total+' '+(g.total===1?'Spiel':'Spiele')}</div><div class="formation-title">${esc(g.name)}</div><div class="formation-percent">${pct}%</div><div class="formation-track" role="img" aria-label="Siegquote ${pct} Prozent"><span style="width:${pct}%"></span></div><div class="formation-wdl">${g.w} Siege · ${g.d} Remis · ${g.l} Niederlagen</div><div class="formation-note">${g.total<3?'Kleine Stichprobe – erst ab drei Spielen für die Bestmarkierung berücksichtigt.':'Berechnet aus '+g.total+' manuell zugeordneten Ligaspielen.'}</div></article>`;
+ }).join('');
 }
 function renderTopPlayers(){
  const container=$('#leaders-grid');container.replaceChildren();
@@ -710,10 +806,10 @@ function renderMatchSquad(players, teamName, isOwn, motmSide, motmIndex){
  const list=Array.isArray(players)?players:[];
  const names=list.map((p,i)=>{
    const winner=motmSide===(isOwn?'ours':'opponents')&&motmIndex===i;
-   return `<li><span class="roster-index">${String(i+1).padStart(2,'0')}</span><span class="roster-player-name">${esc(p.name||'Unbekannter Spieler')}</span>${winner?'<span class="motm-tag" title="Man of the Match">★ MOTM</span>':''}</li>`;
+   return `<li><span class="roster-index">${String(i+1).padStart(2,'0')}</span><span class="roster-player-name">${esc(p.name||'Unbekannter Spieler')}${p.position?`<span class="manual-position">${esc(p.position)}</span>`:''}</span>${winner?'<span class="motm-tag" title="Man of the Match">★ MOTM</span>':''}</li>`;
  }).join('');
  const countText=list.length+' '+(list.length===1?'Spieler':'Spieler');
- return `<section class="roster-side" aria-label="${esc(teamName)}"><div class="roster-top"><strong>${isOwn?'🟢 ':''}${esc(teamName)}</strong><span>${countText}</span></div>${list.length?`<ol class="roster-names">${names}</ol>`:'<div class="match-no-players">EA hat keine Spielernamen für diese Mannschaft geliefert.</div>'}</section>`;
+ return `<section class="roster-side" aria-label="${esc(teamName)}"><div class="roster-top"><strong>${isOwn?'🟢 ':''}${esc(teamName)}</strong><span>${countText}</span></div>${list.length?`<ol class="roster-names">${names}</ol>`:'<div class="match-no-players">Keine Spieler für diese Mannschaft erfasst.</div>'}</section>`;
 }
 function renderMatch(m){
  const ours=Array.isArray(m.lineup?.ours)?m.lineup.ours:[];
@@ -723,8 +819,11 @@ function renderMatch(m){
  const winner=winners.length===1?winners[0]:null;
  const count=ours.length+them.length;
  const label=count?`${ours.length} + ${them.length} Spieler anzeigen`:'Spieler prüfen';
+ const manual=!!m.manualScore||!!m.manualPlayers;
+ const source=manual?'<span class="manual-match-tag">ADMIN-KORREKTUR</span> ':'';
+ const formTag=m.formation?`<span class="manual-match-tag">${esc(m.formation)}</span> `:'';
  const result=['W','D','L'].includes(m.result)?m.result:'D';
- return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Spieler anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">Von EA für dieses Spiel erfasste Spieler (${count} insgesamt). Keine individuellen Match-Statistiken.</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true,winner?.side,winner?.i)}${renderMatchSquad(them,m.opponent||'Gegner',false,winner?.side,winner?.i)}</div>${winner?`<p class="match-motm">★ <strong>Man of the Match:</strong> ${esc(winner.p.name||'Unbekannter Spieler')} (${esc(winner.side==='ours'?(clubData?.name||'Dein Club'):(m.opponent||'Gegner'))})</p>`:''}<p class="note">Quelle: EA clubs/matches → players. Die Anzahl zählt nur von EA erfasste Profile; KI-Spieler oder fehlende Datensätze werden möglicherweise nicht angezeigt. MOTM nur bei eindeutiger EA-Kennzeichnung.</p></div></details>`;
+ return `<details class="match-entry"><summary class="match" aria-label="Match gegen ${esc(m.opponent)}: ${esc(m.goals)} zu ${esc(m.against)}, Spieler anzeigen"><span class="match-result ${esc(result)}">${esc(result)}</span><div><strong>${esc(m.opponent)}</strong><small class="match-hint">${esc(label)} · ${esc(fmtDate(m.timestamp))} ${source}${formTag}</small></div><span class="match-score">${esc(m.goals)} : ${esc(m.against)}</span><span class="match-date">${esc(fmtDate(m.timestamp))}</span><span class="match-chevron" aria-hidden="true">⌄</span></summary><div class="match-expanded"><p class="match-expanded-head">${m.manualPlayers?'Vom Admin erfasste Spieler des eigenen Clubs; gegnerischer Kader laut EA.':'Von EA für dieses Spiel erfasste Spieler.'} (${count} Profile insgesamt)</p><div class="match-rosters">${renderMatchSquad(ours,clubData?.name||'Dein Club',true,winner?.side,winner?.i)}${renderMatchSquad(them,m.opponent||'Gegner',false,winner?.side,winner?.i)}</div>${winner?`<p class="match-motm">★ <strong>Man of the Match:</strong> ${esc(winner.p.name||'Unbekannter Spieler')} (${esc(winner.side==='ours'?(clubData?.name||'Dein Club'):(m.opponent||'Gegner'))})</p>`:''}<p class="note">${manual?'Eigener Kader bzw. Ergebnis teilweise manuell korrigiert. EA-Ergebnis und -Kader können davon abweichen.':'Quelle: EA clubs/matches → players.'} KI-Spieler und fehlende Profile sind eventuell nicht enthalten. MOTM nur bei eindeutiger EA-Kennzeichnung.</p></div></details>`;
 }
 function renderPlayers(){
   document.querySelectorAll('th[data-sort]').forEach(th=>{
@@ -804,19 +903,28 @@ $('#card-share').addEventListener('click',async()=>{const blob=await getCardBlob
 });
 const startParams=new URLSearchParams(location.search);const startClub=startParams.get('club');if(startParams.get('view')==='events')setSearchMode('events');else if(startClub && /^\d{1,20}$/.test(startClub)) loadClub(startClub);
 
-/* Passwort nur im Arbeitsspeicher dieses Browser-Tabs, niemals im Quellcode oder localStorage. */
-let adminPassword='', adminItems=[], adminBusy=false;
+/* Nur ein zufaelliger Sitzungsschluessel im sessionStorage, niemals das Admin-Passwort.
+   sessionStorage verschwindet beim Schliessen dieses Browser-Tabs. */
+const ADMIN_SESSION_KEY = 'fc27stats.admin-session.v1';
+let adminSessionToken = '';
+try{adminSessionToken=sessionStorage.getItem(ADMIN_SESSION_KEY)||''}catch{}
+function saveAdminSession(token){
+  adminSessionToken=token;
+  try{if(token)sessionStorage.setItem(ADMIN_SESSION_KEY,token);else sessionStorage.removeItem(ADMIN_SESSION_KEY)}catch{}
+}
+let adminItems=[], adminBusy=false;
 let adminTab='division', adminSelectedClub=null, adminOverrides={};
 function adminMessage(message,bad=false){const box=$('#admin-status');box.textContent=message;box.classList.toggle('hidden',!message);box.classList.toggle('bad',bad)}
 function adminSelectTab(tab){
-  adminTab=tab==='events'?'events':'division';
-  for(const name of ['division','events']){
+  adminTab=['division','events','formations'].includes(tab)?tab:'division';
+  for(const name of ['division','events','formations']){
     const on=name===adminTab;
     $('#admin-tab-'+name).classList.toggle('active',on);
     $('#admin-tab-'+name).setAttribute('aria-selected',String(on));
     $('#admin-'+name+'-view').classList.toggle('hidden',!on);
   }
   adminMessage('');
+  if(adminTab==='formations')adminDrawFormations();
 }
 function adminPickClub(id,name,eaDivision=null){
   if(!/^\d{1,20}$/.test(String(id||'')))return;
@@ -869,21 +977,53 @@ async function adminSearchClub(input){
     adminMessage('Wähle deinen Club aus den Suchergebnissen.');
   }catch(err){adminMessage(err.message,true)}
 }
-function adminOpen(){
+async function adminOpen(){
   if(clubData?.id){adminPickClub(clubData.id,clubData.name,clubData.eaDivision)}
   else if(!adminSelectedClub&&startClub&&/^\d{1,20}$/.test(startClub)){adminPickClub(startClub,'Club #'+startClub)}
   else syncAdminDivisionForm();
   adminSelectTab('division');
   $('#admin-overlay').classList.remove('hidden');
-  $('#admin-login-view').classList.toggle('hidden',!!adminPassword);
-  $('#admin-editor-view').classList.toggle('hidden',!adminPassword);
-  if(adminPassword)adminRefresh();else $('#admin-password').focus();
+  $('#admin-login-view').classList.add('hidden');
+  $('#admin-editor-view').classList.add('hidden');
+  // Wiederhergestellte Sitzung zuerst serverseitig pruefen (z. B. nach Deploy).
+  if(adminSessionToken){
+    const candidate=adminSessionToken;
+    try{
+      await adminRequest('/api/admin/session',{});
+      if($('#admin-overlay').classList.contains('hidden')||adminSessionToken!==candidate)return;
+      $('#admin-editor-view').classList.remove('hidden');adminRefresh();return;
+    }catch(err){
+      if(adminSessionToken!==candidate)return;
+      saveAdminSession('');
+    }
+  }
+  if($('#admin-overlay').classList.contains('hidden'))return;
+  $('#admin-login-view').classList.remove('hidden');$('#admin-password').focus();
 }
-function adminClose(){adminPassword='';adminItems=[];$('#admin-overlay').classList.add('hidden');$('#admin-event-form').classList.add('hidden')}
-async function adminRequest(path,payload){
- const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Password':adminPassword},body:JSON.stringify(payload),cache:'no-store'});
+function adminClose(){
+  // Schliessen des Fensters ist kein Logout. Die Sitzung bleibt im geoeffneten Tab.
+  $('#admin-overlay').classList.add('hidden');$('#admin-event-form').classList.add('hidden');
+}
+async function adminRequest(path,payload,password=''){
+ const headers={'Content-Type':'application/json'};
+ if(path==='/api/admin/login')headers['X-Admin-Password']=password;
+ else if(adminSessionToken)headers['X-Admin-Session']=adminSessionToken;
+ const response=await fetch(path,{method:'POST',headers,body:JSON.stringify(payload),cache:'no-store'});
  const data=await response.json().catch(()=>({error:'Serverantwort ist ungültig.'}));
+ if(response.status===401 && path!=='/api/admin/login'){
+   saveAdminSession('');
+   $('#admin-editor-view').classList.add('hidden');
+   $('#admin-login-view').classList.remove('hidden');
+ }
  if(!response.ok)throw Error(data.error||'Anfrage fehlgeschlagen.');return data;
+}
+function adminLogout(){
+ const token=adminSessionToken;
+ if(token){
+   // Unabhaengig vom Serverergebnis sofort lokal abmelden.
+   fetch('/api/admin/logout',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Session':token},body:'{}',cache:'no-store'}).catch(()=>{});
+ }
+ saveAdminSession('');adminItems=[];adminClose();
 }
 function adminRefresh(){
  // Die öffentliche Liste reicht für die Anzeige – nur die Änderungen sind geschützt.
@@ -943,18 +1083,21 @@ $('#admin-close').addEventListener('click',adminClose);
 $('#admin-overlay').addEventListener('click',e=>{if(e.target===$('#admin-overlay'))adminClose()});
 $('#admin-login-form').addEventListener('submit',async e=>{
  e.preventDefault();
- const candidate=$('#admin-password').value;
- adminPassword=candidate;
- try{await adminRequest('/api/admin/login',{});
-   $('#admin-password').value='';$('#admin-login-view').classList.add('hidden');
+ const password=$('#admin-password').value;
+ $('#admin-password').value='';
+ try{
+   const response=await adminRequest('/api/admin/login',{},password);
+   if(typeof response.session!=='string'||!response.session)throw Error('Server hat keine Sitzung erstellt.');
+   saveAdminSession(response.session);
+   $('#admin-login-view').classList.add('hidden');
    $('#admin-editor-view').classList.remove('hidden');adminMessage('');adminRefresh();
- }catch(err){adminPassword='';alert(err.message)}
+ }catch(err){alert(err.message)}
 });
-$('#admin-logout').addEventListener('click',()=>{adminPassword='';adminItems=[];adminClose();});
-$('#admin-logout-top').addEventListener('click',()=>{adminPassword='';adminItems=[];adminClose();});
+$('#admin-logout').addEventListener('click',adminLogout);
+$('#admin-logout-top').addEventListener('click',adminLogout);
 async function adminDivisionChange(reset=false){
   const chosen=adminSelectedClub;
-  if(!chosen||!adminPassword||adminBusy)return adminMessage('Bitte zuerst einen Club auswählen.',true);
+  if(!chosen||!adminSessionToken||adminBusy)return adminMessage('Bitte zuerst einen Club auswählen.',true);
   const value=reset?null:Number($('#admin-division-select').value);
   if(!reset&&(!Number.isInteger(value)||value<1||value>10)){
     adminMessage('Bitte eine gültige Division auswählen.',true);return;
@@ -975,8 +1118,109 @@ async function adminDivisionChange(reset=false){
     adminBusy=false;syncAdminDivisionForm();
   }
 }
+
+const FORMATION_CHOICES=['4-2-3-1','4-3-3','4-4-2','4-1-2-1-2','4-1-4-1','4-3-2-1','4-2-2-2','4-2-4','4-5-1','3-5-2','3-4-3','3-4-2-1','3-4-1-2','3-1-4-2','5-2-3','5-4-1'];
+const MATCH_POSITIONS=['TW','LV','IV','RV','LAV','RAV','ZDM','ZM','ZOM','LM','RM','LF','RF','LS','RS','ST'];
+let adminMatchSelectedId='';
+const formationSelect=$('#admin-match-formation');
+for(const f of FORMATION_CHOICES){const option=document.createElement('option');option.value=f;option.textContent=f;formationSelect.appendChild(option)}
+function editableMatches(){
+ if(!clubData)return [];
+ const recent=Array.isArray(clubData.matches)?clubData.matches:[];
+ const seen=new Set(recent.map(x=>String(x.id)));
+ const history=clubData.formationHistory||{};
+ const older=Object.entries(history).filter(([id,r])=>!seen.has(id)&&r&&/^\d{1,25}$/.test(id)).map(([id,r])=>({id,opponent:r.opponent||'Archiviertes Spiel',timestamp:r.timestamp||0,goals:r.goals,against:r.against,eaGoals:r.eaGoals,eaAgainst:r.eaAgainst,result:r.result,lineup:{ours:[],opponents:[]},archived:true}));
+ return recent.concat(older.sort((a,b)=>b.timestamp-a.timestamp));
+}
+function adminPlayerRow(player={}){
+ const container=$('#admin-match-players');
+ if(container.children.length>=16){adminMessage('Maximal 16 Spieler pro Match.',true);return}
+ const row=document.createElement('div');row.className='match-player-row';
+ const input=document.createElement('input');input.type='text';input.maxLength=70;input.placeholder='Spielername / PSN-ID';input.setAttribute('aria-label','Spielername');input.value=player.name||'';
+ const select=document.createElement('select');select.setAttribute('aria-label','Position für Spieler');
+ const blank=document.createElement('option');blank.value='';blank.textContent='Position –';select.append(blank);
+ for(const position of MATCH_POSITIONS){const opt=document.createElement('option');opt.value=position;opt.textContent=position;select.append(opt)}
+ select.value=MATCH_POSITIONS.includes(player.position)?player.position:'';
+ const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Spieler entfernen');remove.addEventListener('click',()=>row.remove());
+ row.append(input,select,remove);container.append(row);
+}
+function adminSelectMatch(id){
+ const match=editableMatches().find(m=>String(m.id)===String(id));if(!match)return;
+ adminMatchSelectedId=String(match.id);
+ const saved=(clubData.formationHistory||{})[adminMatchSelectedId]||{};
+ $('#admin-match-editor').classList.remove('hidden');
+ $('#admin-match-editor-title').textContent=(match.opponent||'Gegner')+' · '+fmtDate(match.timestamp);
+ $('#admin-match-formation').value=saved.formation||'';
+ $('#admin-match-goals').value=Number.isInteger(saved.goals)?saved.goals:match.goals;
+ $('#admin-match-against').value=Number.isInteger(saved.against)?saved.against:match.against;
+ const players=saved.playersSource==='manual'&&Array.isArray(saved.players)?saved.players:(match.lineup?.ours||[]);
+ const container=$('#admin-match-players');container.replaceChildren();
+ for(const p of players)adminPlayerRow(p);
+ adminDrawFormations(false);
+}
+function adminDrawFormations(autoselect=true){
+ const box=$('#admin-formations-list'),headline=$('#admin-formations-club');box.replaceChildren();
+ if(!clubData?.id){headline.textContent='Bitte zuerst den Club auf der Website öffnen, dessen Matches du bearbeiten möchtest.';$('#admin-match-editor').classList.add('hidden');return}
+ const matches=editableMatches();const history=clubData.formationHistory||{};
+ headline.textContent=(clubData.name||'Club')+' · '+(clubData.matches||[]).length+' aktuelle EA-Spiele · '+Object.keys(history).length+' gespeicherte Spiele';
+ if(!matches.length){box.textContent='Keine Ligaspiele von EA vorhanden.';$('#admin-match-editor').classList.add('hidden');return}
+ for(const match of matches){
+  const button=document.createElement('button');button.type='button';button.className='formation-match-picker'+(adminMatchSelectedId===String(match.id)?' active':'');
+  const info=document.createElement('div'),title=document.createElement('strong'),meta=document.createElement('small');
+  title.textContent=(match.opponent||'Gegner')+' · '+match.goals+':'+match.against;
+  meta.textContent=fmtDate(match.timestamp)+(match.archived?' · Archiv':'')+(history[match.id]?' · Gespeichert':'');
+  info.append(title,meta);const arrow=document.createElement('span');arrow.textContent='Bearbeiten ↗';button.append(info,arrow);
+  button.addEventListener('click',()=>{adminSelectMatch(match.id);$('#admin-match-editor').scrollIntoView({block:'nearest',behavior:'smooth'})});box.append(button);
+ }
+ if(autoselect){
+  if(!matches.some(m=>String(m.id)===adminMatchSelectedId))adminMatchSelectedId=String(matches[0].id);
+  adminSelectMatch(adminMatchSelectedId);
+ }
+}
+function applySavedMatch(match,record){
+ if(record?.scoreSource==='manual'){
+  match.goals=record.goals;match.against=record.against;
+  match.result=record.result;match.manualScore=true;
+ }else{
+  match.goals=match.eaGoals;match.against=match.eaAgainst;
+  match.result=match.goals>match.against?'W':match.goals<match.against?'L':'D';match.manualScore=false;
+ }
+ if(record?.playersSource==='manual'){match.lineup.ours=record.players.map(p=>({...p,motm:false}));match.manualPlayers=true}
+ else {match.manualPlayers=false}
+ match.formation=record?.formation||null;
+}
+async function adminSaveMatch(reset=false){
+ if(adminBusy||!clubData?.id||!adminMatchSelectedId)return;
+ if(reset&&!confirm('Alle manuellen Angaben für dieses Spiel entfernen?'))return;
+ const rows=[...$('#admin-match-players').children];
+ const players=rows.map(r=>({name:r.querySelector('input').value.trim(),position:r.querySelector('select').value}));
+ if(!reset&&(players.some(p=>!p.name)||(new Set(players.map(p=>p.name.toLowerCase()))).size!==players.length))return adminMessage('Bitte alle Spielernamen ausfüllen und doppelte Namen entfernen.',true);
+ const goals=Number($('#admin-match-goals').value),against=Number($('#admin-match-against').value);
+ if(!reset&&(!Number.isInteger(goals)||!Number.isInteger(against)||goals<0||against<0||goals>30||against>30))return adminMessage('Bitte ein gültiges Ergebnis von 0 bis 30 Toren angeben.',true);
+ adminBusy=true;$('#admin-match-save').disabled=true;$('#admin-match-reset').disabled=true;adminMessage('Match wird auf GitHub gespeichert …');
+ try{
+  const data=await adminRequest('/api/admin/formation',{clubId:String(clubData.id),matchId:adminMatchSelectedId,formation:reset?null:$('#admin-match-formation').value||null,goals,against,players,reset});
+  clubData.formationHistory=data.formationHistory||{};
+  // The public server will apply manual annotations after Render redeploys.
+  // Show locally saved values immediately until then.
+  const match=(clubData.matches||[]).find(m=>String(m.id)===adminMatchSelectedId);
+  if(match){
+    if(reset){
+      // Re-fetch the original EA match so its lineup/MOTM is restored as well.
+      try{const response=await api('/api/club?id='+encodeURIComponent(clubData.id));clubData=response}catch{}
+    }else applySavedMatch(match,clubData.formationHistory[adminMatchSelectedId]);
+  }
+  renderClub(clubData);adminDrawFormations();
+  adminMessage(reset?'✓ Manuelle Daten entfernt. Der EA-Kader wird wieder verwendet.':'✓ Gespeichert. Die Ergebnisse der Formationsstatistik und die Matchdetails wurden aktualisiert.');
+ }catch(err){adminMessage(err.message,true)}finally{adminBusy=false;$('#admin-match-save').disabled=false;$('#admin-match-reset').disabled=false}
+}
+$('#admin-player-add').addEventListener('click',()=>adminPlayerRow());
+$('#admin-match-editor').addEventListener('submit',e=>{e.preventDefault();adminSaveMatch(false)});
+$('#admin-match-reset').addEventListener('click',()=>adminSaveMatch(true));
+
 $('#admin-tab-division').addEventListener('click',()=>adminSelectTab('division'));
 $('#admin-tab-events').addEventListener('click',()=>adminSelectTab('events'));
+$('#admin-tab-formations').addEventListener('click',()=>adminSelectTab('formations'));
 $('#admin-club-search-form').addEventListener('submit',e=>{e.preventDefault();adminSearchClub($('#admin-club-search').value)});
 $('#admin-division-form').addEventListener('submit',e=>{e.preventDefault();adminDivisionChange(false)});
 $('#admin-division-reset').addEventListener('click',()=>adminDivisionChange(true));

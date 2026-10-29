@@ -20,6 +20,7 @@ import os
 import socket
 import re
 import hmac
+import secrets
 import base64
 from datetime import date
 from uuid import uuid4
@@ -214,6 +215,22 @@ def division_override_for_club(club_id):
     return None
 
 
+def formation_history_for_club(club_id):
+    # Saved formation/outcome snapshots are curator-maintained: EA doesn't provide formations.
+    with EVENTS_LOCK:
+        data=EVENTS_RUNTIME
+    if data is None:
+        try:
+            with (HERE / 'events.json').open(encoding='utf-8') as f:
+                data=json.load(f)
+        except (OSError,ValueError):
+            return {}
+    histories=data.get('formationHistory',{}) if isinstance(data,dict) else {}
+    club=histories.get(str(club_id),{}) if isinstance(histories,dict) else {}
+    return {mid:val for mid,val in list(club.items())[:500]
+            if isinstance(val,dict)} if isinstance(club,dict) else {}
+
+
 def do_club(club_id):
     club_id = club_id.strip()
     if not club_id.isdecimal() or not 1 <= len(club_id) <= 20:
@@ -248,17 +265,38 @@ def do_club(club_id):
         result = "W" if gf > ga else "L" if gf < ga else "D"
         ours = match_players_for_club(game, club_id)
         theirs = match_players_for_club(game, opponent_id) if opponent_id else []
+        match_id = str(game.get("matchId") or "")
         matches.append({
-            "id": str(game.get("matchId") or ""),
+            "id": match_id,
             "timestamp": game.get("timestamp"),
             "opponent": (other.get("details") or {}).get("name") or "Unbekannter Gegner",
             "goals": gf, "against": ga, "result": result,
+            "eaGoals": gf, "eaAgainst": ga,
             "lineup": {"ours": ours, "opponents": theirs},
         })
     club_name = info.get("name") or "Unbekannter Club"
     ea_division = current_division_for_club(club_id, club_name)
     manual_division = division_override_for_club(club_id)
     division = manual_division if manual_division is not None else ea_division
+    history = formation_history_for_club(club_id)
+    # Manuell erfasste Korrekturen werden deutlich als solche gekennzeichnet.
+    # EA-Originalergebnis wird weiterhin separat mitgeliefert.
+    for match in matches:
+        annotation = history.get(match["id"], {})
+        if not isinstance(annotation, dict):
+            continue
+        if annotation.get("scoreSource") == "manual" and type(annotation.get("goals")) is int and type(annotation.get("against")) is int:
+            match["goals"], match["against"] = annotation["goals"], annotation["against"]
+            match["result"] = "W" if match["goals"] > match["against"] else "L" if match["goals"] < match["against"] else "D"
+            match["manualScore"] = True
+        if annotation.get("playersSource") == "manual" and isinstance(annotation.get("players"), list):
+            match["lineup"]["ours"] = [
+                {"name": str(player.get("name", "")), "position": str(player.get("position", "")), "motm": False}
+                for player in annotation["players"] if isinstance(player, dict)
+            ]
+            match["manualPlayers"] = True
+        if annotation.get("formation"):
+            match["formation"] = annotation["formation"]
     remember_roster(club_id, club_name, members)
     return {
         "id": club_id,
@@ -271,6 +309,7 @@ def do_club(club_id):
         "members": members,
         "career": career,
         "matches": matches,
+        "formationHistory": history,
         "updated": int(time()),
     }
 
@@ -384,6 +423,12 @@ GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
 ADMIN_WRITE_LOCK = Lock()
 ADMIN_FAILURES = defaultdict(deque)
 ADMIN_FAILURE_LOCK = Lock()
+# Fluechtige Admin-Sitzungen: niemals das Admin-Passwort im Browser speichern.
+# Sitzungen werden bei Render-Neustart geloescht und nach 12 Stunden Inaktivitaet ungueltig.
+ADMIN_SESSION_LOCK = Lock()
+ADMIN_SESSIONS = {}
+ADMIN_SESSION_IDLE_SECONDS = 12 * 60 * 60
+ADMIN_SESSION_LIMIT = 100
 EVENTS_RUNTIME = None
 EVENTS_LOCK = Lock()
 EVENT_CATEGORIES = {"Playoffs", "Saison", "Turniere", "News"}
@@ -417,6 +462,41 @@ def admin_auth(password, ip):
         raise AdminError(401, "Falsches Admin-Passwort.")
     with ADMIN_FAILURE_LOCK:
         ADMIN_FAILURES.pop(ip, None)
+
+
+def create_admin_session(password, ip):
+    admin_auth(password, ip)
+    session_token = secrets.token_urlsafe(32)
+    now = monotonic()
+    with ADMIN_SESSION_LOCK:
+        # Alte Sitzungen aufraeumen, ohne einen Hintergrundtask zu benoetigen.
+        for token, expires in list(ADMIN_SESSIONS.items()):
+            if expires <= now:
+                ADMIN_SESSIONS.pop(token, None)
+        if len(ADMIN_SESSIONS) >= ADMIN_SESSION_LIMIT:
+            oldest = min(ADMIN_SESSIONS, key=ADMIN_SESSIONS.get)
+            ADMIN_SESSIONS.pop(oldest, None)
+        ADMIN_SESSIONS[session_token] = now + ADMIN_SESSION_IDLE_SECONDS
+    return session_token
+
+
+def admin_session_auth(session_token):
+    if not admin_configured():
+        raise AdminError(503, "Admin noch nicht eingerichtet. ADMIN_PASSWORD und GITHUB_TOKEN in Render konfigurieren.")
+    if not isinstance(session_token, str) or len(session_token) != 43:
+        raise AdminError(401, "Admin-Sitzung abgelaufen. Bitte erneut anmelden.")
+    now = monotonic()
+    with ADMIN_SESSION_LOCK:
+        expiry = ADMIN_SESSIONS.get(session_token, 0)
+        if expiry <= now:
+            ADMIN_SESSIONS.pop(session_token, None)
+            raise AdminError(401, "Admin-Sitzung abgelaufen. Bitte erneut anmelden.")
+        ADMIN_SESSIONS[session_token] = now + ADMIN_SESSION_IDLE_SECONDS
+
+
+def revoke_admin_session(session_token):
+    with ADMIN_SESSION_LOCK:
+        ADMIN_SESSIONS.pop(session_token, None)
 
 
 def checked_date(raw, optional=True):
@@ -490,7 +570,7 @@ def github_write_events(events, sha):
     owner, repo=GITHUB_REPO.split("/")
     url=f"https://api.github.com/repos/{owner}/{repo}/contents/events.json"
     raw=(json.dumps(events,ensure_ascii=False,indent=2)+"\n").encode("utf-8")
-    body=json.dumps({"message":"FC27 STATS: Events oder Division aktualisiert",
+    body=json.dumps({"message":"FC27 STATS: Admin-Aktualisierung",
                      "content":base64.b64encode(raw).decode("ascii"),
                      "sha":sha,"branch":GITHUB_BRANCH}).encode("utf-8")
     req=Request(url, data=body, method="PUT", headers={
@@ -572,6 +652,118 @@ def admin_set_division(body):
         return {"clubId": club_id, "division": value}
 
 
+FORMATIONS = {"4-2-3-1", "4-3-3", "4-4-2", "4-1-2-1-2", "4-1-4-1", "4-3-2-1",
+              "4-2-2-2", "4-2-4", "4-5-1", "3-5-2", "3-4-3", "3-4-2-1", "3-4-1-2",
+              "3-1-4-2", "5-2-3", "5-3-2", "5-4-1"}
+
+
+POSITIONS = {"TW", "LV", "IV", "RV", "LAV", "RAV", "ZDM", "ZM", "ZOM", "LM", "RM", "LF", "RF", "LS", "RS", "ST"}
+
+
+def validate_manual_roster(raw):
+    if not isinstance(raw, list) or len(raw) > 16:
+        raise ValueError("Bitte höchstens 16 Spieler pro Match eintragen.")
+    result = []
+    seen = set()
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ValueError("Ungültiger Spieler.")
+        name = item.get("name")
+        position = item.get("position")
+        if not isinstance(name, str) or not 1 <= len(name.strip()) <= 70:
+            raise ValueError("Jeder Spieler braucht einen Namen mit höchstens 70 Zeichen.")
+        if position not in POSITIONS and position != "":
+            raise ValueError("Bitte eine gültige Position wählen oder das Feld leer lassen.")
+        name = name.strip()
+        if name.casefold() in seen:
+            raise ValueError("Spieler dürfen in einem Match nicht doppelt eingetragen werden.")
+        seen.add(name.casefold())
+        result.append({"name": name, "position": position})
+    return result
+
+
+def admin_set_formation(body):
+    """Protected match editor for EA matches and matches already saved in history.
+
+    EA results and players are initial suggestions; manual edits are explicitly
+    marked separately. Snapshots persist in GitHub events.json and support
+    historic formations after EA no longer returns the match in its last ten.
+    """
+    global EVENTS_RUNTIME
+    club_id = str(body.get("clubId", ""))
+    match_id = str(body.get("matchId", ""))
+    formation = body.get("formation") or None
+    reset = body.get("reset") is True
+    if not (club_id.isdecimal() and 1 <= len(club_id) <= 20 and match_id.isdecimal() and 1 <= len(match_id) <= 25):
+        raise ValueError("Ungültige Club- oder Match-ID.")
+    if not reset and formation is not None and formation not in FORMATIONS:
+        raise ValueError("Ungültige Formation.")
+    gf = body.get("goals")
+    ga = body.get("against")
+    if not reset and (type(gf) is not int or type(ga) is not int or not (0 <= gf <= 30 and 0 <= ga <= 30)):
+        raise ValueError("Das Ergebnis muss aus zwei ganzen Zahlen zwischen 0 und 30 bestehen.")
+    players = [] if reset else validate_manual_roster(body.get("players", []))
+
+    # Verify match ID belongs to the club using EA, OR that this match was
+    # previously verified and stored. Never allow arbitrary invented match IDs.
+    verified = None
+    if not reset:
+        try:
+            games = api_get("clubs/matches", clubIds=club_id, matchType="leagueMatch", maxResultCount=10)
+        except EAError:
+            games = []
+        for game in games if isinstance(games, list) else []:
+            if not isinstance(game, dict) or str(game.get("matchId", "")) != match_id:
+                continue
+            ours = (game.get("clubs") or {}).get(club_id, {})
+            if not isinstance(ours, dict) or not ours:
+                continue
+            opponents = [v for k,v in (game.get("clubs") or {}).items() if str(k) != club_id and isinstance(v, dict)]
+            ea_gf, ea_ga = int(ours.get("goals") or 0), int(ours.get("goalsAgainst") or 0)
+            verified = {
+                "timestamp": int(game.get("timestamp") or 0),
+                "opponent": str(((opponents[0].get("details") if opponents else {}) or {}).get("name") or "Gegner")[:90],
+                "eaGoals": ea_gf, "eaAgainst": ea_ga
+            }
+            break
+    with ADMIN_WRITE_LOCK:
+        data, sha = github_file_and_sha()
+        histories = data.get("formationHistory", {})
+        if not isinstance(histories, dict) or len(histories) > 300:
+            raise ValueError("Ungültiger Aufstellungsspeicher.")
+        histories = dict(histories)
+        club = histories.get(club_id, {})
+        if not isinstance(club, dict) or len(club) > 500:
+            raise ValueError("Zu viele gespeicherte Matches.")
+        club = dict(club)
+        if reset:
+            if match_id not in club:
+                return club
+            club.pop(match_id, None)
+        else:
+            old = club.get(match_id)
+            if verified is None:
+                if not isinstance(old, dict):
+                    raise ValueError("Match nicht unter den letzten zehn EA-Spielen gefunden. Öffne den Club erneut.")
+                verified = {"timestamp": old.get("timestamp", 0), "opponent": old.get("opponent", "Gegner"),
+                            "eaGoals": old.get("eaGoals", old.get("goals", 0)),
+                            "eaAgainst": old.get("eaAgainst", old.get("against", 0))}
+            if match_id not in club and len(club) >= 500:
+                raise ValueError("Maximal 500 archivierte Matches pro Club.")
+            club[match_id] = {
+                **verified, "formation": formation, "goals": gf, "against": ga,
+                "result": "W" if gf > ga else "L" if gf < ga else "D",
+                "scoreSource": "manual", "players": players, "playersSource": "manual"
+            }
+        if club: histories[club_id] = club
+        else: histories.pop(club_id, None)
+        data["formationHistory"] = histories
+        github_write_events(data, sha)
+        with EVENTS_LOCK:
+            EVENTS_RUNTIME = data
+        return club
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(HERE), **kwargs)
@@ -588,7 +780,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         p=urlsplit(self.path)
-        if p.path not in ("/api/admin/login", "/api/admin/events", "/api/admin/division"):
+        if p.path not in ("/api/admin/login", "/api/admin/session", "/api/admin/logout", "/api/admin/events", "/api/admin/division", "/api/admin/formation"):
             return self.send_json(404,{"error":"Endpunkt nicht gefunden."})
         try:
             length=int(self.headers.get("Content-Length", "0"))
@@ -597,20 +789,38 @@ class Handler(SimpleHTTPRequestHandler):
             payload=json.loads(self.rfile.read(length))
             if not isinstance(payload,dict):
                 raise ValueError("Ungültige Anfrage.")
-            password=self.headers.get("X-Admin-Password", "")
-            if len(password)>1024:
-                raise AdminError(401,"Ungültiges Passwort.")
             # Nicht von einer fremden Website aus Browseranfragen erlauben.
             origin=self.headers.get("Origin", "")
             host=self.headers.get("Host", "")
             if origin and urlsplit(origin).netloc != host:
                 raise AdminError(403,"Anfrage von fremder Website abgelehnt.")
-            admin_auth(password,self.client_address[0])
             if p.path=="/api/admin/login":
+                password=self.headers.get("X-Admin-Password", "")
+                if len(password)>1024:
+                    raise AdminError(401,"Ungültiges Passwort.")
+                session=create_admin_session(password,self.client_address[0])
+                return self.send_json(200,{"ok":True,"session":session})
+            token=self.headers.get("X-Admin-Session", "")
+            if token:
+                admin_session_auth(token)
+            else:
+                # Abwaertskompatibilitaet fuer alte index.html aus dem Browsercache.
+                password=self.headers.get("X-Admin-Password", "")
+                if not password or len(password)>1024:
+                    raise AdminError(401,"Admin-Anmeldung erforderlich.")
+                admin_auth(password,self.client_address[0])
+            if p.path=="/api/admin/session":
+                return self.send_json(200,{"ok":True})
+            if p.path=="/api/admin/logout":
+                if token:
+                    revoke_admin_session(token)
                 return self.send_json(200,{"ok":True})
             if p.path == "/api/admin/division":
                 result = admin_set_division(payload)
                 return self.send_json(200, {"ok": True, "result": result})
+            if p.path == "/api/admin/formation":
+                result = admin_set_formation(payload)
+                return self.send_json(200, {"ok": True, "formationHistory": result})
             result=admin_change(payload)
             return self.send_json(200,{"ok":True,"events":result})
         except AdminError as error:
