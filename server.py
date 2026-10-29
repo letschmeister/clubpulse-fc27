@@ -417,9 +417,9 @@ def do_player_search(gamertag, saved_club_ids=""):
 # ADMIN: Zugangsdaten stehen ausschließlich in Render-Umgebungsvariablen.
 # Niemals Passwörter oder GitHub-Tokens in diese Datei / GitHub eintragen.
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
-GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
-GITHUB_REPO = os.environ.get("GITHUB_REPO", "letschmeister/clubpulse-fc27")
-GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "letschmeister/clubpulse-fc27").strip()
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main").strip() or "main"
 ADMIN_WRITE_LOCK = Lock()
 ADMIN_FAILURES = defaultdict(deque)
 ADMIN_FAILURE_LOCK = Lock()
@@ -547,23 +547,46 @@ def validate_event(entry, old_id=None):
 
 
 def github_file_and_sha():
+    """Events inklusive GitHub-SHA laden.
+
+    Sichere Fehlerdiagnose: nur HTTP-Status und Fehlerklasse ausgeben,
+    niemals Token, geheime URL-Parameter oder GitHub-Antworttexte.
+    """
     owner, repo = GITHUB_REPO.split("/")
     endpoint = f"https://api.github.com/repos/{owner}/{repo}/contents/events.json?{urlencode({'ref':GITHUB_BRANCH})}"
-    req = Request(endpoint, headers={"Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "FC27-STATS-admin/1.0"})
+    req = Request(endpoint, headers={
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "FC27-STATS-admin/1.1"
+    })
     try:
         with urlopen(req, timeout=14) as resp:
-            payload=json.load(resp)
-        decoded=base64.b64decode(payload["content"]).decode("utf-8")
-        events=json.loads(decoded)
+            payload = json.load(resp)
+        decoded = base64.b64decode(payload["content"]).decode("utf-8")
+        events = json.loads(decoded)
         if not isinstance(events, dict) or not isinstance(events.get("items"), list):
-            raise ValueError("Ungültiges Format von events.json auf GitHub.")
+            raise ValueError("Invalid events data shape")
         return events, payload["sha"]
-    except (HTTPError, URLError, TimeoutError, KeyError, ValueError, OSError) as e:
-        # Keine Token oder Zugriffsinformationen aus HTTP-Antworten protokollieren.
-        print("GitHub lesen fehlgeschlagen:", type(e).__name__, getattr(e, "code", ""))
-        raise AdminError(502, "Events können auf GitHub nicht gelesen werden. Token, Repo und Berechtigungen prüfen.") from None
+    except HTTPError as e:
+        print("GitHub lesen fehlgeschlagen: HTTP", e.code, flush=True)
+        if e.code == 401:
+            message = "GitHub meldet HTTP 401: Der in Render hinterlegte GITHUB_TOKEN wird nicht akzeptiert."
+        elif e.code == 403:
+            message = "GitHub meldet HTTP 403: Zugriff verweigert oder API-Limit erreicht. Token und Repository-Zugriff prüfen."
+        elif e.code == 404:
+            message = "GitHub meldet HTTP 404: Repository, Branch oder events.json unter der Token-Berechtigung nicht gefunden."
+        elif e.code == 429:
+            message = "GitHub meldet HTTP 429: Zu viele API-Anfragen, bitte später erneut probieren."
+        else:
+            message = f"GitHub liefert HTTP {e.code} beim Lesen von events.json."
+        raise AdminError(502, message) from None
+    except (URLError, TimeoutError, OSError) as e:
+        print("GitHub lesen fehlgeschlagen: Netzwerk", type(e).__name__, flush=True)
+        raise AdminError(502, "GitHub zurzeit nicht erreichbar (Netzwerk-/Timeoutfehler).") from None
+    except (KeyError, ValueError, UnicodeError, TypeError) as e:
+        print("GitHub lesen fehlgeschlagen: Datenformat", type(e).__name__, flush=True)
+        raise AdminError(502, "GitHub lieferte ein unerwartetes events.json-Dateiformat.") from None
 
 
 def github_write_events(events, sha):
@@ -583,10 +606,16 @@ def github_write_events(events, sha):
             if resp.status not in (200,201):
                 raise AdminError(502,"GitHub hat die Änderung nicht bestätigt.")
     except HTTPError as e:
-        print("GitHub speichern fehlgeschlagen: HTTP", e.code)
+        print("GitHub speichern fehlgeschlagen: HTTP", e.code, flush=True)
         if e.code == 409:
-            raise AdminError(409,"Events wurden zwischenzeitlich verändert. Bitte neu laden.") from None
-        raise AdminError(502,"Speichern auf GitHub fehlgeschlagen. Token muss Contents: Read and write besitzen.") from None
+            raise AdminError(409, "Events wurden zwischenzeitlich verändert. Bitte neu laden.") from None
+        if e.code == 401:
+            raise AdminError(502, "GitHub HTTP 401 beim Schreiben: GITHUB_TOKEN wird nicht akzeptiert.") from None
+        if e.code == 403:
+            raise AdminError(502, "GitHub HTTP 403 beim Schreiben: Contents: Read and write und API-Limits prüfen.") from None
+        if e.code == 404:
+            raise AdminError(502, "GitHub HTTP 404 beim Schreiben: Repository/Branch nicht gefunden oder kein Zugriff.") from None
+        raise AdminError(502, f"GitHub HTTP {e.code} beim Schreiben von events.json.") from None
     except (URLError, TimeoutError, OSError):
         raise AdminError(502,"GitHub ist gerade nicht erreichbar; es wurde nichts gespeichert.") from None
 
