@@ -298,6 +298,12 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 @media(max-width:650px){.formation-grid{grid-template-columns:1fr}.formation-edit-row{grid-template-columns:minmax(0,1fr);gap:9px}.admin-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.admin-tab{font-size:11px;padding:12px 4px}}
 @media(prefers-reduced-motion:reduce){.formation-card,.formation-track span{transition:none}}
 
+/* Match-Vorlage aus dem letzten vorherigen, manuell dokumentierten Spiel. */
+.match-copy-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 17px}
+.match-copy-tools .button{white-space:normal;text-align:center}
+.match-copy-note{font-size:12px;line-height:1.5;color:#adbfaf;flex:1 1 220px}
+.match-copy-tools .button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:650px){.match-copy-tools .button{width:100%}}
 /* Club match editor: scoring and roster administration. */
 .match-editor{margin-top:16px;padding:18px;border-radius:16px;border:1px solid #52684c;background:linear-gradient(130deg,#172620,#161d21)}
 .match-editor-title{font-weight:800;color:#eaffdb;font-size:17px;margin-bottom:15px}
@@ -379,6 +385,17 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
 #today-team-save{background:linear-gradient(125deg,#bdff6c,#d9ff9b);color:#18231b;border-color:#d9ff9b}
 #today-team-save:hover{filter:brightness(1.06)}
 @media(max-width:620px){.topright #team-open{padding:8px 9px;font-size:11px}.topright #team-open span{font-size:11px}.today-planner-controls #today-team-save{flex-basis:100%}}
+
+/* Automatisch geladene Playoff-Statistik – keine manuellen Eingaben nötig. */
+.playoff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:14px}
+.playoff-card{border:1px solid #34473f;border-radius:18px;background:linear-gradient(140deg,#172622,#111b1e);padding:22px;min-width:0}
+.playoff-card h3{margin:0 0 8px;font-size:17px;color:#edf6e8}
+.playoff-card .big{font-size:32px;font-weight:800;color:#cbff78;line-height:1.2}
+.playoff-card small,.playoff-muted{color:#adbdba;font-size:12px}
+.playoff-card .tiny-line{margin-top:9px;font-size:13px;color:#e3eee4}
+.playoff-match{display:flex;justify-content:space-between;gap:10px;padding:12px 13px;border:1px solid #34453b;border-radius:12px;background:#111b1c;margin:8px 0}
+.playoff-match .win{color:#baff76}.playoff-match .loss{color:#ff959b}.playoff-match .draw{color:#f1dd8a}
+@media(max-width:640px){.playoff-card{padding:16px}}
 </style>
 </head>
 <body>
@@ -476,6 +493,11 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
       <div class="section-head"><div><div class="label">// CLUB-BESTWERTE</div><h2>Top-Spieler <span class="heading-flair">✦</span></h2><p>Der beste Spieler in jeder Kategorie – direkt nebeneinander, basierend auf den aktuellen EA-Saisonstatistiken.</p></div></div>
       <div id="leaders-grid" class="leaders-grid" aria-live="polite"></div>
       <p class="note">Beste Bewertung: nur Spieler mit mindestens 5 Einsätzen. Bei Gleichstand wird ein Spieler angezeigt und der Gleichstand gekennzeichnet. Fehlende Daten werden nicht geschätzt.</p>
+    </section>
+    <section class="section" id="playoff-section">
+      <div class="section-head"><div><div class="label">// PLAYOFFS</div><h2>Letzte verfügbare Playoff-Spiele</h2><p>Die Bilanz wird automatisch aus den von EA gelieferten Spielen berechnet.</p></div></div>
+      <div id="playoff-display" class="playoff-grid" aria-live="polite"></div>
+      <p class="note">Maximal zehn zuletzt verfügbare Playoff-Spiele – keine vollständige Historie aller vergangenen Playoffs. Ältere Ergebnisse können fehlen.</p>
     </section>
     <section class="section">
       <div class="section-head"><div><div class="label">// MATCH-HISTORY</div><h2>Letzte Ligaspiele</h2><p>Tippe auf ein Ergebnis, um die beteiligten Spieler beider Teams und – falls verfügbar – den Man of the Match zu sehen. EA liefert maximal zehn Ligaspiele.</p></div></div>
@@ -577,6 +599,10 @@ td.sorted-stat{color:var(--accent);font-weight:800;background:rgba(186,250,112,.
           <div id="admin-formations-list" class="formation-edit-list"></div>
           <form id="admin-match-editor" class="match-editor hidden">
             <div class="match-editor-title" id="admin-match-editor-title">Match bearbeiten</div>
+            <div class="match-copy-tools">
+              <button type="button" class="button secondary sm" id="admin-copy-last" disabled>↶ Vom letzten Spiel übernehmen</button>
+              <span class="match-copy-note" id="admin-copy-last-note">Vorheriges gespeichertes Match wird gesucht.</span>
+            </div>
             <div class="match-editor-grid">
               <label class="match-editor-field">Formation<select id="admin-match-formation"><option value="">Nicht erfasst</option></select></label>
               <label class="match-editor-field">Eigene Tore<input id="admin-match-goals" type="number" min="0" max="30" inputmode="numeric" required></label>
@@ -823,6 +849,19 @@ function renderFormCurve(matches){
   <div class="form-legend"><span><i style="background:#85ef9c"></i>Sieg (3 Punkte)</span><span><i style="background:#f3d67d"></i>Remis (1 Punkt)</span><span><i style="background:#ff818d"></i>Niederlage (0 Punkte)</span></div>`;
 }
 
+function renderPlayoffHistory(data){
+ const el=$('#playoff-display');
+ const games=Array.isArray(data.playoffMatches)?data.playoffMatches:[];
+ if(!games.length){
+   el.innerHTML=`<div class="panel playoff-card">${data.playoffUnavailable?'EA-Playoff-Daten gerade nicht erreichbar.':'Aktuell keine Playoff-Spiele von EA abrufbar.'} Das bedeutet nicht, dass der Club nie Playoffs gespielt hat.</div>`;
+   return;
+ }
+ const wins=games.filter(m=>m.result==='W').length, draws=games.filter(m=>m.result==='D').length, losses=games.filter(m=>m.result==='L').length;
+ const score=games.reduce((a,m)=>a+num(m.goals),0)+':'+games.reduce((a,m)=>a+num(m.against),0);
+ const summary=`<div class="panel playoff-card"><h3>Bilanz · letzte ${games.length} abrufbaren Spiele</h3><div class="big">${Math.round(100*wins/games.length)} %</div><small>Siegquote · EA-Playoff-Matches</small><p class="tiny-line">${wins} Siege · ${draws} Remis · ${losses} Niederlagen</p><p class="tiny-line">Torbilanz: ${score}</p></div>`;
+ const recent=games.map(m=>`<div class="playoff-match"><div><strong>${esc(m.opponent||'Unbekannter Gegner')}</strong><div class="playoff-muted">${esc(fmtDate(m.timestamp))}</div></div><strong class="${m.result==='W'?'win':m.result==='L'?'loss':'draw'}">${esc(m.goals)} : ${esc(m.against)}</strong></div>`).join('');
+ el.innerHTML=summary+`<div class="panel playoff-card"><h3>Playoff-Matchhistorie</h3>${recent}</div>`;
+}
 function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').classList.remove('hidden');$('#club-title').textContent=data.name||'Unbekannter Club';$('#club-monogram').textContent=monogram(data.name);const s=data.stats||{};
   const divValue=data.currentDivision;
   const division=Number(divValue);
@@ -840,6 +879,7 @@ function renderClub(data){$('#intro').classList.add('hidden');$('#dashboard').cl
  $('#summary-metrics').innerHTML=[metric('Spiele',s.gamesPlayed,'Ligaspiele'),metric('Siege',s.wins,'Gewonnene Partien',true),metric('Unentschieden',s.ties,'Remis'),metric('Niederlagen',s.losses,'Verlorene Partien'),metric('Tore',s.goals,'Erzielte Tore',true),metric('Gegentore',s.goalsAgainst,'Kassierte Tore'),metric('Skill Rating',s.skillRating,'EA Skill-Bewertung',true),metric('Tordifferenz', num(s.goals)-num(s.goalsAgainst),'Tore minus Gegentore')].join('');
  const total=num(s.wins)+num(s.losses)+num(s.ties);const percent = n=>total?100*num(n)/total:0;
  $('#performance').innerHTML=`<div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 38px 'Space Grotesk';color:var(--accent)">${total?Math.round(percent(s.wins))+'%':'–'}</span><span class="muted" style="font-size:13px">Siegquote</span></div><div class="bar-stack"><span class="bar-win" style="width:${percent(s.wins)}%"></span><span class="bar-draw" style="width:${percent(s.ties)}%"></span><span class="bar-loss" style="width:${percent(s.losses)}%"></span></div><div class="legend"><span><i style="background:var(--green)"></i> Siege <b>${esc(disp(s.wins))}</b></span><span><i style="background:var(--yellow)"></i> Remis <b>${esc(disp(s.ties))}</b></span><span><i style="background:var(--red)"></i> Niederlagen <b>${esc(disp(s.losses))}</b></span></div>`;
+ renderPlayoffHistory(data);
  const matches=data.matches||[];$('#form-view').innerHTML=renderFormCurve(matches);
  renderFormationStats(data.formationHistory||{});
  renderTodayPlanner();
@@ -1011,6 +1051,17 @@ $('#today-add-player').addEventListener('click',()=>{
 $('#today-clear').addEventListener('click',()=>{todayRoster=[];saveTodayPlayers();drawTodayRows();showTodayStatus('Auswahl für heute geleert.')});
 $('#today-use-last').addEventListener('click',()=>{
  if(!clubData)return;
+ const recorded=Object.values(clubData.formationHistory||{})
+   .filter(r=>r&&r.playersSource==='manual'&&Array.isArray(r.players)&&r.players.some(p=>p?.name&&MATCH_POSITIONS.includes(p.position)))
+   .sort((a,b)=>Number(b.timestamp||0)-Number(a.timestamp||0))[0];
+ if(recorded){
+   todayRoster=recorded.players.slice(0,11).filter(p=>String(p.name||'').trim()).map(p=>({
+     name:String(p.name).slice(0,70),position:MATCH_POSITIONS.includes(p.position)?p.position:''
+   }));
+   saveTodayPlayers();drawTodayRows();
+   showTodayStatus(`Spielerpositionen vom letzten gespeicherten Match übernommen${recorded.formation?' (Formation '+recorded.formation+')':''}. Bitte für heute prüfen.`);
+   return;
+ }
  const last=clubData.matches?.find(m=>Array.isArray(m.lineup?.ours)&&m.lineup.ours.length);
  if(!last)return showTodayStatus('Im letzten Match sind keine Spielerprofile verfügbar.');
  const fallback={forward:'ST',midfielder:'ZM',defender:'IV',goalkeeper:'TW'};
@@ -1390,6 +1441,47 @@ function editableMatches(){
  const older=Object.entries(history).filter(([id,r])=>!seen.has(id)&&r&&/^\d{1,25}$/.test(id)).map(([id,r])=>({id,opponent:r.opponent||'Archiviertes Spiel',timestamp:r.timestamp||0,goals:r.goals,against:r.against,eaGoals:r.eaGoals,eaAgainst:r.eaAgainst,result:r.result,lineup:{ours:[],opponents:[]},archived:true}));
  return recent.concat(older.sort((a,b)=>b.timestamp-a.timestamp));
 }
+// Only genuine saved records can serve as a tactical template: EA does not
+// provide formations or the actual player positions. Never use the target match
+// itself, never copy from a chronologically *newer* match, and never infer values.
+function previousMatchTemplate(targetId){
+ const matches=editableMatches();
+ const target=matches.find(m=>String(m.id)===String(targetId));
+ const until=Number(target?.timestamp||0);
+ if(!Number.isFinite(until)||until<=0)return null;
+ const history=clubData?.formationHistory||{};
+ const candidates=Object.entries(history).flatMap(([id,record])=>{
+   if(String(id)===String(targetId)||!record||typeof record!=='object')return [];
+   const when=Number(record.timestamp||0);
+   if(!Number.isFinite(when)||when<=0||when>=until)return [];
+   const formation=FORMATION_CHOICES.includes(record.formation)?record.formation:'';
+   const players=record.playersSource==='manual'&&Array.isArray(record.players)?
+     record.players.filter(p=>p&&String(p.name||'').trim()).slice(0,16).map(p=>({
+       name:String(p.name).slice(0,70),position:MATCH_POSITIONS.includes(p.position)?p.position:''
+     })):[];
+   if(!formation&&!players.some(p=>p.position))return [];
+   return [{id,when,formation,players,opponent:record.opponent||'Gegner'}];
+ });
+ candidates.sort((a,b)=>b.when-a.when);
+ return candidates[0]||null;
+}
+function copyMatchTemplate(targetId,setFormation,setRoster,setStatus){
+ const source=previousMatchTemplate(targetId);
+ if(!source){setStatus('Kein vorheriges Spiel mit gespeicherter Formation oder Positionen vorhanden.',true);return}
+ const text=`${source.opponent} (${fmtDate(source.when)})`;
+ if(!confirm(`Formation und Spielerpositionen aus dem Spiel gegen ${text} übernehmen?\nDas Ergebnis des aktuellen Spiels bleibt unverändert.`))return;
+ if(source.formation)setFormation(source.formation);
+ if(source.players.length)setRoster(source.players);
+ setStatus(`✓ Übernommen aus ${text}: ${source.formation?'Formation '+source.formation:'Formation nicht erfasst'}${source.players.length?' und '+source.players.length+' Spieler mit Positionen':''}. Bitte prüfen und danach Änderungen speichern.`);
+}
+function updateAdminCopyButton(){
+ const button=$('#admin-copy-last'),note=$('#admin-copy-last-note');
+ const source=previousMatchTemplate(adminMatchSelectedId);
+ button.disabled=!source;
+ note.textContent=source?
+   `Quelle: ${source.opponent} · ${fmtDate(source.when)}. Ergebnis wird nicht kopiert.`:
+   'Noch kein vorheriges Spiel mit gespeicherter Formation oder Positionen.';
+}
 function adminPlayerRow(player={}){
  const container=$('#admin-match-players');
  if(container.children.length>=16){adminMessage('Maximal 16 Spieler pro Match.',true);return}
@@ -1414,6 +1506,7 @@ function adminSelectMatch(id){
  const players=saved.playersSource==='manual'&&Array.isArray(saved.players)?saved.players:(match.lineup?.ours||[]);
  const container=$('#admin-match-players');container.replaceChildren();
  for(const p of players)adminPlayerRow(p);
+ updateAdminCopyButton();
  adminDrawFormations(false);
 }
 function adminDrawFormations(autoselect=true){
@@ -1472,6 +1565,12 @@ async function adminSaveMatch(reset=false){
   adminMessage(reset?'✓ Manuelle Daten entfernt. Der EA-Kader wird wieder verwendet.':'✓ Gespeichert. Die Ergebnisse der Formationsstatistik und die Matchdetails wurden aktualisiert.');
  }catch(err){adminMessage(err.message,true)}finally{adminBusy=false;$('#admin-match-save').disabled=false;$('#admin-match-reset').disabled=false}
 }
+$('#admin-copy-last').addEventListener('click',()=>{
+  copyMatchTemplate(adminMatchSelectedId,
+    f=>{$('#admin-match-formation').value=f},
+    players=>{const box=$('#admin-match-players');box.replaceChildren();players.forEach(adminPlayerRow)},
+    (message,error=false)=>adminMessage(message,error));
+});
 // Inline editing in expanded match cards reuses the protected admin endpoint.
 // The button is visible to all; editing requires a verified admin session.
 function matchById(matchId){
@@ -1514,6 +1613,10 @@ function openInlineMatchEditor(id){
  form.setAttribute('aria-label','Spiel direkt bearbeiten');
  form.innerHTML=`<h3 class="match-inline-title">⚙ ${esc(match.opponent||'Match')} bearbeiten</h3>
   <p class="match-inline-caption">Formation, Endstand und den eigenen Kader mit Positionen bearbeiten. Änderungen werden mit Admin- oder Team-Zugang dauerhaft gespeichert.</p>
+  <div class="match-copy-tools">
+    <button class="button secondary sm match-inline-copy" type="button">↶ Vom letzten Spiel übernehmen</button>
+    <span class="match-copy-note"></span>
+  </div>
   <div class="match-editor-grid">
     <label class="match-editor-field">Formation<select name="formation"><option value="">Nicht bekannt</option>${FORMATION_CHOICES.map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('')}</select></label>
     <label class="match-editor-field">Eigene Tore<input name="goals" type="number" min="0" max="30" step="1" required></label>
@@ -1531,6 +1634,16 @@ function openInlineMatchEditor(id){
  const roster=saved.playersSource==='manual'&&Array.isArray(saved.players)?saved.players:(match.lineup?.ours||[]);
  slot.append(form);
  for(const player of roster)inlinePlayerRow(form.querySelector('.match-inline-players'),player);
+ const source=previousMatchTemplate(id);
+ const copyButton=form.querySelector('.match-inline-copy');
+ copyButton.disabled=!source;
+ form.querySelector('.match-copy-note').textContent=source?
+   `Quelle: ${source.opponent} · ${fmtDate(source.when)}. Das Ergebnis bleibt gleich.`:
+   'Kein vorheriges Match mit gespeicherter Formation oder Positionen vorhanden.';
+ copyButton.addEventListener('click',()=>copyMatchTemplate(id,
+   formation=>{form.elements.formation.value=formation},
+   players=>{const container=form.querySelector('.match-inline-players');container.replaceChildren();players.forEach(p=>inlinePlayerRow(container,p))},
+   (message,error=false)=>inlineMatchStatus(form,message,error)));
  form.querySelector('.match-inline-add').addEventListener('click',()=>inlinePlayerRow(form.querySelector('.match-inline-players')));
  form.querySelector('.match-inline-cancel').addEventListener('click',()=>slot.replaceChildren());
  form.querySelector('.match-inline-reset').addEventListener('click',()=>saveInlineMatch(id,form,true));
