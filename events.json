@@ -61,7 +61,48 @@
   "divisionOverrides": {
     "132788": 4
   },
-  "formationHistory": {},
+  "formationHistory": {
+    "132788": {
+      "153588177270350": {
+        "timestamp": 1793398888,
+        "opponent": "TekzUtd",
+        "eaGoals": 2,
+        "eaAgainst": 1,
+        "formation": "4-2-2-2",
+        "goals": 2,
+        "against": 1,
+        "result": "W",
+        "scoreSource": "manual",
+        "players": [
+          {
+            "name": "Bierbaron08",
+            "position": "ZOM"
+          },
+          {
+            "name": "Burnhead",
+            "position": "ZOM"
+          },
+          {
+            "name": "Leon_noel9",
+            "position": "ZDM"
+          },
+          {
+            "name": "Mudwalker_1971",
+            "position": "ZDM"
+          },
+          {
+            "name": "oujdi-48888",
+            "position": "ST"
+          },
+          {
+            "name": "Smodabo86",
+            "position": "ST"
+          }
+        ],
+        "playersSource": "manual"
+      }
+    }
+  },
   "matchdayPlans": {
     "132788": {
       "players": [
